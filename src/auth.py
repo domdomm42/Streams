@@ -14,22 +14,22 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # Check all inputs and store in data_store
     check_email(email)
-    store['emails'].append(email)
-
     check_password(password)
-    store['passwords'].append(password)
-
     check_first_name(name_first)
-    store['first_names'].append(name_first)
-
     check_last_name(name_last)
-    store['last_names'].append(name_last)
-    
+
+    store['users']['emails'].append(email)
+    store['users']['passwords'].append(password)
+    store['users']['first_names'].append(name_first)
+    store['users']['last_names'].append(name_last)
+
+    data_store.set(store)
+
     # Create user_handle and store in data_store, return auth_user_id
     # NOTE: auth_user_id is the index of the user in the lists
-    auth_user_ID = create_user_handle(name_first, name_last)
-    
-    return auth_user_ID
+    auth_user_id = create_user_handle(name_first, name_last)
+
+    return auth_user_id
 
 
 def check_email(email):
@@ -38,7 +38,9 @@ def check_email(email):
 
     regex = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'
 
-    if re.fullmatch(regex, email) and email not in store['emails']:
+    print(store['users']['emails'])
+
+    if re.fullmatch(regex, email) and email not in store['users']['emails']:
         pass
     else:
         raise InputError('Invalid email!')
@@ -74,21 +76,24 @@ def create_user_handle(name_first, name_last):
     user_handle_copy = user_handle
 
     i = 1
-    while user_handle in store['user_handles']:
+    while user_handle in store['users']['user_handles']:
         user_handle = user_handle_copy + str(i)
         i += 1
     
-    store['user_handles'].append(user_handle)
-    auth_user_ID = store['user_handles'].index(user_handle)
-    print(store)
-    return auth_user_ID
+    store['users']['user_handles'].append(user_handle)
+    auth_user_id = store['users']['user_handles'].index(user_handle)
+
+    data_store.set(store)
+
+    #print(store)
+    return auth_user_id
 
 # Debugging + Testing purposes
 if __name__ == '__main__':
 
-    
-    auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    auth_register_v1('joe1233@gmail.com', 'password', 'Joe', 'Smith')
+    # Testing
+    #auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    #auth_register_v1('joe1233@gmail.com', 'password', 'Joe', 'Smith')
 
 
     # Testing create_user_handle works correctly for people with the same name
@@ -96,4 +101,5 @@ if __name__ == '__main__':
     # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
     # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
     # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
+    pass
     
