@@ -37,9 +37,9 @@ initial_object = {
     },
     
     # The channel_id is the index of the channel in the list
-    # Make a list inside the list, for example for channel_id = 0
-    # The 0th index of all_members is a list of strings containing
-    # all the members  
+    # Make a list inside the list, for example for channel_id = 0,
+    # the 0th index of all_members is a list of strings/numbers containing
+    # all the members
     'channels': {
         'owner_user_id': [],
         'is_public': [],

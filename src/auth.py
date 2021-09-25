@@ -12,12 +12,13 @@ def auth_register_v1(email, password, name_first, name_last):
 
     store = data_store.get()
 
-    # Check all inputs and store in data_store
+    # Check all inputs
     check_email(email)
     check_password(password)
     check_first_name(name_first)
     check_last_name(name_last)
 
+    # Store all the data
     store['users']['emails'].append(email)
     store['users']['passwords'].append(password)
     store['users']['first_names'].append(name_first)
@@ -26,12 +27,16 @@ def auth_register_v1(email, password, name_first, name_last):
     data_store.set(store)
 
     # Create user_handle and store in data_store, return auth_user_id
-    # NOTE: auth_user_id is the index of the user in the lists
+    # NOTE: auth_user_id is the index of the user in the list
     auth_user_id = create_user_handle(name_first, name_last)
 
     return auth_user_id
 
 
+# --- Check email ---
+# This function takes in an email (string) and checks if email is
+# in the correct format and unique
+# This function returns a unique user_handle
 def check_email(email):
 
     store = data_store.get()
@@ -45,24 +50,40 @@ def check_email(email):
     else:
         raise InputError('Invalid email!')
 
+# --- Check password ---
+# This function takes in a password (string) and checks if the 
+# password is >= 6 characters
+# This function does not return anything
 def check_password(password):
     if len(password) >= 6:
         pass
     else: 
         raise InputError('Invalid password!')
 
+# --- Check first name ---
+# This function takes in the user's first name (string) and checks 
+# if the first name is between 1 and 50 characters inclusive
+# This function does not return anything
 def check_first_name(name_first):
     if len(name_first) >= 1 and len(name_first) <= 50:
         pass
     else: 
         raise InputError('Invalid first name!')
 
+# --- Check last name ---
+# This function takes in the user's last name (string) and checks 
+# if the last name is between 1 and 50 characters inclusive
+# This function does not return anything
 def check_last_name(name_last):
     if len(name_last) >= 1 and len(name_last) <= 50:
         pass
     else:
         raise Exception('Invalid last name!')
 
+# --- Create user_handle ---
+# This function takes in the user's first and last name (strings)
+# and creates a unique user_handle (string)
+# This function returns the auth_user_id (int)
 def create_user_handle(name_first, name_last):
 
     user_handle = (name_first.lower() + name_last.lower())[0:19]
@@ -74,7 +95,6 @@ def create_user_handle(name_first, name_last):
     # If user_handle is not unique, then the function will add
     # a number at the end of the function
     user_handle_copy = user_handle
-
     i = 1
     while user_handle in store['users']['user_handles']:
         user_handle = user_handle_copy + str(i)
@@ -88,12 +108,17 @@ def create_user_handle(name_first, name_last):
     #print(store)
     return auth_user_id
 
+
+
+
+
+
 # Debugging + Testing purposes
 if __name__ == '__main__':
 
     # Testing
-    #auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    #auth_register_v1('joe1233@gmail.com', 'password', 'Joe', 'Smith')
+    # auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    # auth_register_v1('joe1233@gmail.com', 'password', 'Joe', 'Smith')
 
 
     # Testing create_user_handle works correctly for people with the same name

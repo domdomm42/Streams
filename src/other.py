@@ -10,9 +10,9 @@ def clear_v1():
     store['users']['last_names'] = []
     store['users']['user_handles'] = []
 
-    store['owner_user_id']['emails'] = []
-    store['is_public']['passwords'] = []
-    store['all_members']['first_names'] = []
-    store['messages']['last_names'] = []
+    store['channels']['owner_user_id'] = []
+    store['channels']['passwords'] = []
+    store['channels']['first_names'] = []
+    store['channels']['last_names'] = []
 
     data_store.set(store)
