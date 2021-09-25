@@ -2,7 +2,7 @@ import pytest
 
 from src.auth import auth_login_v1, auth_register_v1
 from src.error import InputError
-from src.data_store import clear_v1
+from src.other import clear_v1
 
 # Test Invalid Emails
 # --------------------------
