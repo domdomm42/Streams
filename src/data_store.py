@@ -29,9 +29,9 @@ initial_object = {
     'users': [],
     'emails': [],
     'passwords': [],
-    'first_name': [],
-    'last_name': [],
-    'user_handle': [],
+    'first_names': [],
+    'last_names': [],
+    'user_handles': [],
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
