@@ -26,7 +26,26 @@ Example usage:
 
 ## YOU SHOULD MODIFY THIS OBJECT BELOW
 initial_object = {
-    'users': [],
+
+    # The auth_user_id is the index of the user in the list
+    'users': {
+        'emails': [],
+        'passwords': [],
+        'first_names': [],
+        'last_names': [],
+        'user_handles': [],
+    },
+    
+    # The channel_id is the index of the channel in the list
+    # Make a list inside the list, for example for channel_id = 0,
+    # the 0th index of all_members is a list of strings/numbers containing
+    # all the members
+    'channels': {
+        'owner_user_id': [],
+        'is_public': [],
+        'all_members': [],
+        'messages': [],
+    }
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
