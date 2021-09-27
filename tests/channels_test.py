@@ -1,6 +1,7 @@
 import pytest
 
 from src.other import clear_v1
+from src.error import InputError
 from src.auth import auth_login_v1, auth_register_v1
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 from src.channel import channel_join_v1
@@ -44,9 +45,28 @@ def test_given_channels(setup):
      assert channels_list_v1(setup) == {
         'channels': [
         	{
-        		'channel_id': 2,
+        		'channel_id': 1,
         		'name': 'Marry',
         	}
         ],
      }     
+
+# Testing Invalid names for channel creation
+def test_empty_name():
+    with pytest.raises(InputError):
+        channels_create_v1(1, '', True)
+
+def test_long_name():
+    with pytest.raises(InputError):
+        channels_create_v1(1, 'bigbigbigbigbigbigbigbig', True)
+
+def test_empty_name():
+    with pytest.raises(InputError):
+        channels_create_v1(1, '', False)
+
+def test_long_name():
+    with pytest.raises(InputError):
+        channels_create_v1(1, 'bigbigbigbigbigbigbigbig', False)
+
+        
 
