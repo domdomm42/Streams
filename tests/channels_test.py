@@ -1,7 +1,9 @@
 import pytest
 
 from src.other import clear_v1
-from src.channels import channels_list_v1, channels_listall_v1
+from src.auth import auth_login_v1, auth_register_v1
+from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
+from src.channel import channel_join_v1
 
 ''' 
 Channels testing documentation
@@ -15,10 +17,10 @@ def setup():
     clear_v1()
     register_userID = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
     login_joe = auth_login_v1('joe123@gmail.com', 'password')
-    channel_joe = channels_create_v1(login_userID, 'Joe', False)
+    channel_joe = channels_create_v1(login_joe, 'Joe', False)
     register_userID = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
     login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    channel_marry = channels_create_v1(login_userID, 'Marry', True)
+    channel_marry = channels_create_v1(login_marry, 'Marry', True)
     channel_join_v1(login_joe, channel_marry)
     return login_marry
 
