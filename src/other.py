@@ -15,5 +15,6 @@ def clear_v1():
     store['channels']['is_public'] = []
     store['channels']['all_members'] = []
     store['channels']['messages'] = []
+
     data_store.set(store)
     

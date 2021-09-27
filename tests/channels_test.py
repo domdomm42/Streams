@@ -68,5 +68,12 @@ def test_long_name():
     with pytest.raises(InputError):
         channels_create_v1(1, 'bigbigbigbigbigbigbigbig', False)
 
+# Testing simple channel creation
+def test_new_channel():
+    clear_v1()
+    assert channels_create_v1(0, 'Joe', True) == 0
+    assert channels_create_v1(1, 'Marry', True) == 1
+    assert channels_create_v1(0, 'Joeseph', True) == 2
+    
         
 
