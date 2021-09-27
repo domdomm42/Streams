@@ -193,7 +193,6 @@ def check_valid_password(email, password):
         raise InputError('Invalid Password!')
         
 
-    
 # Debugging + Testing purposes
 if __name__ == '__main__':
 
