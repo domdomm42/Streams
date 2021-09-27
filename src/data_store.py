@@ -42,6 +42,7 @@ initial_object = {
     # all the members
     'channels': {
         'owner_user_id': [],
+        'name': [],
         'is_public': [],
         'all_members': [],
         'messages': [],
