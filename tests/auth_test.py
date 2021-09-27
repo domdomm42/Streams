@@ -118,3 +118,63 @@ def test_invalid_last_name():
 def test_invalid_last_name_2():
     with pytest.raises(InputError):
         auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'S'*51)
+
+
+# Test unregistered email 
+def test_unregistered_email():
+    with pytest.raises(InputError):
+        auth_login_v1('joe123.com', 'password')
+
+def test_unregistered_email_2():
+    with pytest.raises(InputError):
+        auth_login_v1('anika.com', 'password')
+
+def test_unregistered_email_3():
+    with pytest.raises(InputError):
+        auth_login_v1(' ', 'password')
+
+def test_unregisterd_email_4():
+    with pytest.raises(InputError):
+        auth_login_v1('.com', 'password')
+
+def test_unregistered_email_5():
+    with pytest.raises(InputError):
+        auth_login_v1('@.com', 'password')
+
+def test_unregisted_email_6():
+    with pytest.raises(InputError):
+        auth_login_v1('2342ras@43', 'password')
+
+def test_unregisted_email_7():
+    with pytest.raises(InputError):
+        auth_login_v1('dklshfdoshfokishjfoihwokjbhfd', 'password')
+
+def test_unregistered_email_8():
+    with pytest.raises(InputError):
+        auth_login_v1('marry.joe!@gmail.com', 'password')
+
+def test_unregistered_email_9():
+    with pytest.raises(InputError):
+        auth_login_v1('wolffangdan', 'dancarry')
+
+
+# Test registered email
+def test_registered_email():
+    with pytest.raises(InputError):
+        login_userID = auth_login_v1('joe123@gmail.com', 'password')
+
+def test_registered_email_2():
+    with pytest.raises(InputError):
+        login_userID = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
+
+def test_registered_email_3():
+    with pytest.raises(InputError):
+        login_userID = auth_login_v1('davidmo@gmail.com', 'passwordD')
+
+
+
+
+
+
+
+
