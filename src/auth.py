@@ -5,7 +5,7 @@ import re
 
 def auth_login_v1(email, password):
 
-    if check_valid_email(email) == 1 and check_valid_password(password) == 1:
+    if check_valid_email(email) and check_valid_password(password):
 
         for x in store["users"]["emails"]:
             email_list.append(x)
@@ -18,7 +18,6 @@ def auth_login_v1(email, password):
                 break
             else:
                 counter = counter + 1
-    
         counter = counter + 1
 
         return user_handles_list[counter]
@@ -145,7 +144,7 @@ def check_valid_email(email):
     # Checks if list contains the email given
     # If email is in the list, a 1 is given
     # If the loop reaches the end and the email isn't present
-    # The 'check' stays at 0.
+    # Error is given
     for y in email_list:
         if y == email:
             check = 1
