@@ -44,10 +44,14 @@ initial_object = {
         'channel_name': [],
         'owner_user_id': [],
 <<<<<<< HEAD
+<<<<<<< HEAD
         'channel_name': [],
 =======
         'name': [],
 >>>>>>> addedssimple channels testing, updated data store, updated clear function
+=======
+        'channel_name': [],
+>>>>>>> Add channel name
         'is_public': [],
         'all_members': [],
         'messages': [],
