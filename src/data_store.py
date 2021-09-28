@@ -40,39 +40,19 @@ initial_object = {
     # Make a list inside the list, for example for channel_id = 0,
     # the 0th index of all_members is a list of strings/numbers containing
     # all the members
-    'channels': [
-        {
-            'channel_id':[]
-            'name':[]
-            'owner_members':[
-                {
-                    'emails': [],
-                    'passwords': [],
-                    'first_names': [],
-                    'last_names': [],
-                    'user_handles': [] 
-                }
-            ]
-            'all_members':[
-                {
-                    'emails': [],
-                    'passwords': [],
-                    'first_names': [],
-                    'last_names': [],
-                    'user_handles': []
-                }
-            ]
-            'message':[
-                {
-                    'message_id':[]
-                    'user_id':[]
-                    'message':[]
-                    'time_created':[]
-                }
-            ]
+    
+    'channels': {
 
-        }
-    ]
+        'owner_user_id': [],
+
+        'channel_name': [],
+
+        'is_public': [],
+
+        'all_members': [],
+
+        'messages': [],
+    }
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
