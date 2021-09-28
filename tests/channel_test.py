@@ -1,58 +1,79 @@
 import pytest
 from src.channel import channel_details_v1, channel_join_v1
-from src.error import InputError
+from src.error import InputError, AccessError
+from src.auth import auth_login_v1, auth_register_v1
+from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 from src.other import clear_v1
 
 #=====Input Error======================
 #=====Test invalid channel_id==========
 
+
+
+@pytest.fixture
+def set_up():
+    clear_v1()
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    #create user Luka with private channel
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False)
+    return login_joe, login_marry, channels_joe, channels_marry
+    
+
+
+
 def test_invalid_channel_id_detail():
-    with pytest.raises(InputError)
-        channel_details_v1('1', '-1')
+    with pytest.raises(InputError):
+        channel_details_v1(1, 100)
 #   with pytest.raises(InputError)
-#       channel_join_v1('1', '-1')
+#       channel_join_v1(1, 100)
 
 
 
 
 #=====Test member join again===========
 
-def test_member_join_again():
+def test_member_join_again(set_up):
         #create a channel and auth_user
-        channel_join_v1('1', '1')          
-    with pytest.raises(InputError)
-        channel_join_v1('1', '1')
+    
+                
+    with pytest.raises(InputError):
+        channel_join_v1(login_joe, channels_joe)
 
 #=====Access Error=====================
 #=====Auth_user is not member==========
 #User is not allow to access channel details
-def test_no_member_access_detail():
+def test_no_member_access_detail(set_up):
         #create channel and auth_user
-    with pytest.raises(InputError)
-        channel_details_v1('2', '1')
+    
+    with pytest.raises(AccessError):
+        channel_details_v1(login_joe, channels_marry)
 
 #=====Channel is private===============
 #User is not a globle owner or member
 
-def test_join_private_channel():
-    #create a private channel and auth_user
-    with pytest.raises(InputError)
-        channel_join_v1('1', '2')
+def test_join_private_channel(set_up):
+    
+    with pytest.raises(AccessError):
+        channel_join_v1(login_joe, channels_marry)
 
 
 #=====Valid case for detail===========
-def test_valid_channel_id_detail():
-    clear_v1()
-    #create a auth_use and a public channel called "A"
-    details = channel_details_v1('1', '1')
-    assert details['name'] == 'A'
+def test_valid_channel_id_detail(set_up):
+    
+    
+    details = channel_details_v1(login_joe, channels_joe)
+    assert details['name'] == 'Joe'
 
 #=====Valid case for join==============
 
-def test_valid_channel_id_join():
-    clear_v1()
-    #create a auth_user and a public channel called "B"
-    channel_join_v1('1', '1')
-    details = channel_details_v1('1', '1')
+def test_valid_channel_id_join(set_up):
+    
+    
+    channel_join_v1(login_joe, channels_marry)
+    details = channel_details_v1(login_marry, channels_joe)
     assert len(details['all_members']) == 2
 
