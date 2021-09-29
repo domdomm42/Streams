@@ -10,17 +10,7 @@ from src.other import clear_v1
 
 
 
-@pytest.fixture
-def set_up():
-    clear_v1()
-    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    login_joe = auth_login_v1('joe123@gmail.com', 'password')
-    channels_joe = channels_create_v1(login_joe, 'Joe', True)
-    #create user Luka with private channel
-    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    channels_marry = channels_create_v1(login_marry, 'Marry', False)
-    return login_joe, login_marry, channels_joe, channels_marry
+
     
 
 
@@ -55,6 +45,7 @@ def test_no_member_access_detail():
     register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
     login_joe = auth_login_v1('joe123@gmail.com', 'password')
     channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    
     #create user Luka with private channel
     register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
     login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
@@ -79,7 +70,7 @@ def test_join_private_channel():
 
 
 #=====Valid case for detail===========
-def test_valid_channel_id_detail():
+def test_valid_channel_id_detail_1():
     clear_v1()
     register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
     login_joe = auth_login_v1('joe123@gmail.com', 'password')
@@ -87,7 +78,61 @@ def test_valid_channel_id_detail():
     
     
     details = channel_details_v1(login_joe, channels_joe)
-    assert details['name'] == 'Joe'
+    print(details)
+    assert details == {
+        'name': 'Joe', 
+        'is_public': True, 
+        'owner_members': [
+            {
+                'u_id': login_joe, 
+                'email': 'joe123@gmail.com', 
+                'name_first': 'Joe', 
+                'name_last': 'Smith', 
+                'handle_str': 'joesmith'
+            }
+        ], 
+        'all_members': [
+            {
+                'u_id': 0, 
+                'email': 'joe123@gmail.com', 
+                'name_first': 'Joe', 
+                'name_last': 'Smith', 
+                'handle_str': 'joesmith'
+            }
+        ]
+    }
+
+def test_valid_channel_id_detail_2():
+    clear_v1()
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False)
+    
+    
+    details = channel_details_v1(login_marry, channels_marry)
+    
+    assert details == {
+        'name': 'Marry', 
+        'is_public': False, 
+        'owner_members': [
+            {
+                'u_id': login_marry, 
+                'email': 'marryjoe222@gmail.com', 
+                'name_first': 'Marry', 
+                'name_last': 'Joe', 
+                'handle_str': 'marryjoe'
+            }
+        ], 
+        'all_members': [
+            {
+                'u_id': login_marry, 
+                'email': 'marryjoe222@gmail.com', 
+                'name_first': 'Marry', 
+                'name_last': 'Joe', 
+                'handle_str': 'marryjoe'
+            }
+        ]
+    }
 
 #=====Valid case for join==============
 
@@ -101,7 +146,36 @@ def test_valid_channel_id_join():
     register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
     login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
     channels_marry = channels_create_v1(login_marry, 'Marry', False)
-    channel_join_v1(login_joe, channels_marry)
+    channel_join_v1(login_marry, channels_joe)
     details = channel_details_v1(login_marry, channels_joe)
-    assert len(details['all_members']) == 2
+    
+    assert details == {
+        'name': 'Joe',
+        'is_public': True,
+        'owner_members': [
+            {
+                'u_id': login_joe, 
+                'email': 'joe123@gmail.com', 
+                'name_first': 'Joe', 
+                'name_last': 'Smith', 
+                'handle_str': 'joesmith'
+            }
+        ], 
+        'all_members': [
+            {
+                'u_id': login_joe, 
+                'email': 'joe123@gmail.com', 
+                'name_first': 'Joe', 
+                'name_last': 'Smith', 
+                'handle_str': 'joesmith'
+            }, 
+            {   'u_id': login_marry, 
+                'email': 'marryjoe222@gmail.com', 
+                'name_first': 'Marry', 
+                'name_last': 'Joe', 
+                'handle_str': 'marryjoe'
+            }
+        ]
+    }
+    
 
