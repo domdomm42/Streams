@@ -36,12 +36,17 @@ def channels_create_v1(auth_user_id, name, is_public):
     # Check length of name
     check_channel_name(name)
 
+    all_members_in_channel = []
+
+    all_members_in_channel.append(auth_user_id)
+
     # Stores necessary data into the data store 
     store = data_store.get()
 
     store['channels']['owner_user_id'].append(auth_user_id)
     store['channels']['channel_name'].append(name)
     store['channels']['is_public'].append(is_public)
+    store['channels']['all_members'].append(all_members_in_channel)
 
     data_store.set(store)
 
