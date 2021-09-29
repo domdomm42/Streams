@@ -4,7 +4,7 @@ from src.other import clear_v1
 from src.error import InputError
 from src.auth import auth_login_v1, auth_register_v1
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
-from src.channel import channel_join_v1
+from src.channel import channel_join_v1, channel_messages_v1, channel_join_v1
 
 ''' 
 Channels testing documentation
@@ -49,7 +49,8 @@ def test_given_channels(setup):
         		'name': 'Marry',
         	}
         ],
-     }     
+    }
+
 
 # Testing Invalid names for channel creation
 def test_empty_name():
@@ -74,6 +75,6 @@ def test_new_channel():
     assert channels_create_v1(0, 'Joe', True) == 0
     assert channels_create_v1(1, 'Marry', True) == 1
     assert channels_create_v1(0, 'Joeseph', True) == 2
-    
+
         
 

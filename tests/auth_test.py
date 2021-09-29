@@ -63,13 +63,13 @@ def test_register_invalid_email_8():
 def test_register_valid_email():
     clear_v1()
     register_userID = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    # login_userID = auth_login_v1('joe123@gmail.com', 'password')
-    # assert register_userID = login_userID
+    #login_userID = auth_login_v1('joe123@gmail.com', 'password')
+    #assert register_userID = login_userID
 
 def test_register_valid_email_2():
     clear_v1()
     register_userID = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    # login_userID = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
+    #login_userID = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
     # assert register_userID = login_userID
 
 def test_register_valid_email_3():
