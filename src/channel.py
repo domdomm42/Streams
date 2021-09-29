@@ -79,44 +79,44 @@ def channel_messages_v1(auth_user_id, channel_id, start):
             'end': place
         }
 
-    def channel_join_v1(auth_user_id, channel_id):
+def channel_join_v1(auth_user_id, channel_id):
         return {
         }
 
     # InputError
     # Check invalid channel_id
-    def check_invalid_channel_id(channel_id):
+def check_invalid_channel_id(channel_id):
         if store['channels'].has_key(channel_id) == True:
             pass
         else:
             raise InputError('Invalid channel id')
 
-    # Check invalid u_id
-    def check_invalid_u_id(u_id):
-        if store['channels'].has_key(u_id) == True:
-            pass
-        else:
-            raise InputError('Invalid u id')
+# Check invalid u_id
+def check_invalid_u_id(u_id):
+    if store['channels'].has_key(u_id) == True:
+        pass
+    else:
+        raise InputError('Invalid u id')
 
-    # Check member u_id
-    def check_member_u_id(channel_id, u_id):
-        if (u_id in channel_id.values()) == True:
-            pass
-        else:
-            raise InputError('Permission dinined!')
+# Check member u_id
+def check_member_u_id(channel_id, u_id):
+    if (u_id in channel_id.values()) == True:
+        pass
+    else:
+        raise InputError('Permission dinined!')
 
-    # Check start
-    def check_invalid_start(channel_id, start):
-        if start <= len(['channel_id']['messages']):
-            pass
-        else:
-            raise InputError('Permission dinined!')
+# Check start
+def check_invalid_start(channel_id, start):
+    if start <= len(['channel_id']['messages']):
+        pass
+    else:
+        raise InputError('Permission dinined!')
 
-    # AccessError
-    # Check authorised
-    def check_autorised_id(u_id):
-        if u_id in channels.values() == True:
-            pass
-        else:
-            raise AccessError('Permission dinined!')
+# AccessError
+# Check authorised
+def check_autorised_id(u_id):
+    if u_id in channels.values() == True:
+        pass
+    else:
+        raise AccessError('Permission dinined!')
 
