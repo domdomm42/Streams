@@ -93,7 +93,7 @@ def test_valid_channel_id_detail_1():
         ], 
         'all_members': [
             {
-                'u_id': 0, 
+                'u_id': login_joe, 
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
