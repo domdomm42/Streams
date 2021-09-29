@@ -36,9 +36,12 @@ def test_invalid_channel_id_detail():
 
 #=====Test member join again===========
 
-def test_member_join_again(set_up):
+def test_member_join_again():
         #create a channel and auth_user
-    
+    clear_v1()
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True)
                 
     with pytest.raises(InputError):
         channel_join_v1(login_joe, channels_joe)
@@ -46,23 +49,41 @@ def test_member_join_again(set_up):
 #=====Access Error=====================
 #=====Auth_user is not member==========
 #User is not allow to access channel details
-def test_no_member_access_detail(set_up):
+def test_no_member_access_detail():
         #create channel and auth_user
-    
+    clear_v1()
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    #create user Luka with private channel
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False)
     with pytest.raises(AccessError):
         channel_details_v1(login_joe, channels_marry)
 
 #=====Channel is private===============
 #User is not a globle owner or member
 
-def test_join_private_channel(set_up):
-    
+def test_join_private_channel():
+    clear_v1()
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    #create user Luka with private channel
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False)
     with pytest.raises(AccessError):
         channel_join_v1(login_joe, channels_marry)
 
 
 #=====Valid case for detail===========
-def test_valid_channel_id_detail(set_up):
+def test_valid_channel_id_detail():
+    clear_v1()
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True)
     
     
     details = channel_details_v1(login_joe, channels_joe)
@@ -70,9 +91,16 @@ def test_valid_channel_id_detail(set_up):
 
 #=====Valid case for join==============
 
-def test_valid_channel_id_join(set_up):
+def test_valid_channel_id_join():
     
-    
+    clear_v1()
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    #create user Luka with private channel
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False)
     channel_join_v1(login_joe, channels_marry)
     details = channel_details_v1(login_marry, channels_joe)
     assert len(details['all_members']) == 2
