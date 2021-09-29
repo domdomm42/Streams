@@ -1,5 +1,5 @@
 import pytest
-from src.channel import channel_invite_v1, channel_message_v1
+from src.channel import channel_invite_v1, channel_messages_v1
 from src.error import InputError, AccessError
 from src.auth import auth_login_v1, auth_register_v1
 from src.other import clear_v1
@@ -23,17 +23,17 @@ def set_up():
 # Test invalid channel_id
 def test_invalid_channel_id_invite():
     with pytest.raises(InputError):
-        channel_invite_v1(8,8)
+        channel_invite_v1(8, 8)
 
 def test_invalid_channel_id_message():
     with pytest.raises(InputError):
-        channel_messages_v1(8,8)
+        channel_messages_v1(8, 8)
 
 
 # Test invalid u_id
 def test_invalid_u_id_invite():
     with pytest.raises(InputError):
-        channel_invite_v1(8,8)
+        channel_invite_v1(8, 8)
 
 
 # Test already member
