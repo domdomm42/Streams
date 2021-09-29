@@ -1,6 +1,6 @@
 import pytest
+#from data_store import data_store
 from src.data_store import data_store
-
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     store = data_store.get()
@@ -16,7 +16,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     #store['channels']['owner_user_id'].append(auth_user_id)
     #store['channels']['u_id'].append(u_id)
 
-    store['channels']['channel_id'].append(u_id)
+    store['channels']['all_members'][channel_id].append(u_id)
 
 
     data_store.set(store)
@@ -53,7 +53,7 @@ def channel_details_v1(auth_user_id, channel_id):
     ],
     }
 
-    def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v1(auth_user_id, channel_id, start):
 
         store = data_store.get()
         # Check
