@@ -7,76 +7,54 @@ from src.other import clear_v1
 # Test Invalid Emails
 # --------------------------
 # The user should not be able to log in if they use an invalid email
-# Dom remove the hashtags to test your auth_login_v1 function - Ridho
+
 def test_register_invalid_email():
     with pytest.raises(InputError):
         auth_register_v1('joe123.com', 'password', 'Joe', 'Smith')
-    # with pytest.raises(InputError):
-    #     auth_login_v1('joe123.com', 'password')
 
 def test_register_invalid_email_2():
     with pytest.raises(InputError):
         auth_register_v1('anika.com', 'password', 'Joe', 'Smith')
-    # with pytest.raises(InputError):
-    #     auth_login_v1('anika.com', 'password')
 
 def test_register_invalid_email_3():
     with pytest.raises(InputError):
         auth_register_v1(' ', 'password', 'Joe', 'Smith')
-    # with pytest.raises(InputError):
-    #     auth_login_v1(' ', 'password')
 
 def test_register_invalid_email_4():
     with pytest.raises(InputError):
         auth_register_v1('.com', 'password', 'Joe', 'Smith')
-    # with pytest.raises(InputError):
-    #     auth_login_v1('.com', 'password')
 
 def test_register_invalid_email_5():
     with pytest.raises(InputError):
         auth_register_v1('@.com', 'password', 'Joe', 'Smith')
-    # with pytest.raises(InputError):
-    #     auth_login_v1('@.com', 'password')
+
 
 def test_register_invalid_email_6():
     with pytest.raises(InputError):
         auth_register_v1('2342ras@43', 'password', 'Joe', 'Smith')
-    # with pytest.raises(InputError):
-    #     auth_login_v1('2342ras@43', 'password')
 
 def test_register_invalid_email_7():
     with pytest.raises(InputError):
         auth_register_v1('dklshfdoshfokishjfoihwokjbhfd', 'password', 'Joe', 'Smith')
-    # with pytest.raises(InputError):
-    #     auth_login_v1('dklshfdoshfokishjfoihwokjbhfd', 'password')
 
 def test_register_invalid_email_8():
     with pytest.raises(InputError):
         auth_register_v1('marry.joe!@gmail.com', 'password', 'Joe', 'Smith')
-    # with pytest.raises(InputError):
-    #     auth_login_v1('marry.joe!@gmail.com', 'password')
 
 # Test Valid Emails
 # --------------------------
 # The user should be able to log in if they use a valid email
-# Dom remove the hashtags to test your auth_login_v1 function - Ridho
 def test_register_valid_email():
     clear_v1()
     register_userID = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    # login_userID = auth_login_v1('joe123@gmail.com', 'password')
-    # assert register_userID = login_userID
 
 def test_register_valid_email_2():
     clear_v1()
     register_userID = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    # login_userID = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    # assert register_userID = login_userID
 
 def test_register_valid_email_3():
     clear_v1()
     register_userID = auth_register_v1('davidmo@gmail.com', 'passwordD', 'David', 'Mo')
-    # login_userID = auth_login_v1('joe123@gmail.com', 'passwordD')
-    # assert register_userID = login_userID
 
 # Test duplicate emails
 def test_register_duplicate_email():
@@ -118,3 +96,99 @@ def test_invalid_last_name():
 def test_invalid_last_name_2():
     with pytest.raises(InputError):
         auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'S'*51)
+
+
+# Test unregistered email 
+# ---------------------------
+def test_unregistered_email():
+    with pytest.raises(InputError):
+        auth_login_v1('joe123.com', 'password')
+
+def test_unregistered_email_2():
+    with pytest.raises(InputError):
+        auth_login_v1('anika.com', 'password')
+
+def test_unregistered_email_3():
+    with pytest.raises(InputError):
+        auth_login_v1(' ', 'password')
+
+def test_unregisterd_email_4():
+    with pytest.raises(InputError):
+        auth_login_v1('.com', 'password')
+
+def test_unregistered_email_5():
+    with pytest.raises(InputError):
+        auth_login_v1('@.com', 'password')
+
+def test_unregisted_email_6():
+    with pytest.raises(InputError):
+        auth_login_v1('2342ras@43', 'password')
+
+def test_unregisted_email_7():
+    with pytest.raises(InputError):
+        auth_login_v1('dklshfdoshfokishjfoihwokjbhfd', 'password')
+
+def test_unregistered_email_8():
+    with pytest.raises(InputError):
+        auth_login_v1('marry.joe!@gmail.com', 'password')
+
+def test_unregistered_email_9():
+    with pytest.raises(InputError):
+        auth_login_v1('wolffangdan', 'dancarry')
+
+
+# Test registered email
+# --------------------------------
+# User must only be able to log in if password matches
+# the registered email.
+def test_registered_email():
+    clear_v1()
+    register_userID = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    login_userID = auth_login_v1('joe123@gmail.com', 'password')
+    assert register_userID == login_userID
+
+
+def test_registered_email_2():
+    clear_v1()
+    register_userID = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
+    login_userID = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
+    assert register_userID == login_userID
+
+
+def test_registered_email_3():
+    clear_v1()
+    register_userID = auth_register_v1('davidmo@gmail.com', 'passwordD', 'David', 'Mo')
+    login_userID = auth_login_v1('davidmo@gmail.com', 'passwordD')
+    assert register_userID == login_userID
+
+# Tests for multiple registers
+def test_registered_email_4():
+    clear_v1()
+    register_userID = auth_register_v1('panhain7@gmail.com', '016758899', 'Panha', 'In')
+    register_userID = auth_register_v1('oudomiscool@gmail.com', 'potatoyum', 'Oudom', 'Lim')
+    login_userID = auth_login_v1('oudomiscool@gmail.com', 'potatoyum')
+    assert register_userID == login_userID
+
+
+# Testing for unmatched password
+def test_wrong_password():
+    with pytest.raises(InputError):
+        login_userID = auth_login_v1('joe123@gmail.com', 'cotton')
+
+def test_wrong_password_2():
+    with pytest.raises(InputError):
+        login_userID = auth_login_v1('marryjoe222@gmail.com', 'eyed')
+
+def test_wrong_password_3():
+    with pytest.raises(InputError):
+        login_userID = auth_login_v1('davidmo@gmail.com', 'joe')
+
+
+
+
+
+
+
+
+
+
