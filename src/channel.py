@@ -16,7 +16,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     #store['channels']['owner_user_id'].append(auth_user_id)
     #store['channels']['u_id'].append(u_id)
 
-    store['channels']['channel_id'].append(u_id)
+    store['channels']['all_members'][channel_id].append(u_id)
 
 
     data_store.set(store)
