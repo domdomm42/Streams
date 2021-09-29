@@ -23,30 +23,30 @@ def set_up():
 # Test invalid channel_id
 def test_invalid_channel_id_invite():
     with pytest.raises(InputError):
-        channel_invite_v1(8, 8)
+        channel_invite_v1(8, 8, 8)
 
 def test_invalid_channel_id_message():
     with pytest.raises(InputError):
-        channel_messages_v1(8, 8)
+        channel_messages_v1(8, 8, 8)
 
 
 # Test invalid u_id
 def test_invalid_u_id_invite():
     with pytest.raises(InputError):
-        channel_invite_v1(8, 8)
+        channel_invite_v1(8, 8, 8)
 
 
 # Test already member
 def test_repeated_invite():
-    channel_invite_v1(8,8)
+    channel_invite_v1(8,8,8)
     with pytest.raises(InputError):
-        channel_invite_v1(8,8)
+        channel_invite_v1(8,8,8)
 
 
 # Test start
 def test_start_message():
     with pytest.raises(InputError):
-        channel_messages_v1(8,88)
+        channel_messages_v1(8,8,88)
 
 
 

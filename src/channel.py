@@ -1,6 +1,7 @@
 import pytest
 #from data_store import data_store
 from src.data_store import data_store
+from src.error import InputError, AccessError
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     store = data_store.get()
@@ -83,27 +84,43 @@ def channel_join_v1(auth_user_id, channel_id):
         return {
         }
 
-    # InputError
-    # Check invalid channel_id
+# InputError
+# Check invalid channel_id
 def check_invalid_channel_id(channel_id):
-        if store['channels'].has_key(channel_id) == True:
-            pass
-        else:
-            raise InputError('Invalid channel id')
+    
+    store = data_store.get()
+    
+    if channel_id >= len(store['channels']['owner_user_id']):
+        raise InputError('Channel does not exist!')
+    else:
+        pass
+    
+    
 
 # Check invalid u_id
 def check_invalid_u_id(u_id):
-    if store['channels'].has_key(u_id) == True:
-        pass
-    else:
-        raise InputError('Invalid u id')
+    i = 0
+    
+    for item in store['channels']['all_members'][channel_id]:
+        
+        if i == u_id:
+            pass
+            
+        i += 1
+    raise InputError('Invalid input')
 
 # Check member u_id
 def check_member_u_id(channel_id, u_id):
-    if (u_id in channel_id.values()) == True:
+    
+    store = data_store.get()
+
+    if u_id in store['channels']['all_members']['channel_id']:
         pass
     else:
-        raise InputError('Permission dinined!')
+        raise AccessError('User not apart of channel')
+ 
+
+
 
 # Check start
 def check_invalid_start(channel_id, start):
@@ -115,8 +132,14 @@ def check_invalid_start(channel_id, start):
 # AccessError
 # Check authorised
 def check_autorised_id(u_id):
-    if u_id in channels.values() == True:
-        pass
-    else:
-        raise AccessError('Permission dinined!')
+    store = data_store.get()
+   
+    
+    for user in store['channels']['all_members'][channel_id]:
+        if user == auth_user_id:
+            return
+            
+    
+    raise AccessError('Permission denied!')
+
 
