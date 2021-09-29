@@ -1,21 +1,23 @@
 import pytest
 from src.data_store import data_store
-from src.error import InputError, AccessError
+
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     store = data_store.get()
     # Check
     check_invalid_channel_id(channel_id)
     check_invalid_u_id(u_id)
-    check_member_u_id(u_id)
+    check_member_u_id(channel_id, u_id)
 
     check_autorised_id(u_id)
 
     # Store
 
-    store['channels']['owner_user_id'].append(auth_user_id)
-    store['channels']['channel_id'].append(channel_id)
-    store['channels']['u_id'].append(u_id)
+    #store['channels']['owner_user_id'].append(auth_user_id)
+    #store['channels']['u_id'].append(u_id)
+
+    store['channels']['channel_id'].append(u_id)
+
 
     data_store.set(store)
     return {
@@ -28,28 +30,28 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 #
 # all_members.append(auth_user_id)
 
-# def channel_details_v1(auth_user_id, channel_id):
-#     return {
-#         'name': 'Hayden',
-#         'owner_members': [
-#             {
-#                 'u_id': 1,
-#                 'email': 'example@gmail.com',
-#                 'name_first': 'Hayden',
-#                 'name_last': 'Jacobs',
-#                 'handle_str': 'haydenjacobs',
-#             }
-#         ],
-#         'all_members': [
-#             {
-#                 'u_id': 1,
-#                 'email': 'example@gmail.com',
-#                 'name_first': 'Hayden',
-#                 'name_last': 'Jacobs',
-#                 'handle_str': 'haydenjacobs', store = data_store.get()
-#     }
-#     ],
-#     }
+def channel_details_v1(auth_user_id, channel_id):
+    return {
+        'name': 'Hayden',
+        'owner_members': [
+            {
+                'u_id': 1,
+                'email': 'example@gmail.com',
+                'name_first': 'Hayden',
+                'name_last': 'Jacobs',
+                'handle_str': 'haydenjacobs',
+            }
+        ],
+        'all_members': [
+            {
+                'u_id': 1,
+                'email': 'example@gmail.com',
+                'name_first': 'Hayden',
+                'name_last': 'Jacobs',
+                #'handle_str': 'haydenjacobs', store = data_store.get()
+    }
+    ],
+    }
 
     def channel_messages_v1(auth_user_id, channel_id, start):
 
@@ -97,8 +99,8 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
             raise InputError('Invalid u id')
 
     # Check member u_id
-    def check_member_u_id(u_id):
-        if u_id in channel.values() == True:
+    def check_member_u_id(channel_id, u_id):
+        if (u_id in channel_id.values()) == True:
             pass
         else:
             raise InputError('Permission dinined!')
@@ -118,4 +120,3 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         else:
             raise AccessError('Permission dinined!')
 
-    # (store['channels'].has_key(channel_id) == True) and (u_id in channels.values() == True):
