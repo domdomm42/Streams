@@ -16,13 +16,13 @@ def channel_details_v1(auth_user_id, channel_id):
     check_authority(auth_user_id, channel_id)
     name = store['channels']['channel_name'][channel_id]
     public = store['channels']['is_public'][channel_id]
-    owners = store['chaneels']['owner_user_id'][channel_id]
-    members = store['channels']['all_members'][channels_id]
+    owners = store['channels']['owner_user_id'][channel_id]
+    members = store['channels']['all_members'][channel_id]
     
-    return {name, public, owners, members
+    return {name, public, owners, members}
     
         
-    }
+    
 
 def channel_messages_v1(auth_user_id, channel_id, start):
     return {
