@@ -89,11 +89,16 @@ def channel_join_v1(auth_user_id, channel_id):
 def check_invalid_channel_id(channel_id):
     
     store = data_store.get()
+    i = 0
     
-    if channel_id >= len(store['channels']['owner_user_id']):
-        raise InputError('Channel does not exist!')
-    else:
-        pass
+    for items in store['channels']['channel_name']:
+        
+        if i == channel_id:
+            return
+            
+        i += 1
+    raise InputError('Invalid input')
+
     
     
 
