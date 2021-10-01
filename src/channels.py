@@ -59,4 +59,3 @@ def check_channel_name(name):
         pass
     else:
         raise InputError('Length of channel name must be between 1 and 20 characters!')
-        
