@@ -56,29 +56,29 @@ def channel_details_v1(auth_user_id, channel_id):
 
 def channel_messages_v1(auth_user_id, channel_id, start):
 
-        store = data_store.get()
-        # Check
-        check_invalid_channel_id(channel_id)
-        check_invalid_start(channel_id, start)
+    store = data_store.get()
+    # Check
+    check_invalid_channel_id(channel_id)
+    check_invalid_start(channel_id, start)
 
-        check_autorised_id(u_id)
+    check_autorised_id(u_id)
 
-        # Loop
-        messages_list = []
-        place = start
-        for message in intial_object['channels']['messages'][0]:
-            messages_list.append(message)
-            place += 1
-            if place == 50:
-                break
-        if place < 50:
-            place = -1
+    # Loop
+    messages_list = []
+    place = start
+    for message in intial_object['channels']['messages'][0]:
+        messages_list.append(message)
+        place += 1
+        if place == 50:
+            break
+    if place < 50:
+        place = -1
 
-        return {
-            'message': message,
-            'start': start,
-            'end': place
-        }
+    return {
+        'message': message,
+        'start': start,
+        'end': place
+    }
 
 def channel_join_v1(auth_user_id, channel_id):
         return {
