@@ -1,4 +1,3 @@
-<<<<<<< tests/channel_test.py
 import pytest
 from src.channel import channel_details_v1, channel_join_v1
 from src.error import InputError, AccessError
