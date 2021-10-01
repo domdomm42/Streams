@@ -11,7 +11,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
     check_member_u_id(channel_id, u_id)
 
-    check_autorised_id(u_id)
+    check_autorised_id(u_id,auth_user_id,channel_id)
 
     # Store
 
@@ -52,19 +52,19 @@ def channel_details_v1(auth_user_id, channel_id):
     ],
     }
 
-def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v1(auth_user_id,u_id, channel_id, start):
 
     store = data_store.get()
     # Check
     check_invalid_channel_id(channel_id)
     check_invalid_start(channel_id, start)
 
-    check_autorised_id(u_id)
+    check_autorised_id(u_id,auth_user_id,channel_id)
 
     # Loop
     messages_list = []
     place = start
-    for message in initial_object['channels']['messages'][0]:
+    for message in store['channels']['messages'][0]:
         messages_list.append(message)
         place += 1
         if place == 50:
@@ -101,7 +101,8 @@ def check_invalid_channel_id(channel_id):
     
 
 # Check invalid u_id
-def check_invalid_u_id(u_id):
+def check_invalid_u_id(u_id, channel_id):
+    store = data_store.get()
     i = 0
     
     for item in store['channels']['all_members'][channel_id]:
