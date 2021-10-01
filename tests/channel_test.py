@@ -59,7 +59,7 @@ def test_no_member_access_detail_1():
     login_joe = auth_login_v1('joe123@gmail.com', 'password')
     channels_joe = channels_create_v1(login_joe, 'Joe', True)
     
-    #create user Luka with private channel
+    
     register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
     login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
     channels_marry = channels_create_v1(login_marry, 'Marry', False)
@@ -75,7 +75,7 @@ def test_no_member_access_detail_2():
     login_joe = auth_login_v1('joe123@gmail.com', 'password')
     channels_joe = channels_create_v1(login_joe, 'Joe', True)
     
-    #create user Luka with private channel
+    
     register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
     login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
     channels_marry = channels_create_v1(login_marry, 'Marry', False)
@@ -89,7 +89,7 @@ def test_join_private_channel():
     register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
     login_joe = auth_login_v1('joe123@gmail.com', 'password')
     channels_joe = channels_create_v1(login_joe, 'Joe', True)
-    #create user Luka with private channel
+    
     register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
     login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
     channels_marry = channels_create_v1(login_marry, 'Marry', False)
@@ -170,7 +170,7 @@ def test_valid_channel_id_join():
     register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
     login_joe = auth_login_v1('joe123@gmail.com', 'password')
     channels_joe = channels_create_v1(login_joe, 'Joe', True)
-    #create user Luka with private channel
+    
     register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
     login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
     channels_marry = channels_create_v1(login_marry, 'Marry', False)
