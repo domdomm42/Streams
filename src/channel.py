@@ -7,11 +7,11 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     store = data_store.get()
     # Check
     check_invalid_channel_id(channel_id)
-    check_invalid_u_id(u_id)
+    check_invalid_u_id(u_id,channel_id)
 
     check_member_u_id(channel_id, u_id)
 
-    check_autorised_id(u_id,auth_user_id,channel_id)
+    check_autorised_id(auth_user_id,channel_id)
 
     # Store
 
@@ -52,28 +52,32 @@ def channel_details_v1(auth_user_id, channel_id):
     ],
     }
 
-def channel_messages_v1(auth_user_id,u_id, channel_id, start):
+def channel_messages_v1(auth_user_id, channel_id, start):
 
     store = data_store.get()
     # Check
     check_invalid_channel_id(channel_id)
     check_invalid_start(channel_id, start)
 
-    check_autorised_id(u_id,auth_user_id,channel_id)
+    check_autorised_id(auth_user_id,channel_id)
+
+    #list_message = [1,2,3,4]
+
 
     # Loop
     messages_list = []
     place = start
-    for message in store['channels']['messages'][0]:
-        messages_list.append(message)
-        place += 1
-        if place == 50:
-            break
-    if place < 50:
-        place = -1
+    # store['channels']['messages'].append[list_message]
+    # for message in store['channels']['messages'][channel_id]:
+    #     messages_list.append(message)
+    #     place += 1
+    #     if place == 50:
+    #         break
+    # if place < 50:
+    #     place = -1
 
     return {
-        'message': message,
+        'messages': messages_list,
         'start': start,
         'end': place
     }
@@ -108,34 +112,45 @@ def check_invalid_u_id(u_id, channel_id):
     for item in store['channels']['all_members'][channel_id]:
         
         if i == u_id:
-            pass
+            return
             
         i += 1
-    raise InputError('Invalid input')
+    raise InputError('Invalid u id')
 
 # Check member u_id
 def check_member_u_id(channel_id, u_id):
     
     store = data_store.get()
 
-    if u_id in store['channels']['all_members']['channel_id']:
-        pass
+    if u_id in store['channels']['all_members'][channel_id]:
+        raise InputError('User not apart of channel')
     else:
-        raise AccessError('User not apart of channel')
+        pass
  
 
 
 
 # Check start
 def check_invalid_start(channel_id, start):
-    if start <= len(['channel_id']['messages']):
-        pass
-    else:
-        raise InputError('Permission dinined!')
+    
+    store = data_store.get()
+    
+    
+    # if start <= len(store['channels']['messages'][channel_id]):
+    #     pass
+
+    cnt = 0
+    for item in store['channels']['all_members'][channel_id]:
+        
+        if start == cnt:
+            return
+        cnt += 1
+
+    raise AccessError('Permission dinined!')
 
 # AccessError
 # Check authorised
-def check_autorised_id(u_id,auth_user_id,channel_id):
+def check_autorised_id(auth_user_id,channel_id):
     store = data_store.get()
    
     

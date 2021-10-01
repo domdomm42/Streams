@@ -41,9 +41,10 @@ def test_invalid_channel_id_message():
     register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
     login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
     channels_asd = channels_create_v1(login_asd, 'asd', False)
+    start = 0
     
     with pytest.raises(InputError):
-        channel_messages_v1(login_abc, channels_abc, login_asd,register_user_id)
+        channel_messages_v1(login_abc,999, start)
 
 
 # Test invalid u_id
@@ -58,7 +59,7 @@ def test_invalid_u_id_invite():
     channels_asd = channels_create_v1(login_asd, 'asd', False)
 
     with pytest.raises(InputError):
-        channel_invite_v1(login_abc, channels_abc, login_asd)
+        channel_invite_v1(login_abc, channels_abc, 999)
 
 
 # Test already member
@@ -72,9 +73,9 @@ def test_repeated_invite():
     login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
     channels_asd = channels_create_v1(login_asd, 'asd', False)
     
-    channel_invite_v1(login_abc, channels_abc, login_asd)
+    #channel_invite_v1(login_abc, channels_abc, login_asd)
     with pytest.raises(InputError):
-        channel_invite_v1(login_abc, channels_abc, login_asd)
+        channel_invite_v1(login_abc, channels_abc, login_abc)
 
 
 # Test start
@@ -87,10 +88,10 @@ def test_start_message():
     register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
     login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
     channels_asd = channels_create_v1(login_asd, 'asd', False)
-    
-    with pytest.raises(AccessError):
-        channel_messages_v1(login_abc, channels_abc, login_asd,register_user_id)
 
+
+    with pytest.raises(AccessError):
+        channel_messages_v1(login_abc, channels_abc, 999)
 
 
 # AccessError
@@ -105,10 +106,10 @@ def test_authorised_invite():
     register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
     login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
     channels_asd = channels_create_v1(login_asd, 'asd', False)
-    
+    start = 0
+
     with pytest.raises(AccessError):
-        channel_messages_v1(login_abc, channels_abc, login_asd,register_user_id)
-        channel_invite_v1(login_abc, channels_abc, login_asd)
+        channel_invite_v1(login_asd, channels_abc, login_asd)
 
 
 def test_authorised_message():
@@ -120,6 +121,7 @@ def test_authorised_message():
     register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
     login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
     channels_asd = channels_create_v1(login_asd, 'asd', False)
-    
+    start = 0
+
     with pytest.raises(AccessError):
-        channel_messages_v1(login_abc, channels_abc, login_asd,register_user_id)
+        channel_messages_v1(login_asd, channels_abc, start)
