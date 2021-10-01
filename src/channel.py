@@ -106,16 +106,12 @@ def check_invalid_channel_id(channel_id):
 
 # Check invalid u_id
 def check_invalid_u_id(u_id, channel_id):
+	
     store = data_store.get()
-    i = 0
-    
-    for item in store['channels']['all_members'][channel_id]:
-        
-        if i == u_id:
-            return
+
+    if u_id not in store['channels']['all_members'][channel_id]:
             
-        i += 1
-    raise InputError('Invalid u id')
+        raise InputError('User not apart of the channel')
 
 # Check member u_id
 def check_member_u_id(channel_id, u_id):
