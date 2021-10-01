@@ -22,10 +22,10 @@ def channel_details_v1(auth_user_id, channel_id):
     name = store['channels']['channel_name'][channel_id]
     public = store['channels']['is_public'][channel_id]
     owners = store['channels']['owner_user_id'][channel_id]
-    print(owners)
+    
     
     members = store['channels']['all_members'][channel_id]
-    print(members)
+    
     owner_details = []
     
     

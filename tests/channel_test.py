@@ -106,7 +106,7 @@ def test_valid_channel_id_detail_1():
     
     
     details = channel_details_v1(login_joe, channels_joe)
-    print(details)
+    
     assert details == {
         'name': 'Joe', 
         'is_public': True, 
