@@ -41,6 +41,7 @@ initial_object = {
     # the 0th index of all_members is a list of strings/numbers containing
     # all the members
     'channels': {
+        'channel_name': [],
         'owner_user_id': [],
         'channel_name': [],
         'is_public': [],
