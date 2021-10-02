@@ -82,6 +82,6 @@ def test_long_name():
 # Testing simple channel creation
 def test_new_channel():
     clear_v1()
-    assert channels_create_v1(0, 'Joe', True) == 0
-    assert channels_create_v1(1, 'Marry', True) == 1
-    assert channels_create_v1(0, 'Joeseph', True) == 2
+    assert channels_create_v1(0, 'Joe', True).get('channel_id') == 0
+    assert channels_create_v1(1, 'Marry', True).get('channel_id') == 1
+    assert channels_create_v1(0, 'Joeseph', True).get('channel_id') == 2
