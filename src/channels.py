@@ -1,6 +1,12 @@
 from src.data_store import data_store
 from src.error import InputError
 
+''' 
+Both Channels list functions create a new list of dictionaries
+structure that utilize the data store to gather details of all 
+existing channels and those that contain a given user ID, returning
+the newly created structure upon completion
+'''
 
 def channels_list_v1(auth_user_id):
     new_list = {'channels':[]}
@@ -8,9 +14,13 @@ def channels_list_v1(auth_user_id):
     store = data_store.get()
     i = 0
     for members in store['channels']['all_members']:
+
+        # Tracks the Channel_id by its index in the 'channel' data_store'
         name = store['channels']['channel_name'][i]
         new_dict = { 'channel_id': i, 'name': name}
 
+        # Filters the added channels by the existance of the User
+        # in the members
         if auth_user_id in members:
             new_list['channels'].append(new_dict)
 
@@ -18,6 +28,8 @@ def channels_list_v1(auth_user_id):
 
     return new_list
 
+# Works in a similar fashion to previous function with the 
+# ommision of User filter
 def channels_listall_v1(auth_user_id):
     new_list = {'channels':[]}
 
