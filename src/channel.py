@@ -62,7 +62,64 @@ def channel_details_v1(auth_user_id, channel_id):
         'all_members': members_details
 
     }
-    
+##      <Given a channel with ID channel_id that the authorised 
+##      user is a member of, provide basic details about the channel.>
+##      
+##      Arguments:
+##          <auth_user_id> (<integer>)    - <use to identify users>
+##          <channel_id> (<integer>)    - <ise to identify channels>
+##          ...
+##      
+##      Exceptions:
+##
+##          InputError('Invalid input')  - Occurs when channel_id does 
+##          not refer to a valid channel.
+##
+##          AccessError('Permission denied!') - Occurs when channel_id 
+##          is valid and the authorised user is not a member of the channel
+##      
+##      Return Value:
+##          Returns <dictionary:
+##                  {
+##                      <name> (<string>)
+##                      <is_public> (<boolean>)
+##                      <owner_member> (<list of distionary:
+##                      {
+##                          <emails> (<string>)
+##                          <first_name> (<string>)
+##                          <last_name> (<string>)
+##                          <user_handles> (<string>)
+##
+##                      }>)
+##                      <all_members> (<list of distionary:
+##                      {
+##                          <emails> (<string>)
+##                          <first_name> (<string>)
+##                          <last_name> (<string>)
+##                          <user_handles> (<string>)
+##
+##                      }>)
+##    
+##                  }> 
+##          on <member of this channel access this channel's details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
     
 
@@ -110,7 +167,29 @@ def channel_join_v1(auth_user_id, channel_id):
 
     return {
     }
+##      <Given a channel_id of a channel that the authorised user can join, 
+##      adds them to that channel.>
+##      
+##      Arguments:
+##         <auth_user_id> (<integer>)    - <use to identify users>
+##         <channel_id> (<integer>)    - <ise to identify channels>
+##          ... 
+##      
+##      Exceptions:
 
+##          InputError('Invalid input')  - Occurs when channel_id does 
+##          not refer to a valid channel.
+
+##          InputError('You are a member already!')  - Occurs when 
+##          the authorised user is already a member of the channel
+##
+##          AccessError('This is private channel, permission denied!') - Occurs when
+##          channel_id refers to a channel that is private and the authorised user 
+##          is not already a channel member and is not a global owner
+##      
+##      Return Value:
+##          This function return nothing.
+##      
 
 # check the channel id is valid
 def check_channel_id(channel_id):
