@@ -33,18 +33,18 @@ def test_invalid_channel_id_join():
 def test_member_join_again_1():
         #create a channel and auth_user
     clear_v1()
-    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    login_joe = auth_login_v1('joe123@gmail.com', 'password')
-    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password').get('auth_user_id')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True).get('channel_id')
                 
     with pytest.raises(InputError):
         channel_join_v1(login_joe, channels_joe)
 
 def test_member_join_again_2():
     clear_v1()
-    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    channels_marry = channels_create_v1(login_marry, 'Marry', False)
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe').get('auth_user_id')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM').get('auth_user_id')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False).get('channel_id')
     with pytest.raises(InputError):
         channel_join_v1(login_marry, channels_marry)
 
@@ -55,14 +55,14 @@ def test_member_join_again_2():
 def test_no_member_access_detail_1():
         #create channel and auth_user
     clear_v1()
-    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    login_joe = auth_login_v1('joe123@gmail.com', 'password')
-    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password').get('auth_user_id')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True).get('channel_id')
     
     
-    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    channels_marry = channels_create_v1(login_marry, 'Marry', False)
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe').get('auth_user_id')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM').get('auth_user_id')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False).get('channel_id')
     with pytest.raises(AccessError):
         channel_details_v1(login_joe, channels_marry)
 
@@ -71,14 +71,14 @@ def test_no_member_access_detail_1():
 def test_no_member_access_detail_2():
         #create channel and auth_user
     clear_v1()
-    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    login_joe = auth_login_v1('joe123@gmail.com', 'password')
-    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password').get('auth_user_id')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True).get('channel_id')
     
     
-    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    channels_marry = channels_create_v1(login_marry, 'Marry', False)
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe').get('auth_user_id')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM').get('auth_user_id')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False).get('channel_id')
     with pytest.raises(AccessError):
         channel_details_v1(login_marry, channels_joe)
 #=====Channel is private===============
@@ -86,13 +86,13 @@ def test_no_member_access_detail_2():
 
 def test_join_private_channel():
     clear_v1()
-    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    login_joe = auth_login_v1('joe123@gmail.com', 'password')
-    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password').get('auth_user_id')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True).get('channel_id')
     
-    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    channels_marry = channels_create_v1(login_marry, 'Marry', False)
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe').get('auth_user_id')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM').get('auth_user_id')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False).get('channel_id')
     with pytest.raises(AccessError):
         channel_join_v1(login_joe, channels_marry)
 
@@ -100,9 +100,9 @@ def test_join_private_channel():
 #=====Valid case for detail===========
 def test_valid_channel_id_detail_1():
     clear_v1()
-    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    login_joe = auth_login_v1('joe123@gmail.com', 'password')
-    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password').get('auth_user_id')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True).get('channel_id')
     
     
     details = channel_details_v1(login_joe, channels_joe)
@@ -132,9 +132,9 @@ def test_valid_channel_id_detail_1():
 
 def test_valid_channel_id_detail_2():
     clear_v1()
-    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    channels_marry = channels_create_v1(login_marry, 'Marry', False)
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe').get('auth_user_id')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM').get('auth_user_id')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False).get('channel_id')
     
     
     details = channel_details_v1(login_marry, channels_marry)
@@ -167,13 +167,13 @@ def test_valid_channel_id_detail_2():
 def test_valid_channel_id_join():
     
     clear_v1()
-    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    login_joe = auth_login_v1('joe123@gmail.com', 'password')
-    channels_joe = channels_create_v1(login_joe, 'Joe', True)
+    register_user_id = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
+    login_joe = auth_login_v1('joe123@gmail.com', 'password').get('auth_user_id')
+    channels_joe = channels_create_v1(login_joe, 'Joe', True).get('channel_id')
     
-    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-    channels_marry = channels_create_v1(login_marry, 'Marry', False)
+    register_user_id = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe').get('auth_user_id')
+    login_marry = auth_login_v1('marryjoe222@gmail.com', 'passwordM').get('auth_user_id')
+    channels_marry = channels_create_v1(login_marry, 'Marry', False).get('channel_id')
     channel_join_v1(login_marry, channels_joe)
     details = channel_details_v1(login_marry, channels_joe)
     
