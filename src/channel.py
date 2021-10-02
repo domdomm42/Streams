@@ -1,10 +1,10 @@
 import pytest
-#from data_store import data_store
 from src.data_store import data_store
 from src.error import InputError, AccessError
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     store = data_store.get()
+    
     # Check
     check_invalid_channel_id(channel_id)
     check_invalid_u_id(u_id,channel_id)
@@ -14,7 +14,6 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     check_autorised_id(auth_user_id,channel_id)
 
     # Store
-
     store['channels']['all_members'][channel_id].append(u_id)
 
 
@@ -24,10 +23,6 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     }
 
 
-# store['channels']['channel_id']['name'],
-#
-#
-# all_members.append(auth_user_id)
 
 def channel_details_v1(auth_user_id, channel_id):
     return {
@@ -128,16 +123,13 @@ def check_member_u_id(channel_id, u_id):
 def check_invalid_start(channel_id, start):
     
     store = data_store.get()
-    
-    
-    # if start <= len(store['channels']['messages'][channel_id]):
-    #     pass
 
     cnt = 0
     for item in store['channels']['all_members'][channel_id]:
         
         if start == cnt:
             return
+        
         cnt += 1
 
     raise AccessError('Permission dinined!')
