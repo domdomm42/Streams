@@ -50,7 +50,9 @@ def channels_create_v1(auth_user_id, name, is_public):
     # Gives index that is 1 over what we expect hence minus 1.
     channel_id = i - 1
 
-    return channel_id 
+    return {
+        'channel_id': channel_id,
+    } 
 
 
     # Function to check if name is within 1 and 20 characters.

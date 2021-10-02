@@ -24,7 +24,9 @@ def auth_login_v1(email, password):
             else:
                 counter = counter + 1
 
-        return counter
+        return {
+        'auth_user_id': counter,
+        }
     else:
         raise InputError('Wrong email and/or password!')
 
@@ -50,7 +52,10 @@ def auth_register_v1(email, password, name_first, name_last):
     # NOTE: auth_user_id is the index of the user in the list
     auth_user_id = create_user_handle(name_first, name_last)
 
-    return auth_user_id
+    return {
+        'auth_user_id': auth_user_id,
+    }
+
 
 
 # --- Check email ---
