@@ -23,14 +23,12 @@ def channels_listall_v1(auth_user_id):
 
 def channels_create_v1(auth_user_id, name, is_public):
 
-    # Check length of name
     check_channel_name(name)
 
     all_members_in_channel = []
 
     all_members_in_channel.append(auth_user_id)
-
-    # Stores necessary data into the data store 
+ 
     store = data_store.get()
 
     store['channels']['owner_user_id'].append(auth_user_id)
@@ -40,19 +38,37 @@ def channels_create_v1(auth_user_id, name, is_public):
 
     data_store.set(store)
 
-    # Loops through the channel owner_user_id with a seperate 
-    # iterator to find the channel_id(index)
     i = 0
-    for x in store["channels"]["owner_user_id"]:
+    for data_owner_user_id in store["channels"]["owner_user_id"]:
         i += 1
     
-    # We want to start index with 0, the for loop above
-    # Gives index that is 1 over what we expect hence minus 1.
+
     channel_id = i - 1
 
     return {
         'channel_id': channel_id,
     } 
+
+    '''
+    The function above takes in the auth_user_id and name and is_public
+    and checks if the channel name the user has given us is valid, if it 
+    is valid, store the channel_creator user id in all members and stores user
+    data in data store.
+
+    Arguments:
+        auth_user_id - Integers      -  Used to identify users.
+        name - Strings               -  Channel name.
+        is_public - Boolean          -  Checks if channel is public.
+
+    Exceptions:
+        InputError - InputError is given when length of channel_name is not in between 1 and 20
+                     inclusive.
+
+    Return Value:
+        Return 'channel_id': channel_id - If channel name is between 1 and 20 inclusive then 
+                                          return 'channel_id': channel_id.
+
+    '''
 
 
     # Function to check if name is within 1 and 20 characters.
