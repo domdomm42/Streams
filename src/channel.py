@@ -62,6 +62,9 @@ def channel_details_v1(auth_user_id, channel_id):
         'all_members': members_details
 
     }
+    
+        
+    
 
 
 def channel_messages_v1(auth_user_id, channel_id, start):

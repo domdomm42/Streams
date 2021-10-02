@@ -35,7 +35,7 @@ initial_object = {
         'last_names': [],
         'user_handles': [],
     },
-    
+
     # The channel_id is the index of the channel in the list
     # Make a list inside the list, for example for channel_id = 0,
     # the 0th index of all_members is a list of strings/numbers containing
@@ -43,6 +43,7 @@ initial_object = {
     'channels': {
         'channel_name': [],
         'owner_user_id': [],
+        'channel_name': [],
         'is_public': [],
         'all_members': [],
         'messages': [],
