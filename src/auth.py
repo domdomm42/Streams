@@ -31,16 +31,32 @@ def auth_login_v1(email, password):
         raise InputError('Wrong email and/or password!')
 
 def auth_register_v1(email, password, name_first, name_last):
+    '''
+    This function registers a user with valid inputs and will store the user's data
+    in data_store.
 
+    Arguments:
+        email (string)    - the user's email
+        password (string)    - the user's password
+        name_first (string)    - the user's first name
+        name_last (string)   - the user's last name
+
+    Exceptions:
+        InputError  - Occurs when email is not a valid email
+                      or the email address is already being used
+                      or the length of password is less than 6 characters
+                      or the length of first/last name is not 1-50 characters inclusive
+
+    Return Value:
+        Returns auth_user_id (dictionary)
+    '''
     store = data_store.get()
 
-    # Check all inputs
     check_email(email)
     check_password(password)
     check_first_name(name_first)
     check_last_name(name_last)
 
-    # Store all the data
     store['users']['emails'].append(email)
     store['users']['passwords'].append(password)
     store['users']['first_names'].append(name_first)
@@ -48,8 +64,6 @@ def auth_register_v1(email, password, name_first, name_last):
 
     data_store.set(store)
 
-    # Create user_handle and store in data_store, return auth_user_id
-    # NOTE: auth_user_id is the index of the user in the list
     auth_user_id = create_user_handle(name_first, name_last)
 
     return {
@@ -189,18 +203,3 @@ def check_valid_password(email, password):
             counter = counter + 1
 
     raise InputError('Invalid Password!')
-    
-# Debugging + Testing purposes
-if __name__ == '__main__':
-
-    # Testing
-    # auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    # auth_register_v1('joe1233@gmail.com', 'password', 'Joe', 'Smith')
-
-
-    # Testing create_user_handle works correctly for people with the same name
-    # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
-    # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
-    # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
-    # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
-    pass
