@@ -6,17 +6,6 @@ from src.auth import auth_login_v1, auth_register_v1
 from src.other import clear_v1
 
 
-@pytest.fixture
-def set_up():
-    clear_v1()
-    register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')
-    login_abc = auth_login_v1('abc1531@gmail.com', 'password')
-    channels_abc = channels_create_v1(login_abc, 'abc', True)
-    register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
-    login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
-    channels_asd = channels_create_v1(login_asd, 'asd', False)
-    return login_abc, login_asd, channels_abc, channels_asd
-
 
 # InputError
 
