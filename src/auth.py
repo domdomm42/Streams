@@ -99,8 +99,6 @@ def check_email(email):
 
     regex = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'
 
-    print(store['users']['emails'])
-
     if re.fullmatch(regex, email) and email not in store['users']['emails']:
         pass
     else:
@@ -151,7 +149,7 @@ def create_user_handle(name_first, name_last):
     # If user_handle is not unique, then the function will add
     # a number at the end of the function
     user_handle_copy = user_handle
-    i = 1
+    i = 0
     while user_handle in store['users']['user_handles']:
         user_handle = user_handle_copy + str(i)
         i += 1
