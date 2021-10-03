@@ -70,8 +70,6 @@ def auth_register_v1(email, password, name_first, name_last):
         'auth_user_id': auth_user_id,
     }
 
-
-
 # --- Check email ---
 # This function takes in an email (string) and checks if email is
 # in the correct format and unique
@@ -117,7 +115,7 @@ def check_last_name(name_last):
     if len(name_last) >= 1 and len(name_last) <= 50:
         pass
     else:
-        raise Exception('Invalid last name!')
+        raise InputError('Invalid last name!')
 
 # --- Create user_handle ---
 # This function takes in the user's first and last name (strings)
@@ -150,7 +148,6 @@ def create_user_handle(name_first, name_last):
 # This function takes in an email and checks if
 # email used to log in is registed. If email
 # is not stored, return error.
-
 def check_valid_email(email):
 
     store = data_store.get()
@@ -176,7 +173,6 @@ def check_valid_email(email):
 # This function takes in password and check if 
 # password matches the registered email, if it doesn't, return
 # Error.
-
 def check_valid_password(email, password):
     email_list = []
     password_list = []
