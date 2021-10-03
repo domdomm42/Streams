@@ -4,24 +4,6 @@ from src.error import InputError
 import re
 
 def auth_login_v1(email, password):
-    ''' 
-    The Function above takes in email and password and checks if the email is 
-    registered, if email is registered, it will then check if password matches,
-    if email and password is registered and correct, the user id will be returned
-
-    Arguments:
-        email - Integers      - Used to check whether the email given is registered
-        password - Integers   - Used to check whether the password matches the email
-    
-    Exceptions:
-        Input Error - Occurs when either the email is not registered or the password given 
-                      does not match the email.
-    
-    Return Value:
-        Returns 'auth_user_id': counter - When check_valid_email and check_valid_password == 1 and
-                                          when the index of the list of password == index of list of email.
-
-    '''
 
     store = data_store.get()
     email_list = []
@@ -48,6 +30,24 @@ def auth_login_v1(email, password):
     else:
         raise InputError('Wrong email and/or password!')
 
+    ''' 
+    The Function above takes in email and password and checks if the email is 
+    registered, if email is registered, it will then check if password matches,
+    if email and password is registered and correct, the user id will be returned
+
+    Arguments:
+        email - Integers      - Used to check whether the email given is registered
+        password - Integers   - Used to check whether the password matches the email
+    
+    Exceptions:
+        Input Error - Occurs when either the email is not registered or the password given 
+                      does not match the email.
+    
+    Return Value:
+        Returns 'auth_user_id': counter - When check_valid_email and check_valid_password == 1 and
+                                          when the index of the list of password == index of list of email.
+
+    '''
 
 def auth_register_v1(email, password, name_first, name_last):
     '''
@@ -99,6 +99,8 @@ def check_email(email):
 
     regex = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'
 
+    print(store['users']['emails'])
+
     if re.fullmatch(regex, email) and email not in store['users']['emails']:
         pass
     else:
@@ -149,7 +151,7 @@ def create_user_handle(name_first, name_last):
     # If user_handle is not unique, then the function will add
     # a number at the end of the function
     user_handle_copy = user_handle
-    i = 0
+    i = 1
     while user_handle in store['users']['user_handles']:
         user_handle = user_handle_copy + str(i)
         i += 1
