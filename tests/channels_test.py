@@ -80,6 +80,14 @@ def test_mary_channels(setup):
         ]
     }
 
+# Test if empty channels in data_store return an empty list inside 
+# channels dictionary
+def test_empty_channels():
+    clear_v1()
+    assert channels_list_v1(0) == {'channels': []}
+    assert channels_listall_v1(0) == {'channels': []}
+    assert channels_list_v1(4) == {'channels': []}
+    assert channels_listall_v1(4) == {'channels': []}
 
 # Testing Invalid names for channel creation
 def test_empty_name1():
