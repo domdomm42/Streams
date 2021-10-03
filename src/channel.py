@@ -45,22 +45,22 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
 def channel_details_v1(auth_user_id, channel_id):
     """
-    Given a channel with ID channel_id that the authorised
+    Given a channel with ID channel_id that the authorised 
     user is a member of, provide basic details about the channel.
-
+      
     Arguments:
         auth_user_id (integer)    - use to identify users
         channel_id (integer)    - use to identify channels
-
-
+        
+      
     Exceptions:
 
-        InputError('Invalid input')  - Occurs when channel_id does
+        InputError('Invalid input')  - Occurs when channel_id does 
         not refer to a valid channel.
 
-        AccessError('Permission denied!') - Occurs when channel_id
+        AccessError('Permission denied!') - Occurs when channel_id 
         is valid and the authorised user is not a member of the channel
-
+      
     Return Value:
         Returns dictionary:
                 {
@@ -82,7 +82,7 @@ def channel_details_v1(auth_user_id, channel_id):
                         user_handles (string)
 
                     }
-
+    
                 }
         on member of this channel access this channel's details
         """
@@ -125,6 +125,28 @@ def channel_details_v1(auth_user_id, channel_id):
         'all_members': members_details
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
 
 
 def channel_messages_v1(auth_user_id, channel_id, start):
@@ -219,7 +241,7 @@ def channel_join_v1(auth_user_id, channel_id):
 
     return {
     }
-
+     
 
 # check the channel id is valid
 def check_channel_id(channel_id):
