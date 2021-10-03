@@ -31,7 +31,7 @@ def test_invalid_channel_id_message():
     login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM').get('auth_user_id')
     channels_asd = channels_create_v1(login_asd, 'asd', False).get('channel_id')
     with pytest.raises(InputError):
-        channel_messages_v1(login_abc, 999, login_asd)
+        channel_messages_v1(login_abc, channels_abc, 999)
 
 
 # Test invalid u_id
