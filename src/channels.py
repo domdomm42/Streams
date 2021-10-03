@@ -22,6 +22,26 @@ def channels_listall_v1(auth_user_id):
     }
 
 def channels_create_v1(auth_user_id, name, is_public):
+        '''
+    The function above takes in the auth_user_id and name and is_public
+    and checks if the channel name the user has given us is valid, if it 
+    is valid, store the channel_creator user id in all members and stores user
+    data in data store.
+
+    Arguments:
+        auth_user_id - Integers      -  Used to identify users.
+        name - Strings               -  Channel name.
+        is_public - Boolean          -  Checks if channel is public.
+
+    Exceptions:
+        InputError - InputError is given when length of channel_name is not in between 1 and 20
+                     inclusive.
+
+    Return Value:
+        Return 'channel_id': channel_id - If channel name is between 1 and 20 inclusive then 
+                                          return 'channel_id': channel_id.
+
+    '''
 
     check_channel_name(name)
 
@@ -48,27 +68,6 @@ def channels_create_v1(auth_user_id, name, is_public):
     return {
         'channel_id': channel_id,
     } 
-
-    '''
-    The function above takes in the auth_user_id and name and is_public
-    and checks if the channel name the user has given us is valid, if it 
-    is valid, store the channel_creator user id in all members and stores user
-    data in data store.
-
-    Arguments:
-        auth_user_id - Integers      -  Used to identify users.
-        name - Strings               -  Channel name.
-        is_public - Boolean          -  Checks if channel is public.
-
-    Exceptions:
-        InputError - InputError is given when length of channel_name is not in between 1 and 20
-                     inclusive.
-
-    Return Value:
-        Return 'channel_id': channel_id - If channel name is between 1 and 20 inclusive then 
-                                          return 'channel_id': channel_id.
-
-    '''
 
 
     # Function to check if name is within 1 and 20 characters.
