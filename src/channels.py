@@ -1,61 +1,106 @@
-from src.data_store import data_store
-from src.error import InputError
-
-def channels_list_v1(auth_user_id):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
-
-def channels_listall_v1(auth_user_id):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
-
-def channels_create_v1(auth_user_id, name, is_public):
-
-    # Check length of name
-    check_channel_name(name)
-
-    all_members_in_channel = []
-
-    all_members_in_channel.append(auth_user_id)
-
-    # Stores necessary data into the data store 
-    store = data_store.get()
-
-    store['channels']['owner_user_id'].append(auth_user_id)
-    store['channels']['channel_name'].append(name)
-    store['channels']['is_public'].append(is_public)
-    store['channels']['all_members'].append(all_members_in_channel)
-
-    data_store.set(store)
-
-    # Loops through the channel owner_user_id with a seperate 
-    # iterator to find the channel_id(index)
-    i = 0
-    for x in store["channels"]["owner_user_id"]:
-        i += 1
-    
-    # We want to start index with 0, the for loop above
-    # Gives index that is 1 over what we expect hence minus 1.
-    channel_id = i - 1
-
-    return channel_id 
+import pytest
+from src.channel import channel_invite_v1, channel_messages_v1
+from src.channels import channels_create_v1
+from src.error import InputError, AccessError
+from src.auth import auth_login_v1, auth_register_v1
+from src.other import clear_v1
 
 
-    # Function to check if name is within 1 and 20 characters.
-def check_channel_name(name):
-    if len(name) >= 1 and len(name) <= 20:
-        pass
-    else:
-        raise InputError('Length of channel name must be between 1 and 20 characters!')
+# InputError
+
+# Test invalid channel_id
+def test_invalid_channel_id_invite():
+    clear_v1()
+    register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')
+    login_abc = auth_login_v1('abc1531@gmail.com', 'password')
+    channels_abc = channels_create_v1(login_abc, 'abc', True)
+    register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
+    login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
+    channels_asd = channels_create_v1(login_asd, 'asd', False)
+    with pytest.raises(InputError):
+        channel_invite_v1(login_abc, channels_abc, login_asd)
+
+
+def test_invalid_channel_id_invite():
+    clear_v1()
+    register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')
+    login_abc = auth_login_v1('abc1531@gmail.com', 'password')
+    channels_abc = channels_create_v1(login_abc, 'abc', True)
+    register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
+    login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
+    channels_asd = channels_create_v1(login_asd, 'asd', False)
+    with pytest.raises(InputError):
+        channel_invite_v1(login_abc, channels_abc, 999)
+
+
+# Test invalid u_id
+def test_invalid_u_id_invite():
+    clear_v1()
+    register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')
+    login_abc = auth_login_v1('abc1531@gmail.com', 'password')
+    channels_abc = channels_create_v1(login_abc, 'abc', True)
+    register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
+    login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
+    channels_asd = channels_create_v1(login_asd, 'asd', False)
+
+    with pytest.raises(InputError):
+        channel_invite_v1(login_abc, channels_abc, 999)
+
+
+# Test already member
+def test_repeated_invite():
+    clear_v1()
+    register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')
+    login_abc = auth_login_v1('abc1531@gmail.com', 'password')
+    channels_abc = channels_create_v1(login_abc, 'abc', True)
+    register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
+    login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
+    channels_asd = channels_create_v1(login_asd, 'asd', False)
+
+    with pytest.raises(InputError):
+        channel_invite_v1(login_abc, channels_abc, login_abc)
+
+
+# Test start
+def test_start_message():
+    clear_v1()
+    register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')
+    login_abc = auth_login_v1('abc1531@gmail.com', 'password')
+    channels_abc = channels_create_v1(login_abc, 'abc', True)
+    register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
+    login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
+    channels_asd = channels_create_v1(login_asd, 'asd', False)
+
+    with pytest.raises(AccessError):
+        channel_messages_v1(login_abc, channels_abc, 999)
+
+
+# AccessError
+
+# Test authorised
+def test_authorised_invite():
+    clear_v1()
+    register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')
+    login_abc = auth_login_v1('abc1531@gmail.com', 'password')
+    channels_abc = channels_create_v1(login_abc, 'abc', True)
+    register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
+    login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
+    channels_asd = channels_create_v1(login_asd, 'asd', False)
+    start = 0
+
+    with pytest.raises(AccessError):
+        channel_invite_v1(login_asd, channels_abc, login_asd)
+
+
+def test_authorised_message():
+    clear_v1()
+    register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')
+    login_abc = auth_login_v1('abc1531@gmail.com', 'password')
+    channels_abc = channels_create_v1(login_abc, 'abc', True)
+    register_user_id = auth_register_v1('asd1531@gmail.com', 'passwordM', 'asd', '456')
+    login_asd = auth_login_v1('asd1531@gmail.com', 'passwordM')
+    channels_asd = channels_create_v1(login_asd, 'asd', False)
+    start = 0
+
+    with pytest.raises(AccessError):
+        channel_messages_v1(login_asd, channels_abc, start)
