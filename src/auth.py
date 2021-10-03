@@ -11,15 +11,15 @@ def auth_login_v1(email, password):
 
     if check_valid_email(email) == 1 and check_valid_password(email, password) == 1:
 
-        for x in store["users"]["emails"]:
-            email_list.append(x)
+        for data_email in store["users"]["emails"]:
+            email_list.append(data_email)
 
-        for y in store["users"]["user_handles"]:
-            user_handles_list.append(y)
+        for data_user_handles in store["users"]["user_handles"]:
+            user_handles_list.append(data_user_handles)
 
         counter = 0
-        for z in email_list:
-            if z == email:
+        for list_emails in email_list:
+            if list_emails == email:
                 break
             else:
                 counter = counter + 1
@@ -29,6 +29,25 @@ def auth_login_v1(email, password):
         }
     else:
         raise InputError('Wrong email and/or password!')
+
+    ''' 
+    The Function above takes in email and password and checks if the email is 
+    registered, if email is registered, it will then check if password matches,
+    if email and password is registered and correct, the user id will be returned
+
+    Arguments:
+        email - Integers      - Used to check whether the email given is registered
+        password - Integers   - Used to check whether the password matches the email
+    
+    Exceptions:
+        Input Error - Occurs when either the email is not registered or the password given 
+                      does not match the email.
+    
+    Return Value:
+        Returns 'auth_user_id': counter - When check_valid_email and check_valid_password == 1 and
+                                          when the index of the list of password == index of list of email.
+
+    '''
 
 def auth_register_v1(email, password, name_first, name_last):
     '''
@@ -154,16 +173,11 @@ def check_valid_email(email):
     email_list = []
     check = 0
 
-    # Loops through registered email and adds it to a list.
-    for x in store["users"]["emails"]:
-        email_list.append(x)
+    for data_email in store["users"]["emails"]:
+        email_list.append(data_email)
 
-    # Checks if list contains the email given
-    # If email is in the list, a 1 is given
-    # If the loop reaches the end and the email isn't present
-    # Error is given
-    for y in email_list:
-        if y == email:
+    for stored_email_list in email_list:
+        if stored_email_list == email:
             check = 1
             return 1
     
@@ -179,18 +193,14 @@ def check_valid_password(email, password):
     check = 0
 
     store = data_store.get()
-    # Loops through registered email and adds it
-    # to the list.
-    for x in store["users"]["emails"]:
-        email_list.append(x)
+    for data_email in store["users"]["emails"]:
+        email_list.append(data_email)
 
-    # Loops through stored password and adds it
-    # to the list.
-    for y in store["users"]["passwords"]:
-        password_list.append(y)
+    for data_password in store["users"]["passwords"]:
+        password_list.append(data_password)
 
     counter = 0
-    # Finds the index of the email,
+
     for idx in email_list:
         if idx == email:
             if password == password_list[counter]:
