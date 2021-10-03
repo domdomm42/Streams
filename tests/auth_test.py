@@ -182,13 +182,3 @@ def test_wrong_password_2():
 def test_wrong_password_3():
     with pytest.raises(InputError):
         login_userID = auth_login_v1('davidmo@gmail.com', 'joe')
-
-
-
-
-
-
-
-
-
-

@@ -1,25 +1,65 @@
 from src.data_store import data_store
 from src.error import InputError
 
-def channels_list_v1(auth_user_id):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
+''' 
+Both Channels list functions create a new list of dictionaries
+structure that utilize the data store to gather details of all 
+existing channels and those that contain a given user ID.
+'''
 
+def channels_list_v1(auth_user_id):
+    '''
+    Arguements:
+        auth_user_id (int) - idetifying variable for each user 
+
+    Return Value:
+        returns new_list: list of dicionaries containing channel 
+        id's and names of all existing channels that the given 
+        User ID is a member of.
+    '''
+
+    new_list = {'channels':[]}
+
+    store = data_store.get()
+    i = 0
+    for members in store['channels']['all_members']:
+
+        # Tracks the Channel ID by its index in the 'channel' data_store
+        name = store['channels']['channel_name'][i]
+        new_dict = { 'channel_id': i, 'name': name}
+
+        # Filters the added channels by the existance of User in 
+        # the members
+        if auth_user_id in members:
+            new_list['channels'].append(new_dict)
+
+        i += 1
+
+    return new_list
+
+# Works like the previous function with the ommission of User Filter
 def channels_listall_v1(auth_user_id):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
+    '''
+    Arguements:
+        auth_user_id (int) - idetifying variable for each user 
+
+    Return Value:
+        returns new_list: list of dicionaries containing channel 
+        id's and names of all existing channels.
+    '''
+
+    new_list = {'channels':[]}
+
+    store = data_store.get()
+    i = 0
+    for name in store['channels']['channel_name']:
+        
+        new_dict = {'channel_id': i, 'name': name}
+        new_list['channels'].append(new_dict)
+
+        i += 1
+
+    return new_list
 
 def channels_create_v1(auth_user_id, name, is_public):
 
