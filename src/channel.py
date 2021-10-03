@@ -328,7 +328,7 @@ def check_invalid_start(channel_id, start):
     #     pass
 
     cnt = 0
-    for item in store['channels']['all_members'][channel_id]:
+    for item in store['channels']['messages'][channel_id]:
 
         if start == cnt:
             return
