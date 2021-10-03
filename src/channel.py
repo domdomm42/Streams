@@ -323,19 +323,10 @@ def check_member_u_id(channel_id, u_id):
 # Check start
 def check_invalid_start(channel_id, start):
     store = data_store.get()
-
-    # if start <= len(store['channels']['messages'][channel_id]):
-    #     pass
-
-    cnt = 0
-    for item in store['channels']['messages'][channel_id]:
-
-        if start == cnt:
-            return
-        cnt += 1
-
-    raise InputError('Permission dinined!')
-
+    if start <= len(store['channels']['messages'][channel_id]):
+        pass
+    else:
+        raise InputError('Permission dinined!')
 
 # AccessError
 # Check authorised
