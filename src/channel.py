@@ -22,45 +22,37 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         Return Value: {}
     """
 
-
-
     store = data_store.get()
 
-    # Check
     check_invalid_channel_id(channel_id)
     check_invalid_u_id(u_id, channel_id)
-
     check_member_u_id(channel_id, u_id)
-
     check_autorised_id(auth_user_id, channel_id)
 
-    # Store
     store['channels']['all_members'][channel_id].append(u_id)
 
     data_store.set(store)
     return {
-
     }
 
 
 def channel_details_v1(auth_user_id, channel_id):
     """
-    Given a channel with ID channel_id that the authorised
+    Given a channel with ID channel_id that the authorised 
     user is a member of, provide basic details about the channel.
-
+      
     Arguments:
         auth_user_id (integer)    - use to identify users
         channel_id (integer)    - use to identify channels
-
-
+      
     Exceptions:
 
-        InputError('Invalid input')  - Occurs when channel_id does
+        InputError('Invalid input')  - Occurs when channel_id does 
         not refer to a valid channel.
 
-        AccessError('Permission denied!') - Occurs when channel_id
+        AccessError('Permission denied!') - Occurs when channel_id 
         is valid and the authorised user is not a member of the channel
-
+      
     Return Value:
         Returns dictionary:
                 {
@@ -82,15 +74,13 @@ def channel_details_v1(auth_user_id, channel_id):
                         user_handles (string)
 
                     }
-
+    
                 }
         on member of this channel access this channel's details
         """
     store = data_store.get()
 
-    # check input
     check_channel_id(channel_id)
-
     check_authority(auth_user_id, channel_id)
 
     name = store['channels']['channel_name'][channel_id]
@@ -126,7 +116,6 @@ def channel_details_v1(auth_user_id, channel_id):
 
     }
 
-
 def channel_messages_v1(auth_user_id, channel_id, start):
     """
         Given a channel with channel_id that the authorised user is a member of ,
@@ -152,22 +141,12 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         }
         """
     
-    
-    
     store = data_store.get()
     
-    
-    # Check
     check_invalid_channel_id(channel_id)
     check_invalid_start(channel_id, start)
-
     check_autorised_id(auth_user_id, channel_id)
 
-    # list_message = [1,2,3,4]
-
-    # Loop
-    messages_list = []
-    place = start
     # store['channels']['messages'].append[list_message]
     # for message in store['channels']['messages'][channel_id]:
     #     messages_list.append(message)
@@ -178,9 +157,9 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     #     place = -1
 
     return {
-        'messages': messages_list,
+        'messages': [],
         'start': start,
-        'end': place
+        'end': (start + 50),
     }
 
 
@@ -219,7 +198,7 @@ def channel_join_v1(auth_user_id, channel_id):
 
     return {
     }
-
+     
 
 # check the channel id is valid
 def check_channel_id(channel_id):
@@ -300,19 +279,8 @@ def check_member_u_id(channel_id, u_id):
 
 # Check start
 def check_invalid_start(channel_id, start):
-    store = data_store.get()
-
-    # if start <= len(store['channels']['messages'][channel_id]):
-    #     pass
-
-    cnt = 0
-    for item in store['channels']['all_members'][channel_id]:
-
-        if start == cnt:
-            return
-        cnt += 1
-
-    raise AccessError('Permission dinined!')
+    if start > 0:
+        raise InputError('Permission denied!')
 
 
 # AccessError

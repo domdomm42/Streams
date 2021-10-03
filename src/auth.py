@@ -11,34 +11,71 @@ def auth_login_v1(email, password):
 
     if check_valid_email(email) == 1 and check_valid_password(email, password) == 1:
 
-        for x in store["users"]["emails"]:
-            email_list.append(x)
+        for data_email in store["users"]["emails"]:
+            email_list.append(data_email)
 
-        for y in store["users"]["user_handles"]:
-            user_handles_list.append(y)
+        for data_user_handles in store["users"]["user_handles"]:
+            user_handles_list.append(data_user_handles)
 
         counter = 0
-        for z in email_list:
-            if z == email:
+        for list_emails in email_list:
+            if list_emails == email:
                 break
             else:
                 counter = counter + 1
 
-        return counter
+        return {
+        'auth_user_id': counter,
+        }
     else:
         raise InputError('Wrong email and/or password!')
 
-def auth_register_v1(email, password, name_first, name_last):
+    ''' 
+    The Function above takes in email and password and checks if the email is 
+    registered, if email is registered, it will then check if password matches,
+    if email and password is registered and correct, the user id will be returned
 
+    Arguments:
+        email - Integers      - Used to check whether the email given is registered
+        password - Integers   - Used to check whether the password matches the email
+    
+    Exceptions:
+        Input Error - Occurs when either the email is not registered or the password given 
+                      does not match the email.
+    
+    Return Value:
+        Returns 'auth_user_id': counter - When check_valid_email and check_valid_password == 1 and
+                                          when the index of the list of password == index of list of email.
+
+    '''
+
+def auth_register_v1(email, password, name_first, name_last):
+    '''
+    This function registers a user with valid inputs and will store the user's data
+    in data_store.
+
+    Arguments:
+        email (string)    - the user's email
+        password (string)    - the user's password
+        name_first (string)    - the user's first name
+        name_last (string)   - the user's last name
+
+    Exceptions:
+        InputError  - Occurs when email is not a valid email
+                      or the email address is already being used
+                      or the length of password is less than 6 characters
+                      or the length of first/last name is not 1-50 characters inclusive
+
+    Return Value:
+        Returns auth_user_id (dictionary)
+    '''
     store = data_store.get()
 
-    # Check all inputs
     check_email(email)
     check_password(password)
     check_first_name(name_first)
     check_last_name(name_last)
 
-    # Store all the data
     store['users']['emails'].append(email)
     store['users']['passwords'].append(password)
     store['users']['first_names'].append(name_first)
@@ -46,12 +83,11 @@ def auth_register_v1(email, password, name_first, name_last):
 
     data_store.set(store)
 
-    # Create user_handle and store in data_store, return auth_user_id
-    # NOTE: auth_user_id is the index of the user in the list
     auth_user_id = create_user_handle(name_first, name_last)
 
-    return auth_user_id
-
+    return {
+        'auth_user_id': auth_user_id,
+    }
 
 # --- Check email ---
 # This function takes in an email (string) and checks if email is
@@ -98,7 +134,7 @@ def check_last_name(name_last):
     if len(name_last) >= 1 and len(name_last) <= 50:
         pass
     else:
-        raise Exception('Invalid last name!')
+        raise InputError('Invalid last name!')
 
 # --- Create user_handle ---
 # This function takes in the user's first and last name (strings)
@@ -131,23 +167,17 @@ def create_user_handle(name_first, name_last):
 # This function takes in an email and checks if
 # email used to log in is registed. If email
 # is not stored, return error.
-
 def check_valid_email(email):
 
     store = data_store.get()
     email_list = []
     check = 0
 
-    # Loops through registered email and adds it to a list.
-    for x in store["users"]["emails"]:
-        email_list.append(x)
+    for data_email in store["users"]["emails"]:
+        email_list.append(data_email)
 
-    # Checks if list contains the email given
-    # If email is in the list, a 1 is given
-    # If the loop reaches the end and the email isn't present
-    # Error is given
-    for y in email_list:
-        if y == email:
+    for stored_email_list in email_list:
+        if stored_email_list == email:
             check = 1
             return 1
     
@@ -157,25 +187,20 @@ def check_valid_email(email):
 # This function takes in password and check if 
 # password matches the registered email, if it doesn't, return
 # Error.
-
 def check_valid_password(email, password):
     email_list = []
     password_list = []
     check = 0
 
     store = data_store.get()
-    # Loops through registered email and adds it
-    # to the list.
-    for x in store["users"]["emails"]:
-        email_list.append(x)
+    for data_email in store["users"]["emails"]:
+        email_list.append(data_email)
 
-    # Loops through stored password and adds it
-    # to the list.
-    for y in store["users"]["passwords"]:
-        password_list.append(y)
+    for data_password in store["users"]["passwords"]:
+        password_list.append(data_password)
 
     counter = 0
-    # Finds the index of the email,
+
     for idx in email_list:
         if idx == email:
             if password == password_list[counter]:
@@ -184,18 +209,3 @@ def check_valid_password(email, password):
             counter = counter + 1
 
     raise InputError('Invalid Password!')
-    
-# Debugging + Testing purposes
-if __name__ == '__main__':
-
-    # Testing
-    # auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    # auth_register_v1('joe1233@gmail.com', 'password', 'Joe', 'Smith')
-
-
-    # Testing create_user_handle works correctly for people with the same name
-    # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
-    # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
-    # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
-    # create_user_handle('Joe', 'Jimsfkjhydsyfdysfdyhs')
-    pass
