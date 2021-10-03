@@ -334,7 +334,7 @@ def check_invalid_start(channel_id, start):
             return
         cnt += 1
 
-    raise AccessError('Permission dinined!')
+    raise InputError('Permission dinined!')
 
 
 # AccessError
