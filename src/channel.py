@@ -24,13 +24,13 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
 def channel_details_v1(auth_user_id, channel_id):
     """
-    <Given a channel with ID channel_id that the authorised 
-    user is a member of, provide basic details about the channel.>
+    Given a channel with ID channel_id that the authorised 
+    user is a member of, provide basic details about the channel.
       
     Arguments:
-        <auth_user_id> (<integer>)    - <use to identify users>
-        <channel_id> (<integer>)    - <ise to identify channels>
-        ...
+        auth_user_id (integer)    - use to identify users
+        channel_id (integer)    - use to identify channels
+        
       
     Exceptions:
 
@@ -41,29 +41,29 @@ def channel_details_v1(auth_user_id, channel_id):
         is valid and the authorised user is not a member of the channel
       
     Return Value:
-        Returns <dictionary:
+        Returns dictionary:
                 {
-                    <name> (<string>)
-                    <is_public> (<boolean>)
-                    <owner_member> (<list of distionary:
+                    name (string)
+                    is_public (boolean)
+                    owner_member :
                     {
-                        <emails> (<string>)
-                        <first_name> (<string>)
-                        <last_name> (<string>)
-                        <user_handles> (<string>)
+                        emails (string)
+                        first_name (string)
+                        last_name (string)
+                        user_handles (string)
 
-                    }>)
-                    <all_members> (<list of distionary:
+                    }
+                    all_members :
                     {
-                        <emails> (<string>)
-                        <first_name> (<string>)
-                        <last_name> (<string>)
-                        <user_handles> (<string>)
+                        emails (string)
+                        first_name (string)
+                        last_name (string)
+                        user_handles (string)
 
-                    }>)
+                    }
     
-                }> 
-        on <member of this channel access this channel's details>
+                }
+        on member of this channel access this channel's details
         """
     store = data_store.get()
 
@@ -104,46 +104,8 @@ def channel_details_v1(auth_user_id, channel_id):
         'all_members': members_details
 
     }
-##      <Given a channel with ID channel_id that the authorised 
-##      user is a member of, provide basic details about the channel.>
-##      
-##      Arguments:
-##          <auth_user_id> (<integer>)    - <use to identify users>
-##          <channel_id> (<integer>)    - <ise to identify channels>
-##          ...
-##      
-##      Exceptions:
-##
-##          InputError('Invalid input')  - Occurs when channel_id does 
-##          not refer to a valid channel.
-##
-##          AccessError('Permission denied!') - Occurs when channel_id 
-##          is valid and the authorised user is not a member of the channel
-##      
-##      Return Value:
-##          Returns <dictionary:
-##                  {
-##                      <name> (<string>)
-##                      <is_public> (<boolean>)
-##                      <owner_member> (<list of distionary:
-##                      {
-##                          <emails> (<string>)
-##                          <first_name> (<string>)
-##                          <last_name> (<string>)
-##                          <user_handles> (<string>)
-##
-##                      }>)
-##                      <all_members> (<list of distionary:
-##                      {
-##                          <emails> (<string>)
-##                          <first_name> (<string>)
-##                          <last_name> (<string>)
-##                          <user_handles> (<string>)
-##
-##                      }>)
-##    
-##                  }> 
-##          on <member of this channel access this channel's details>
+
+
 
 
 
@@ -200,22 +162,25 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
 def channel_join_v1(auth_user_id, channel_id):
     """
-    <Given a channel_id of a channel that the authorised user can join,    
-    adds them to that channel.>                                           
+    Given a channel_id of a channel that the authorised user can join,    
+    adds them to that channel.                                        
      
     Arguments:
-        <auth_user_id> (<integer>)    - <use to identify users>
-        <channel_id> (<integer>)    - <ise to identify channels>
+        auth_user_id (integer)    - use to identify users
+        channel_id (integer)    - use to identify channels
          ... 
      
     Exceptions:
+
          InputError('Invalid input')  - Occurs when channel_id does 
          not refer to a valid channel.
+
          InputError('You are a member already!')  - Occurs when 
-         the authorised user is already a member of the channel
+         the authorised user is already a member of the channel.
+
          AccessError('This is private channel, permission denied!') - Occurs when
          channel_id refers to a channel that is private and the authorised user 
-         is not already a channel member and is not a global owner
+         is not already a channel member and is not a global owner.
      
     Return Value:
          This function return empty dictionary.
