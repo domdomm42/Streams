@@ -1,6 +1,17 @@
 from src.data_store import data_store
 
 def clear_v1():
+    '''
+    This function access all fields in the data structure from data_store
+    and empties all of them to the original state at the beginning of the code.
+
+    Arguements:
+        N/A
+    Exceptions:
+        N/A
+    Returns:
+        Empty dictionary {} every time    
+    '''
 
     store = data_store.get()
     
