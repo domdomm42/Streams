@@ -82,19 +82,19 @@ def test_mary_channels(setup):
 
 
 # Testing Invalid names for channel creation
-def test_empty_name():
+def test_empty_name1():
     with pytest.raises(InputError):
         channels_create_v1(1, '', True)
 
-def test_long_name():
+def test_long_name1():
     with pytest.raises(InputError):
         channels_create_v1(1, 'bigbigbigbigbigbigbigbig', True)
 
-def test_empty_name():
+def test_empty_name2():
     with pytest.raises(InputError):
         channels_create_v1(1, '', False)
 
-def test_long_name():
+def test_long_name2():
     with pytest.raises(InputError):
         channels_create_v1(1, 'bigbigbigbigbigbigbigbig', False)
 
