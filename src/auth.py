@@ -115,7 +115,7 @@ def check_last_name(name_last):
     if len(name_last) >= 1 and len(name_last) <= 50:
         pass
     else:
-        raise Exception('Invalid last name!')
+        raise InputError('Invalid last name!')
 
 # --- Create user_handle ---
 # This function takes in the user's first and last name (strings)
