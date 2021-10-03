@@ -22,7 +22,7 @@ def test_invalid_channel_id_invite():
         channel_invite_v1(login_abc, 999, login_asd)
 
 
-def test_invalid_channel_id_message():
+def test_invalid_channel_id_messages():
     clear_v1()
     register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123').get('auth_user_id')
     login_abc = auth_login_v1('abc1531@gmail.com', 'password').get('auth_user_id')
@@ -64,7 +64,7 @@ def test_repeated_invite():
 
 
 # Test start
-def test_start_message():
+def test_start_messages():
     clear_v1()
     register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123').get('auth_user_id')
     login_abc = auth_login_v1('abc1531@gmail.com', 'password').get('auth_user_id')
@@ -94,7 +94,7 @@ def test_authorised_invite():
         channel_invite_v1(login_asd, channels_abc, login_asd)
 
 
-def test_authorised_message():
+def test_authorised_messages():
     clear_v1()
     register_user_id = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123').get('auth_user_id')
     login_abc = auth_login_v1('abc1531@gmail.com', 'password').get('auth_user_id')
