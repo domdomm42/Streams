@@ -3,6 +3,27 @@ from src.error import InputError, AccessError
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
+    """
+        Given a user with ID u_id to join a channel with ID channel_id.
+        
+        Arguments:
+            auth_user_id (integer)    - use to identify users
+            channel_id (integer)    - use to identify channels
+                    u_id(integer)       - use to identify users
+
+        Exceptions:
+
+            InputError('Invalid input')  - Occurs when channel_id does
+            not refer to a valid channel.
+
+            AccessError('Permission denied!') - Occurs when channel_id
+            is valid and the authorised user is not a member of the channel
+
+        Return Value: {}
+    """
+
+
+
     store = data_store.get()
 
     # Check
@@ -129,16 +150,42 @@ def channel_details_v1(auth_user_id, channel_id):
 
 
 def channel_messages_v1(auth_user_id, channel_id, start):
+    """
+        Given a channel with channel_id that the authorised user is a member of ,
+        return up to 50 messages between index of  start and end.
 
+        Arguments:
+            auth_user_id (integer)    - use to identify users
+            channel_id (integer)    - use to identify channels
+                    start(integer)       - use to identify the index of new messages
+
+        Exceptions:
+
+            InputError('Invalid input')  - Occurs when channel_id does
+            not refer to a valid channel.
+
+            AccessError('Permission denied!') - Occurs when channel_id
+            is valid and the authorised user is not a member of the channel
+
+        Return Value: {
+            message,
+            start,
+            end
+        }
+        """
+    
+    
+    
     store = data_store.get()
+    
+    
     # Check
     check_invalid_channel_id(channel_id)
     check_invalid_start(channel_id, start)
 
-    check_autorised_id(auth_user_id,channel_id)
+    check_autorised_id(auth_user_id, channel_id)
 
-    #list_message = [1,2,3,4]
-
+    # list_message = [1,2,3,4]
 
     # Loop
     messages_list = []
@@ -159,29 +206,28 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     }
 
 
-
 def channel_join_v1(auth_user_id, channel_id):
     """
-    Given a channel_id of a channel that the authorised user can join,    
-    adds them to that channel.                                        
-     
+    Given a channel_id of a channel that the authorised user can join,
+    adds them to that channel.
+
     Arguments:
         auth_user_id (integer)    - use to identify users
         channel_id (integer)    - use to identify channels
-         ... 
-     
+         ...
+
     Exceptions:
 
-         InputError('Invalid input')  - Occurs when channel_id does 
+         InputError('Invalid input')  - Occurs when channel_id does
          not refer to a valid channel.
 
-         InputError('You are a member already!')  - Occurs when 
+         InputError('You are a member already!')  - Occurs when
          the authorised user is already a member of the channel.
 
          AccessError('This is private channel, permission denied!') - Occurs when
-         channel_id refers to a channel that is private and the authorised user 
+         channel_id refers to a channel that is private and the authorised user
          is not already a channel member and is not a global owner.
-     
+
     Return Value:
          This function return empty dictionary.
     """
@@ -240,6 +286,8 @@ def check_channel_status(channel_id, auth_user_id):
         pass
     else:
         raise AccessError('This is private channel, permission denied!')
+
+
 # InputError
 # Check invalid channel_id
 def check_invalid_channel_id(channel_id):
