@@ -113,5 +113,24 @@ def test_new_channel():
     assert channels_create_v1(1, 'Marry', True).get('channel_id') == 1
     assert channels_create_v1(0, 'Joeseph', True).get('channel_id') == 2
 
+# Testing Invalid user_ID for channel_create_v1
+def test_invalid_id_channel_create_negative():
+    clear_v1()
+    with pytest.raises(AccessError):
+        channels_create_v1(-1, 'bigboy', True) 
+
+def test_invalid_id_channel_create_over():
+    clear_v1()
+    assert channels_create_v1(0, 'Joe', True).get('channel_id') == 0
+    assert channels_create_v1(1, 'Marry', True).get('channel_id') == 1
+    assert channels_create_v1(0, 'Joeseph', True).get('channel_id') == 2
+
+    with pytest.raises(AccessError):
+        channels_create_v1(3, 'bigboy', True) 
+
+
+
+
+
         
 
