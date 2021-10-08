@@ -191,7 +191,7 @@ def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
     check_channel_id(channel_id)
     check_exist_member(auth_user_id, channel_id)
-    check_channel_status(channel_id, auth_user_id)
+    check_join_limit(channel_id, auth_user_id)
 
     store['channels']['all_members'][channel_id].append(auth_user_id)
     data_store.set(store)
@@ -204,14 +204,15 @@ def channel_join_v1(auth_user_id, channel_id):
 def check_channel_id(channel_id):
     store = data_store.get()
     i = 0
-
+    if channel_id < 0 :
+        raise AccessError('Invalid Id')
     for element in store['channels']['channel_name']:
 
         if i == channel_id:
             return
 
         i += 1
-    raise InputError('Invalid input')
+    raise InputError(description='Invalid input')
 
 
 def check_authority(auth_user_id, channel_id):
@@ -221,7 +222,7 @@ def check_authority(auth_user_id, channel_id):
         if user == auth_user_id:
             return
 
-    raise AccessError('Permission denied!')
+    raise AccessError(description='Permission denied!')
 
 
 # check user is a member or not
@@ -231,18 +232,22 @@ def check_exist_member(auth_user_id, channel_id):
     for user in store['channels']['all_members'][channel_id]:
 
         if user == auth_user_id:
-            raise InputError('You are a member already!')
+            raise InputError(description='You are a member already!')
 
     pass
 
 
 # check the channel status(private or not)
-def check_channel_status(channel_id, auth_user_id):
+def check_join_limit(channel_id, auth_user_id):
     store = data_store.get()
+    is_globle = store['users']['is_globle_owner'][auth_user_id]
+
     if store['channels']['is_public'][channel_id] == True:
         pass
+    elif store['channels']['is_public'][channel_id] == False and is_globle == True:
+        pass
     else:
-        raise AccessError('This is private channel, permission denied!')
+        raise AccessError(description='Permission denied')
 
 
 # InputError

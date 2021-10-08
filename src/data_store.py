@@ -34,6 +34,7 @@ initial_object = {
         'first_names': [],
         'last_names': [],
         'user_handles': [],
+        'is_globle_owner':[]
     },
 
     # The channel_id is the index of the channel in the list
