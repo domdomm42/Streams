@@ -17,19 +17,19 @@ user Marry (channel 1, 2, 3) and a public channel for user Joe (channel 0, 1, 3)
 def setup():
     clear_v1()
 
-    login_joe = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    channel_joe = channels_create_v1(login_joe, 'Joe', False).get('channel_id')
+    login_joe = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
+    channels_create_v1(login_joe, 'Joe', False).get('channel_id')
 
-    login_marry = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
+    login_marry = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe').get('auth_user_id')
     channel_marry = channels_create_v1(login_marry, 'Marry', True).get('channel_id')
 
-    channel_second_marry = channels_create_v1(login_marry, 'Second_Marry', False).get('channel_id')
+    channels_create_v1(login_marry, 'Second_Marry', False).get('channel_id')
     channel_join_v1(login_joe, channel_marry)
 
     channel_second_joe = channels_create_v1(login_joe, 'Second_Joe', True).get('channel_id')
     channel_join_v1(login_marry, channel_second_joe)
 
-    login_sam = auth_register_v1('sam123@gmail.com', 'passwordJ', 'Sam', 'Smith')
+    login_sam = auth_register_v1('sam123@gmail.com', 'passwordJ', 'Sam', 'Smith').get('auth_user_id')
     channels_create_v1(login_sam, 'Sam', True).get('channel_id')
     
     return login_marry
@@ -109,9 +109,9 @@ def test_long_name2():
 # Testing simple channel creation
 def test_new_channel():
     clear_v1()
-    assert channels_create_v1(0, 'Joe', True).get('channel_id') == 0
-    assert channels_create_v1(1, 'Marry', True).get('channel_id') == 1
-    assert channels_create_v1(0, 'Joeseph', True).get('channel_id') == 2
+    auth_user_id = auth_register_v1('dommm@gmail.com', 'limoudom123', 'oudom', 'lim').get('auth_user_id')
+    assert channels_create_v1(auth_user_id, 'Joe', True).get('channel_id') == 0
+    
 
 # Testing Invalid user_ID for channel_create_v1
 def test_invalid_id_channel_create_negative():
@@ -121,10 +121,6 @@ def test_invalid_id_channel_create_negative():
 
 def test_invalid_id_channel_create_over():
     clear_v1()
-    assert channels_create_v1(0, 'Joe', True).get('channel_id') == 0
-    assert channels_create_v1(1, 'Marry', True).get('channel_id') == 1
-    assert channels_create_v1(0, 'Joeseph', True).get('channel_id') == 2
-
     with pytest.raises(AccessError):
         channels_create_v1(3, 'bigboy', True) 
 
