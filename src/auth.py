@@ -140,7 +140,7 @@ def check_last_name(name_last):
 # This function returns the auth_user_id (int)
 def create_user_handle(name_first, name_last):
 
-    user_handle = (name_first.lower() + name_last.lower())[0:19]
+    user_handle = (name_first.lower() + name_last.lower())[0:20]
 
     # Obtain data
     store = data_store.get()
@@ -207,3 +207,8 @@ def check_valid_password(email, password):
             counter = counter + 1
 
     raise InputError('Invalid Password!')
+
+# if __name__ == '__main__':
+#     auth_register_v1('joejim123@gmail.com', 'password', '1234567890', 'a1234567890')
+#     store = data_store.get()
+#     print(store)
