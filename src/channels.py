@@ -1,5 +1,5 @@
 from src.data_store import data_store
-from src.error import InputError
+from src.error import InputError, AccessError
 
 ''' 
 Both Channels list functions create a new list of dictionaries
@@ -90,6 +90,10 @@ def channels_create_v1(auth_user_id, name, is_public):
     all_members_in_channel.append(auth_user_id)
  
     store = data_store.get()
+    
+
+    if auth_user_id > len(store['users']['user_handles']) or auth_user_id < 0:
+        raise AccessError('Invalid auth_user_id!')
 
     store['channels']['owner_user_id'].append(auth_user_id)
     store['channels']['channel_name'].append(name)
@@ -99,7 +103,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     data_store.set(store)
 
     i = 0
-    for data_owner_user_id in store["channels"]["owner_user_id"]:
+    for _ in store["channels"]["owner_user_id"]:
         i += 1
     
 

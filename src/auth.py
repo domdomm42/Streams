@@ -169,14 +169,14 @@ def check_valid_email(email):
 
     store = data_store.get()
     email_list = []
-    check = 0
+
 
     for data_email in store["users"]["emails"]:
         email_list.append(data_email)
 
     for stored_email_list in email_list:
         if stored_email_list == email:
-            check = 1
+            
             return 1
     
     raise InputError('Email not registered!')
@@ -188,7 +188,7 @@ def check_valid_email(email):
 def check_valid_password(email, password):
     email_list = []
     password_list = []
-    check = 0
+    
 
     store = data_store.get()
     for data_email in store["users"]["emails"]:

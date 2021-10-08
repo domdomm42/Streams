@@ -40,15 +40,15 @@ def test_register_invalid_email_8():
 # Test valid emails
 def test_register_valid_email():
     clear_v1()
-    register_userID = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
+    auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
 
 def test_register_valid_email_2():
     clear_v1()
-    register_userID = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
+    auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
 
 def test_register_valid_email_3():
     clear_v1()
-    register_userID = auth_register_v1('davidmo@gmail.com', 'passwordD', 'David', 'Mo')
+    auth_register_v1('davidmo@gmail.com', 'passwordD', 'David', 'Mo')
 
 # Test duplicate emails
 def test_register_duplicate_email():
@@ -177,14 +177,14 @@ def test_registered_email_4():
 def test_wrong_password():
     clear_v1()
     with pytest.raises(InputError):
-        login_userID = auth_login_v1('joe123@gmail.com', 'cotton')
+        auth_login_v1('joe123@gmail.com', 'cotton')
 
 def test_wrong_password_2():
     clear_v1()
     with pytest.raises(InputError):
-        login_userID = auth_login_v1('marryjoe222@gmail.com', 'eyed')
+        auth_login_v1('marryjoe222@gmail.com', 'eyed')
 
 def test_wrong_password_3():
     clear_v1()
     with pytest.raises(InputError):
-        login_userID = auth_login_v1('davidmo@gmail.com', 'joe')
+        auth_login_v1('davidmo@gmail.com', 'joe')
