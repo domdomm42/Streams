@@ -29,12 +29,13 @@ initial_object = {
 
     # The auth_user_id is the index of the user in the list
     'users': {
+        'user_id': [], # NEW
         'emails': [],
         'passwords': [],
         'first_names': [],
         'last_names': [],
         'user_handles': [],
-        'is_global_owner': [],
+        'is_global_user': [],
     },
 
     # The channel_id is the index of the channel in the list
@@ -42,13 +43,40 @@ initial_object = {
     # the 0th index of all_members is a list of strings/numbers containing
     # all the members
     'channels': {
+        'channel_id': [], #NEW
         'channel_name': [],
         'owner_user_id': [],
         'is_public': [],
         'all_members': [],
-        'messages': [],
-    }
+        'messages': []
+    },
+
+    # Contains the messages of all the channels and DMs
+    'messages': {
+        'message_id': [], #NEW
+        'u_id': [],
+        'message': [],
+        'time_created': [],
+        
+    },
+
+    # DMS // Group Chats
+    'dms': {
+        'dm_id': [1], #NEW
+        'owner_id': [], #DUNNO FIX LATER
+        'name': [],
+        'all_members': [],
+        'messages': [], # each message is unique ID
+    },
+
+    #BY USING INDEX FOR THE ID, if we remove a message, all the messages after gets shifted to the left
+    # WHICH IS BAD
+
+    # dm_create, sending messages and creating user and creating channel will assign their ID,
+    #which will be the ID of the last index + 1
 }
+
+
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
 class Datastore:
@@ -67,4 +95,3 @@ print('Loading Datastore...')
 
 global data_store
 data_store = Datastore()
-
