@@ -18,12 +18,12 @@ def setup():
     clear_v1()
 
     login_joe = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-    channel_joe = channels_create_v1(login_joe, 'Joe', False).get('channel_id')
+    channels_create_v1(login_joe, 'Joe', False).get('channel_id')
 
     login_marry = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
     channel_marry = channels_create_v1(login_marry, 'Marry', True).get('channel_id')
 
-    channel_second_marry = channels_create_v1(login_marry, 'Second_Marry', False).get('channel_id')
+    channels_create_v1(login_marry, 'Second_Marry', False).get('channel_id')
     channel_join_v1(login_joe, channel_marry)
 
     channel_second_joe = channels_create_v1(login_joe, 'Second_Joe', True).get('channel_id')
