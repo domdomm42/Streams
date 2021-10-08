@@ -92,8 +92,8 @@ def channels_create_v1(auth_user_id, name, is_public):
     store = data_store.get()
     
 
-    #if auth_user_id > len(store['users']['user_handles']) or auth_user_id < 0:
-        #raise AccessError('Invalid auth_user_id!')
+    if auth_user_id > len(store['users']['user_handles']) or auth_user_id < 0:
+        raise AccessError('Invalid auth_user_id!')
 
     store['channels']['owner_user_id'].append(auth_user_id)
     store['channels']['channel_name'].append(name)
