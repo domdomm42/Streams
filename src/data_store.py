@@ -62,7 +62,7 @@ initial_object = {
 
     # DMS // Group Chats
     'dms': {
-        'dm_id': [1], #NEW
+        'dm_id': [], #NEW
         'owner_id': [], #DUNNO FIX LATER
         'name': [],
         'all_members': [],
