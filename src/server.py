@@ -43,6 +43,12 @@ def clear_everything():
     clear_v1()
     return dumps({})
 
+@APP.route("/auth/login/v2", methods=['POST'])
+def auth_login():
+    request_data = request.get_json()
+    token_and_auth_user_id = auth_login_v1(request_data['email'], request_data['password'])
+    return dumps(token_and_auth_user_id)
+
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
