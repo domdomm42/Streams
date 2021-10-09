@@ -6,6 +6,9 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 
+from src.auth import auth_register_v1
+from src.other import clear_v1
+
 def quit_gracefully(*args):
     '''For coverage'''
     exit(0)
@@ -28,6 +31,17 @@ APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
 #### NO NEED TO MODIFY ABOVE THIS POINT, EXCEPT IMPORTS
+
+@APP.route("/auth/register/v2", methods=['POST'])
+def register_user():
+    request_data = request.get_json()
+    token_and_auth_user_id = auth_register_v1(request_data['email'], request_data['password'], request_data['name_first'], request_data['name_last'])
+    return dumps(token_and_auth_user_id)
+
+@APP.route("/clear/v1", methods=['DELETE'])
+def clear_everything():
+    clear_v1()
+    return dumps({})
 
 # Example
 @APP.route("/echo", methods=['GET'])
