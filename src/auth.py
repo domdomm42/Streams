@@ -67,7 +67,10 @@ def auth_register_v1(email, password, name_first, name_last):
                       or the length of first/last name is not 1-50 characters inclusive
 
     Return Value:
-        Returns auth_user_id (dictionary)
+        {
+            'token': str(user_id),
+            'auth_user_id': user_id
+        } (dictionary) - contains token (string) and auth_user_id (int)
     '''
     store = data_store.get()
 
@@ -76,17 +79,27 @@ def auth_register_v1(email, password, name_first, name_last):
     check_first_name(name_first)
     check_last_name(name_last)
 
+    create_user_handle(name_first, name_last)
+
+    if store['users']['user_id'] == []: # First user to register
+        store['users']['user_id'].append(0)
+        store['users']['is_global_owner'].append(True) 
+    else:
+        store['users']['user_id'].append(store['users']['user_id'][-1] + 1)
+        store['users']['is_global_owner'].append(False) 
+
     store['users']['emails'].append(email)
     store['users']['passwords'].append(password)
     store['users']['first_names'].append(name_first)
     store['users']['last_names'].append(name_last)
 
+    user_id = store['users']['user_id'][-1]
+
     data_store.set(store)
 
-    auth_user_id = create_user_handle(name_first, name_last)
-
     return {
-        'auth_user_id': auth_user_id,
+        'token': str(user_id),
+        'auth_user_id': user_id
     }
 
 # --- Check email ---
@@ -102,7 +115,7 @@ def check_email(email):
     if re.fullmatch(regex, email) and email not in store['users']['emails']:
         pass
     else:
-        raise InputError('Invalid email!')
+        raise InputError(description = 'This email is already registered!')
 
 # --- Check password ---
 # This function takes in a password (string) and checks if the 
@@ -137,7 +150,7 @@ def check_last_name(name_last):
 # --- Create user_handle ---
 # This function takes in the user's first and last name (strings)
 # and creates a unique user_handle (string)
-# This function returns the auth_user_id (int)
+# This function does not return anything
 def create_user_handle(name_first, name_last):
 
     user_handle = (name_first.lower() + name_last.lower())[0:20]
@@ -155,11 +168,8 @@ def create_user_handle(name_first, name_last):
         i += 1
     
     store['users']['user_handles'].append(user_handle)
-    auth_user_id = store['users']['user_handles'].index(user_handle)
 
     data_store.set(store)
-
-    return auth_user_id
 
 # --- Checks if email is registered ---
 # This function takes in an email and checks if
@@ -210,5 +220,6 @@ def check_valid_password(email, password):
 
 # if __name__ == '__main__':
 #     auth_register_v1('joejim123@gmail.com', 'password', '1234567890', 'a1234567890')
+#     auth_register_v1('joejim1234@gmail.com', 'password', '1234567890', 'a1234567890')
 #     store = data_store.get()
 #     print(store)

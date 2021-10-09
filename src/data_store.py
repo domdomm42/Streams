@@ -29,14 +29,15 @@ initial_object = {
 
     # The auth_user_id is the index of the user in the list
     'users': {
-        'user_id': [], # NEW
+        'user_id': [],
         'emails': [],
         'passwords': [],
         'first_names': [],
         'last_names': [],
         'user_handles': [],
-        'is_global_user': [],
+        'is_global_owner': [],
     },
+
 
     # The channel_id is the index of the channel in the list
     # Make a list inside the list, for example for channel_id = 0,
@@ -63,10 +64,10 @@ initial_object = {
     # DMS // Group Chats
     'dms': {
         'dm_id': [], #NEW
-        'owner_id': [], #DUNNO FIX LATER
-        'name': [],
+        'owner_user_id': [],
+        'dm_name': [],
         'all_members': [],
-        'messages': [], # each message is unique ID
+        'messages': [], 
     },
 
     #BY USING INDEX FOR THE ID, if we remove a message, all the messages after gets shifted to the left
