@@ -71,7 +71,7 @@ def test_no_member_access_detail_1():
 def test_no_member_access_detail_2():
         #create channel and auth_user
     clear_v1()
-    rauth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
+    auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith').get('auth_user_id')
     login_joe = auth_login_v1('joe123@gmail.com', 'password').get('auth_user_id')
     channels_joe = channels_create_v1(login_joe, 'Joe', True).get('channel_id')
     
