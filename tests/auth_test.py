@@ -185,74 +185,81 @@ def test_invalid_last_name_2():
     response_data = response.json()
     assert response_data['code'] == 400
 
-# # Test unregistered email 
-# def test_unregistered_email():
-#     clear_v1()
-#     with pytest.raises(InputError):
-#         auth_login_v1('joe123.com', 'password')
+ #########################################################################
+ ############################################################################
+
+# Test unregistered email 
+def test_unregistered_email():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info = {"email": "joe123@gmail.com", "password": "password"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
 
 # def test_unregistered_email_2():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('anika.com', 'password')
 
 # def test_unregistered_email_3():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1(' ', 'password')
 
 # def test_unregisterd_email_4():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('.com', 'password')
 
 # def test_unregistered_email_5():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('@.com', 'password')
 
 # def test_unregisted_email_6():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('2342ras@43', 'password')
 
 # def test_unregisted_email_7():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('dklshfdoshfokishjfoihwokjbhfd', 'password')
 
 # def test_unregistered_email_8():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('marry.joe!@gmail.com', 'password')
 
 # def test_unregistered_email_9():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('wolffangdan', 'dancarry')
 
 # # Test registered email
 # def test_registered_email():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     register_userID = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
 #     login_userID = auth_login_v1('joe123@gmail.com', 'password')
 #     assert register_userID == login_userID
 
 # def test_registered_email_2():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     register_userID = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
 #     login_userID = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
 #     assert register_userID == login_userID
 
 # def test_registered_email_3():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     register_userID = auth_register_v1('davidmo@gmail.com', 'passwordD', 'David', 'Mo')
 #     login_userID = auth_login_v1('davidmo@gmail.com', 'passwordD')
 #     assert register_userID == login_userID
 
 # # Tests for multiple registers
 # def test_registered_email_4():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     register_userID = auth_register_v1('panhain7@gmail.com', '016758899', 'Panha', 'In')
 #     register_userID = auth_register_v1('oudomiscool@gmail.com', 'potatoyum', 'Oudom', 'Lim')
 #     login_userID = auth_login_v1('oudomiscool@gmail.com', 'potatoyum')
@@ -260,16 +267,16 @@ def test_invalid_last_name_2():
 
 # # Testing for unmatched password
 # def test_wrong_password():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('joe123@gmail.com', 'cotton')
 
 # def test_wrong_password_2():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('marryjoe222@gmail.com', 'eyed')
 
 # def test_wrong_password_3():
-#     clear_v1()
+#     requests.delete(f'{BASE_URL}/clear/v1')
 #     with pytest.raises(InputError):
 #         auth_login_v1('davidmo@gmail.com', 'joe')
