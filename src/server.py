@@ -6,7 +6,7 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 
-from src.auth import auth_register_v1
+from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
 
 def quit_gracefully(*args):

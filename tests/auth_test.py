@@ -4,18 +4,7 @@ from src.auth import auth_login_v1, auth_register_v1
 from src.error import InputError
 from src.other import clear_v1
 
-BASE_URL = 'http://127.0.0.1:6564'
-
-# def test_http():
-
-#     user_info = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
-
-#     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
-#     response_data = response.json()
-
-#     print(response_data)
-
-#     assert response_data['auth_user_id'] == 0
+BASE_URL = 'http://127.0.0.1:6566'
 
 # Test invalid emails
 def test_register_invalid_email():
