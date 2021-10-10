@@ -17,9 +17,9 @@ def channels_list_v1(auth_user_id):
         id's and names of all existing channels that the given 
         User ID is a member of.
     '''
-
+    check_valid_id(token)
     new_list = {'channels':[]}
-
+    
     store = data_store.get()
     i = 0
     for members in store['channels']['all_members']:
@@ -47,7 +47,7 @@ def channels_listall_v1(auth_user_id):
         returns new_list: list of dicionaries containing channel 
         id's and names of all existing channels.
     '''
-
+    check_valid_id(token)
     new_list = {'channels':[]}
 
     store = data_store.get()
@@ -109,11 +109,17 @@ def channels_create_v1(auth_user_id, name, is_public):
         'channel_id': channel_id,
     } 
 
-
-
     # Function to check if name is within 1 and 20 characters.
 def check_channel_name(name):
     if len(name) >= 1 and len(name) <= 20:
         pass
     else:
         raise InputError('Length of channel name must be between 1 and 20 characters!')
+
+def check_valid_id(token):
+    store = data_store.get()
+    
+    if token not in store['users']['token']:
+        raise AccessError('Invalid token given')
+    else:
+        pass
