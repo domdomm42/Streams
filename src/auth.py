@@ -24,13 +24,30 @@ def auth_login_v1(email, password):
     '''
 
     store = data_store.get()
+    email_list = []
+    user_handles_list = []
+
 
     if check_valid_email(email) == 1 and check_valid_password(email, password) == 1:
 
-        user_id = store['users']['user_id'][-1]
+
+        for data_email in store["users"]["emails"]:
+            email_list.append(data_email)
+
+        for data_user_handles in store["users"]["user_handles"]:
+            user_handles_list.append(data_user_handles)
+
+        counter = 0
+        for list_emails in email_list:
+            if list_emails == email:
+                break
+            else:
+                counter = counter + 1
+
+        user_id = store['users']['user_id'][counter]
 
         return {
-        'token': user_id,
+        'token': str(user_id),
         'auth_user_id': user_id,
         }
     else:

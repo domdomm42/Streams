@@ -3,19 +3,9 @@ import requests
 from src.auth import auth_login_v1, auth_register_v1
 from src.error import InputError
 from src.other import clear_v1
+from src.config import *
 
-BASE_URL = 'http://127.0.0.1:6564'
-
-# def test_http():
-
-#     user_info = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
-
-#     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
-#     response_data = response.json()
-
-#     print(response_data)
-
-#     assert response_data['auth_user_id'] == 0
+BASE_URL = url
 
 # Test invalid emails
 def test_register_invalid_email():
@@ -186,7 +176,7 @@ def test_invalid_last_name_2():
     assert response_data['code'] == 400
 
  #########################################################################
- ############################################################################
+ #########################################################################
 
 # Test unregistered email 
 def test_unregistered_email():
@@ -198,85 +188,152 @@ def test_unregistered_email():
     assert response_data['code'] == 400
 
 
-# def test_unregistered_email_2():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('anika.com', 'password')
+def test_unregistered_email_2():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-# def test_unregistered_email_3():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1(' ', 'password')
+    user_info = {"email": "anika.com", "password": "password"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
 
-# def test_unregisterd_email_4():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('.com', 'password')
 
-# def test_unregistered_email_5():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('@.com', 'password')
+def test_unregistered_email_3():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-# def test_unregisted_email_6():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('2342ras@43', 'password')
+    user_info = {"email": "", "password": "password"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
 
-# def test_unregisted_email_7():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('dklshfdoshfokishjfoihwokjbhfd', 'password')
 
-# def test_unregistered_email_8():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('marry.joe!@gmail.com', 'password')
+def test_unregisterd_email_4():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-# def test_unregistered_email_9():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('wolffangdan', 'dancarry')
+    user_info = {"email": ".com", "password": "password"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_unregistered_email_5():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info = {"email": "@.com", "password": "password"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_unregisted_email_6():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info = {"email": "2342ras@43", "password": "password"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_unregisted_email_7():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info = {"email": "dklshfdoshfokishjfoihwokjbhfd", "password": "password"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_unregistered_email_8():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info = {"email": "marry.joe!@gmail.com", "password": "password"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_unregistered_email_9():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info = {"email": "wolffangdan", "password": "dancarry"}
+    response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
 
 # # Test registered email
-# def test_registered_email():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     register_userID = auth_register_v1('joe123@gmail.com', 'password', 'Joe', 'Smith')
-#     login_userID = auth_login_v1('joe123@gmail.com', 'password')
-#     assert register_userID == login_userID
+def test_registered_email():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-# def test_registered_email_2():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     register_userID = auth_register_v1('marryjoe222@gmail.com', 'passwordM', 'Marry', 'Joe')
-#     login_userID = auth_login_v1('marryjoe222@gmail.com', 'passwordM')
-#     assert register_userID == login_userID
+    user_info_reg = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
+    user_info_login = {"email": "joe123@gmail.com", "password": "password"}
 
-# def test_registered_email_3():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     register_userID = auth_register_v1('davidmo@gmail.com', 'passwordD', 'David', 'Mo')
-#     login_userID = auth_login_v1('davidmo@gmail.com', 'passwordD')
-#     assert register_userID == login_userID
+    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
+    response_reg_data = response_reg.json()
+    response_log_data = response_log.json()
+    assert response_reg_data == response_log_data
 
-# # Tests for multiple registers
-# def test_registered_email_4():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     register_userID = auth_register_v1('panhain7@gmail.com', '016758899', 'Panha', 'In')
-#     register_userID = auth_register_v1('oudomiscool@gmail.com', 'potatoyum', 'Oudom', 'Lim')
-#     login_userID = auth_login_v1('oudomiscool@gmail.com', 'potatoyum')
-#     assert register_userID == login_userID
+def test_registered_email_2():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-# # Testing for unmatched password
-# def test_wrong_password():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('joe123@gmail.com', 'cotton')
+    user_info_reg = {"email": "marryjoe222@gmail.com", "password": "passwordM", "name_first": "Marry", "name_last": "Joe"}
+    user_info_login = {"email": "marryjoe222@gmail.com", "password": "passwordM"}
 
-# def test_wrong_password_2():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('marryjoe222@gmail.com', 'eyed')
+    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
+    response_reg_data = response_reg.json()
+    response_log_data = response_log.json()
+    assert response_reg_data == response_log_data
 
-# def test_wrong_password_3():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     with pytest.raises(InputError):
-#         auth_login_v1('davidmo@gmail.com', 'joe')
+
+def test_registered_email_3():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info_reg = {"email": "davidmo@gmail.com", "password": "passwordD", "name_first": "David", "name_last": "Mo"}
+    user_info_login = {"email": "davidmo@gmail.com", "password": "passwordD"}
+
+    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
+    response_reg_data = response_reg.json()
+    response_log_data = response_log.json()
+    assert response_reg_data == response_log_data
+
+
+# Tests for multiple registers
+def test_registered_email_4():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    register_userID = auth_register_v1('panhain7@gmail.com', '016758899', 'Panha', 'In').get('auth_user_id')
+    register_userID = auth_register_v1('oudomiscool@gmail.com', 'potatoyum', 'Oudom', 'Lim').get('auth_user_id')
+    login_userID = auth_login_v1('oudomiscool@gmail.com', 'potatoyum').get('auth_user_id')
+    assert register_userID == login_userID
+
+# Testing for unmatched password
+def test_wrong_password():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info_reg = {"email": "davidmo@gmail.com", "password": "passwordD", "name_first": "David", "name_last": "Mo"}
+    user_info_login = {"email": "davidmo@gmail.com", "password": "passwordy"}
+
+    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
+    response_log_data = response_log.json()
+    assert response_log_data['code'] == 400
+
+
+
+def test_wrong_password_2():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info_reg = {"email": "marryjoe222@gmail.com", "password": "yayayaoyy", "name_first": "Marry", "name_last": "Joe"}
+    user_info_login = {"email": "marryjoe222@gmail.com", "password": "passwordy"}
+
+    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
+    response_log_data = response_log.json()
+    assert response_log_data['code'] == 400
+
+
+def test_wrong_password_3():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info_login = {"email": "marryjoe222@gmail.com", "password": "passwordy"}
+
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
+    response_log_data = response_log.json()
+    assert response_log_data['code'] == 400
