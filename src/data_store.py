@@ -29,7 +29,9 @@ initial_object = {
 
     # The auth_user_id is the index of the user in the list
     'users': {
+        'token': [],
         'user_id': [],
+        'logged_in'; [],
         'emails': [],
         'passwords': [],
         'first_names': [],
