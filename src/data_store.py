@@ -31,7 +31,7 @@ initial_object = {
     'users': {
         'token': [],
         'user_id': [],
-        'logged_in'; [],
+        'logged_in': [],
         'emails': [],
         'passwords': [],
         'first_names': [],
