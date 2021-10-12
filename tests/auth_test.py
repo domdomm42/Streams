@@ -310,7 +310,7 @@ def test_wrong_password():
     user_info_reg = {"email": "davidmo@gmail.com", "password": "passwordD", "name_first": "David", "name_last": "Mo"}
     user_info_login = {"email": "davidmo@gmail.com", "password": "passwordy"}
 
-    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log_data = response_log.json()
     assert response_log_data['code'] == 400
@@ -323,7 +323,7 @@ def test_wrong_password_2():
     user_info_reg = {"email": "marryjoe222@gmail.com", "password": "yayayaoyy", "name_first": "Marry", "name_last": "Joe"}
     user_info_login = {"email": "marryjoe222@gmail.com", "password": "passwordy"}
 
-    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log_data = response_log.json()
     assert response_log_data['code'] == 400
