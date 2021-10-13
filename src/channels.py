@@ -61,7 +61,7 @@ def channels_listall_v1(auth_user_id):
 
     return new_list
 
-def channels_create_v1(auth_user_id, name, is_public):
+def channels_create_v1(token, name, is_public):
     '''
     The function above takes in the auth_user_id and name and is_public
     and checks if the channel name the user has given us is valid, if it 
@@ -87,20 +87,19 @@ def channels_create_v1(auth_user_id, name, is_public):
 
     all_members_in_channel = []
 
-    all_members_in_channel.append(auth_user_id)
+    all_members_in_channel.append(int(token))
  
     store = data_store.get()
     
 
-    if auth_user_id > len(store['users']['user_handles']) or auth_user_id < 0:
+    if int(token) not in store['users']['user_id']:
         raise AccessError('Invalid auth_user_id!')
 
-    store['channels']['owner_user_id'].append(auth_user_id)
+    store['channels']['owner_user_id'].append(int(token))
     store['channels']['channel_name'].append(name)
     store['channels']['is_public'].append(is_public)
     store['channels']['all_members'].append(all_members_in_channel)
 
-    data_store.set(store)
 
     i = 0
     for _ in store["channels"]["owner_user_id"]:
@@ -108,6 +107,10 @@ def channels_create_v1(auth_user_id, name, is_public):
     
 
     channel_id = i - 1
+
+    store['channels']['channel_id'].append(channel_id)
+
+    data_store.set(store)
 
     return {
         'channel_id': channel_id,

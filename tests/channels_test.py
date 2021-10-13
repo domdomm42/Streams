@@ -1,10 +1,15 @@
 import pytest
+import requests
 
+from src.config import *
 from src.other import clear_v1
 from src.error import InputError, AccessError
 from src.auth import auth_login_v1, auth_register_v1
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 from src.channel import channel_join_v1, channel_messages_v1, channel_join_v1, channel_details_v1
+
+BASE_URL = url
+
 
 ''' 
 Channels testing documentation
@@ -91,38 +96,79 @@ def test_empty_channels():
 
 # Testing Invalid names for channel creation
 def test_empty_name1():
-    with pytest.raises(InputError):
-        channels_create_v1(1, '', True)
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    channel_creation_name = {"token": "1", "name": "", "is_public": True}
+
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 400
+
 
 def test_long_name1():
-    with pytest.raises(InputError):
-        channels_create_v1(1, 'bigbigbigbigbigbigbigbig', True)
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    channel_creation_name = {"token": "1", "name": "bigbigbigbigbigbigbigbig", "is_public": True}
+
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 400
+
 
 def test_empty_name2():
-    with pytest.raises(InputError):
-        channels_create_v1(1, '', False)
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    channel_creation_name = {"token": "1", "name": "", "is_public": False}
+
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 400
 
 def test_long_name2():
-    with pytest.raises(InputError):
-        channels_create_v1(1, 'bigbigbigbigbigbigbigbig', False)
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    channel_creation_name = {"token": "1", "name": "bigbigbigbigbigbigbigbig", "is_public": False}
+
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 400
 
 # Testing simple channel creation
 def test_new_channel():
-    clear_v1()
-    auth_user_id = auth_register_v1('dommm@gmail.com', 'limoudom123', 'oudom', 'lim').get('auth_user_id')
-    assert channels_create_v1(auth_user_id, 'Joe', True).get('channel_id') == 0
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    auth_user_id_reg = {"email": "dommm@gmail.com", "password": "limoudom123", "name_first": "oudom", "name_last": "lim"}
+    response_auth_user_id = requests.post(f'{BASE_URL}/auth/register/v2', json = auth_user_id_reg)
+
+    auth_user_id_info = response_auth_user_id.json()
+
+    channel_creation_name = {"token": auth_user_id_info["token"], "name": "domserver", "is_public": False}
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+
+    response_create_data = response_create.json()
+    assert response_create_data["channel_id"] == 0
+
     
 
 # Testing Invalid user_ID for channel_create_v1
 def test_invalid_id_channel_create_negative():
-    clear_v1()
-    with pytest.raises(AccessError):
-        channels_create_v1(-1, 'bigboy', True) 
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    channel_creation_name = {"token": "-1", "name": "bigboy", "is_public": True}
+
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 403
+
 
 def test_invalid_id_channel_create_over():
-    clear_v1()
-    with pytest.raises(AccessError):
-        channels_create_v1(3, 'bigboy', True) 
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    channel_creation_name = {"token": "3", "name": "bigboy", "is_public": True}
+
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 403
 
 
 
