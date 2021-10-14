@@ -8,6 +8,7 @@ from src import config
 
 from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
+from src.channels import channels_create_v1
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -42,6 +43,18 @@ def register_user():
 def clear_everything():
     clear_v1()
     return dumps({})
+
+@APP.route("/auth/login/v2", methods=['POST'])
+def auth_login():
+    request_data = request.get_json()
+    token_and_auth_user_id = auth_login_v1(request_data['email'], request_data['password'])
+    return dumps(token_and_auth_user_id)
+
+@APP.route("/channels/create/v2", methods=['POST'])
+def channels_create():
+    request_data = request.get_json()
+    channel_id = channels_create_v1(request_data['token'], request_data['name'], request_data['is_public'])
+    return dumps(channel_id)
 
 # Example
 @APP.route("/echo", methods=['GET'])
