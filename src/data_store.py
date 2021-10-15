@@ -27,11 +27,13 @@ Example usage:
 ## YOU SHOULD MODIFY THIS OBJECT BELOW
 initial_object = {
 
+    'logged_in_users': [],
+
+    #'logged_in_users': [{'user_id': 0, 'session_id': 0}, {'user_id': 0, 'session_id': 1}]
+
     # The auth_user_id is the index of the user in the list
     'users': {
-        'token': [],
         'user_id': [],
-        'logged_in': [],
         'emails': [],
         'passwords': [],
         'first_names': [],

@@ -1,5 +1,6 @@
 from src.data_store import data_store
 from src.error import InputError
+from src.auth_auth_helpers import hash, generate_jwt
 
 import re
 
@@ -28,7 +29,7 @@ def auth_login_v1(email, password):
     user_handles_list = []
 
 
-    if check_valid_email(email) == 1 and check_valid_password(email, password) == 1:
+    if check_valid_email(email) == 1 and check_valid_password(email, hash(password)) == 1:
 
 
         for data_email in store["users"]["emails"]:
@@ -47,8 +48,8 @@ def auth_login_v1(email, password):
         user_id = store['users']['user_id'][counter]
 
         return {
-        'token': str(user_id),
-        'auth_user_id': user_id,
+            'token': generate_jwt(user_id),
+            'auth_user_id': user_id,
         }
     else:
         raise InputError('Wrong email and/or password!')
@@ -94,7 +95,7 @@ def auth_register_v1(email, password, name_first, name_last):
         store['users']['is_global_owner'].append(False) 
 
     store['users']['emails'].append(email)
-    store['users']['passwords'].append(password)
+    store['users']['passwords'].append(hash(password))
     store['users']['first_names'].append(name_first)
     store['users']['last_names'].append(name_last)
 
@@ -103,7 +104,7 @@ def auth_register_v1(email, password, name_first, name_last):
     data_store.set(store)
 
     return {
-        'token': str(user_id),
+        'token': generate_jwt(user_id),
         'auth_user_id': user_id
     }
 

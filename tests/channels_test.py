@@ -133,20 +133,20 @@ def test_long_name2():
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
-# Testing simple channel creation
-def test_new_channel():
-    requests.delete(f'{BASE_URL}/clear/v1')
+# # Testing simple channel creation
+# def test_new_channel():
+#     requests.delete(f'{BASE_URL}/clear/v1')
 
-    auth_user_id_reg = {"email": "dommm@gmail.com", "password": "limoudom123", "name_first": "oudom", "name_last": "lim"}
-    response_auth_user_id = requests.post(f'{BASE_URL}/auth/register/v2', json = auth_user_id_reg)
+#     auth_user_id_reg = {"email": "dommm@gmail.com", "password": "limoudom123", "name_first": "oudom", "name_last": "lim"}
+#     response_auth_user_id = requests.post(f'{BASE_URL}/auth/register/v2', json = auth_user_id_reg)
 
-    auth_user_id_info = response_auth_user_id.json()
+#     auth_user_id_info = response_auth_user_id.json()
 
-    channel_creation_name = {"token": auth_user_id_info["token"], "name": "domserver", "is_public": False}
-    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+#     channel_creation_name = {"token": auth_user_id_info["token"], "name": "domserver", "is_public": False}
+#     response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
 
-    response_create_data = response_create.json()
-    assert response_create_data["channel_id"] == 0
+#     response_create_data = response_create.json()
+#     assert response_create_data["channel_id"] == 0
 
     
 
