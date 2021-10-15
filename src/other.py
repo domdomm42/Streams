@@ -1,4 +1,5 @@
 from src.data_store import data_store
+from src.auth_auth_helpers import reset_session_tracker
 
 def clear_v1():
     '''
@@ -13,8 +14,12 @@ def clear_v1():
         Empty dictionary {} every time    
     '''
 
+    reset_session_tracker()
+
     store = data_store.get()
     
+    store['logged_in_users'] = []
+
     store['users']['user_id'] = []
     store['users']['emails'] = []
     store['users']['passwords'] = []

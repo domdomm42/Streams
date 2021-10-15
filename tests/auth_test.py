@@ -1,9 +1,12 @@
 import pytest
 import requests
+import jwt
 from src.auth import auth_login_v1, auth_register_v1
 from src.error import InputError
 from src.other import clear_v1
 from src.config import *
+from src.auth_auth_helpers import SECRET
+
 
 BASE_URL = url
 
@@ -58,7 +61,7 @@ def test_register_valid_email():
     user_info = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['token'] == '0'
+    assert response_data['token'] == jwt.encode({'user_id': 0, 'session_id': 1}, SECRET, algorithm='HS256')
     assert response_data['auth_user_id'] == 0
 
 def test_register_valid_email_2():
@@ -68,7 +71,7 @@ def test_register_valid_email_2():
     user_info = {"email": "marryjoe222@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['token'] == '0'
+    assert response_data['token'] == jwt.encode({'user_id': 0, 'session_id': 1}, SECRET, algorithm='HS256')
     assert response_data['auth_user_id'] == 0
 
 def test_register_valid_email_3():
@@ -78,13 +81,13 @@ def test_register_valid_email_3():
     user_info = {"email": "marryjoe222@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['token'] == '0'
+    assert response_data['token'] == jwt.encode({'user_id': 0, 'session_id': 1}, SECRET, algorithm='HS256')
     assert response_data['auth_user_id'] == 0
 
     user_info = {"email": "jimmyjoe@gmail.com", "password": "password", "name_first": "Jimmy", "name_last": "Joe"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['token'] == '1'
+    assert response_data['token'] == jwt.encode({'user_id': 1, 'session_id': 2}, SECRET, algorithm='HS256')
     assert response_data['auth_user_id'] == 1
 
 # Test duplicate emails
@@ -263,11 +266,10 @@ def test_registered_email():
     user_info_reg = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
     user_info_login = {"email": "joe123@gmail.com", "password": "password"}
 
-    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
-    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
-    response_reg_data = response_reg.json()
-    response_log_data = response_log.json()
-    assert response_reg_data == response_log_data
+    requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login) 
+    response_log = response_log.json()
+    assert response_log['token'] == jwt.encode({'user_id': 0, 'session_id': 2}, SECRET, algorithm='HS256')
 
 def test_registered_email_2():
     requests.delete(f'{BASE_URL}/clear/v1')
@@ -277,9 +279,8 @@ def test_registered_email_2():
 
     response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
-    response_reg_data = response_reg.json()
-    response_log_data = response_log.json()
-    assert response_reg_data == response_log_data
+    response_log = response_log.json()
+    assert response_log['token'] == jwt.encode({'user_id': 0, 'session_id': 2}, SECRET, algorithm='HS256')
 
 
 def test_registered_email_3():
@@ -290,9 +291,8 @@ def test_registered_email_3():
 
     response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
-    response_reg_data = response_reg.json()
-    response_log_data = response_log.json()
-    assert response_reg_data == response_log_data
+    response_log = response_log.json()
+    assert response_log['token'] == jwt.encode({'user_id': 0, 'session_id': 2}, SECRET, algorithm='HS256')
 
 
 # Tests for multiple registers
@@ -314,8 +314,6 @@ def test_wrong_password():
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log_data = response_log.json()
     assert response_log_data['code'] == 400
-
-
 
 def test_wrong_password_2():
     requests.delete(f'{BASE_URL}/clear/v1')
