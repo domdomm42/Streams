@@ -277,7 +277,7 @@ def test_registered_email_2():
     user_info_reg = {"email": "marryjoe222@gmail.com", "password": "passwordM", "name_first": "Marry", "name_last": "Joe"}
     user_info_login = {"email": "marryjoe222@gmail.com", "password": "passwordM"}
 
-    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log = response_log.json()
     assert response_log['token'] == jwt.encode({'user_id': 0, 'session_id': 2}, SECRET, algorithm='HS256')
@@ -289,7 +289,7 @@ def test_registered_email_3():
     user_info_reg = {"email": "davidmo@gmail.com", "password": "passwordD", "name_first": "David", "name_last": "Mo"}
     user_info_login = {"email": "davidmo@gmail.com", "password": "passwordD"}
 
-    response_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log = response_log.json()
     assert response_log['token'] == jwt.encode({'user_id': 0, 'session_id': 2}, SECRET, algorithm='HS256')
