@@ -1,5 +1,9 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
+from src.auth_auth_helpers import check_and_get_user_id
+from src.auth import auth_register_v1
+from src.other import print_store_debug
+import requests
 
 ''' 
 Both Channels list functions create a new list of dictionaries
@@ -83,19 +87,21 @@ def channels_create_v1(token, name, is_public):
 
     '''
 
+    user_id = check_and_get_user_id(token)
+
     check_channel_name(name)
 
     all_members_in_channel = []
 
-    all_members_in_channel.append(int(token))
+    all_members_in_channel.append(user_id)
  
     store = data_store.get()
     
 
-    if int(token) not in store['users']['user_id']:
+    if user_id not in store['users']['user_id']:
         raise AccessError('Invalid auth_user_id!')
 
-    store['channels']['owner_user_id'].append(int(token))
+    store['channels']['owner_user_id'].append(user_id)
     store['channels']['channel_name'].append(name)
     store['channels']['is_public'].append(is_public)
     store['channels']['all_members'].append(all_members_in_channel)
@@ -124,3 +130,8 @@ def check_channel_name(name):
         pass
     else:
         raise InputError('Length of channel name must be between 1 and 20 characters!')
+
+# if __name__ == '__main__':
+
+    # token_and_user_id = auth_register_v1("joe123@gmail.com", "password", "Marry", "Joe")
+    # print(channels_create_v1(token_and_user_id['token'], "Joessdf", True))
