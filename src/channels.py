@@ -101,10 +101,11 @@ def channels_create_v1(token, name, is_public):
     if user_id not in store['users']['user_id']:
         raise AccessError('Invalid auth_user_id!')
 
-    store['channels']['owner_user_id'].append(user_id)
+    store['channels']['owner_user_id'].append([user_id])
     store['channels']['channel_name'].append(name)
     store['channels']['is_public'].append(is_public)
     store['channels']['all_members'].append(all_members_in_channel)
+    store['channels']['messages'].append([])
 
 
     i = 0

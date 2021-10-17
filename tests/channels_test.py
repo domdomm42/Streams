@@ -102,8 +102,6 @@ def test_empty_name1():
     user_info = {"email": "marryjoe222@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     token = response.json()['token']
-
-
     channel_creation_name = {"token": token, "name": "", "is_public": True}
 
     response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)

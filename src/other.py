@@ -35,10 +35,7 @@ def clear_v1():
     store['channels']['all_members'] = []
     store['channels']['messages'] = []
 
-    store['messages']['message_id'] = []
-    store['messages']['u_id'] = []
-    store['messages']['message'] = []
-    store['messages']['time_created'] = []
+    store['messages'] = []
 
     store['dms']['dm_id'] = []
     store['dms']['owner_user_id'] = []
