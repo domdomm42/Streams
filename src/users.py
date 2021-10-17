@@ -35,7 +35,7 @@ def user_profile_v1(token, u_id):
 
     for x in ['channels']['all_members']
         
-        if u_id >= len(store['users']['user_handles']):
+        if u_id < len(store['users']['user_handles']):
             user.append({'u_id': owners, 'email': user_email, 'name_first': user_first_name, 'name_last': user_last_name, 'handle_str': user_handles})
 
     
