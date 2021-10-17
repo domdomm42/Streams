@@ -2,6 +2,7 @@ import hashlib
 import jwt
 from src.data_store import data_store
 from src.error import AccessError
+#from src.other import print_store_debug
 
 SESSION_TRACKER = 0
 SECRET = 'BEAGLE'
@@ -31,13 +32,15 @@ def generate_jwt(user_id):
 #     return jwt.decode(encoded_jwt, SECRET, algorithm=['HS256'])
 
 def check_and_get_user_id(token):
-    decoded_token = jwt.decode(token, SECRET, algorithm=['HS256'])
+    decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
     user_id = decoded_token['user_id']
     session_id = decoded_token['session_id']
 
+
     store = data_store.get()
 
-    if {'user_id': user_id, 'session_id:': session_id} in store['logged_in_users']:
-        return user_id
+    for token in store['logged_in_users']:
+        if token['user_id'] == user_id and token['session_id'] == session_id:
+            return user_id
     else:
         raise AccessError('Invalid token!')

@@ -57,13 +57,7 @@ initial_object = {
     },
 
     # Contains the messages of all the channels and DMs
-    'messages': {
-        'message_id': [], #NEW
-        'u_id': [],
-        'message': [],
-        'time_created': [],
-        
-    },
+    'messages': [],
 
     # DMS // Group Chats
     'dms': {

@@ -1,8 +1,9 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
+from src.auth_auth_helpers import check_and_get_user_id
 
 
-def channel_invite_v1(auth_user_id, channel_id, u_id):
+def channel_invite_v1(token, channel_id, u_id):
     """
         Given a user with ID u_id to join a channel with ID channel_id.
         
@@ -21,6 +22,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
         Return Value: {}
     """
+    auth_user_id = check_and_get_user_id(token)
 
     store = data_store.get()
 

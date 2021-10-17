@@ -9,6 +9,8 @@ from src import config
 from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1
+from src.channel import channel_invite_v1
+from src.message import message_send_v1, message_edit_v1, message_remove_v1
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -56,6 +58,30 @@ def channels_create():
     channel_id = channels_create_v1(request_data['token'], request_data['name'], request_data['is_public'])
     return dumps(channel_id)
 
+@APP.route("/channel/invite/v2", methods=['POST'])
+def channels_invite():
+    request_data = request.get_json()
+    response = channel_invite_v1(request_data['token'], request_data['channel_id'], request_data['u_id'])
+    return dumps(response)
+
+@APP.route("/message/send/v1", methods=['POST'])
+def send_message():
+    request_data = request.get_json()
+    message_id = message_send_v1(request_data['token'], request_data['channel_id'], request_data['message'])
+    return dumps(message_id)
+
+@APP.route("/message/edit/v1", methods=['PUT'])
+def edit_message():
+    request_data = request.get_json()
+    message_id = message_edit_v1(request_data['token'], request_data['message_id'], request_data['message'])
+    return dumps(message_id)
+
+@APP.route("/message/remove/v1", methods=['DELETE'])
+def delete_message():
+    request_data = request.get_json()
+    response = message_remove_v1(request_data['token'], request_data['message_id'])
+    return dumps(response)
+
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
@@ -63,7 +89,6 @@ def echo():
     if data == 'echo':
    	    raise InputError(description='Cannot echo "echo"')
     return dumps({
-        'data': data
     })
 
 #### NO NEED TO MODIFY BELOW THIS POINT
