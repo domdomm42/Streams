@@ -33,8 +33,6 @@ def setup():
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     marry_mae_data = response.json()
 
-    print_store_debug()
-
     return joe_smith_data, joes_funland_data, marry_mae_data
 
 def setup_2():
@@ -178,6 +176,7 @@ def test_edit_empty_message():
     # Empty message causes the message to be deleted, which raises 
     message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi"}
     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    print(response.json()['message'])
     assert response.json()['code'] == INPUT_ERROR
 
 def test_unauthorised_user_edit_message():
@@ -188,79 +187,80 @@ def test_unauthorised_user_edit_message():
 
     message_edit_input = {"token": marry_mae_token, "message_id": message_id, "message": "I'm a hacker!"} 
     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    print(response.json()['message'])
     assert response.json()['code'] == ACCESS_ERROR
 
 # ## the owners can edit any message even if they don't send it
 
-# def test_owner_editing_any_message(setup_2):
+def test_owner_editing_any_message():
 
-#     joe_smith_token = setup_2()[0]
-#     #message_id = setup_2()[1]
-#     marry_mae_token = setup_2[2]
-#     joes_funland_data = setup_2[3]
+    joe_smith_token = setup_2()[0]
+    #message_id = setup_2()[1]
+    marry_mae_token = setup_2()[2]
+    joes_funland_data = setup_2()[3]
 
-#     # Invite Marry to Joe's Private channel
-#     invite_input = {"token": joe_smith_token, "channel_id": joes_funland_data, "u_id": 1}
-#     response = requests.post(f'{BASE_URL}/channel/invite/v2', json = invite_input)
+    # Invite Marry to Joe's Private channel
+    invite_input = {"token": joe_smith_token, "channel_id": joes_funland_data, "u_id": 1}
+    response = requests.post(f'{BASE_URL}/channel/invite/v2', json = invite_input)
 
-#     # Marry send's a message to the channel
-#     message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_data, "message": "Hello everyone, I'm Mrry!"}
-#     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+    # Marry send's a message to the channel
+    message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_data, "message": "Hello everyone, I'm Mrry!"}
+    response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
 
-#     marrys_message_id = response.json()['message_id']
+    marrys_message_id = response.json()['message_id']
 
-#     # Joe, the owner, edits Marry's message
-#     message_edit_input = {"token": joe_smith_token, "message_id": marrys_message_id, "message": "Hello everyone, I'm Marry!"} 
-#     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)    
+    # Joe, the owner, edits Marry's message
+    message_edit_input = {"token": joe_smith_token, "message_id": marrys_message_id, "message": "Hello everyone, I'm Marry!"} 
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)    
 
 #     # MAYBE TRY TO CHECK!??
 
 # #################
 # # REMOVING MESSAGE
 
-# def test_remove_invalid_twice(setup_2):
+def test_remove_invalid_twice():
 
-#     joe_smith_token = setup_2()[0]
-#     message_id = setup_2()[1]
+    joe_smith_token = setup_2()[0]
+    message_id = setup_2()[1]
 
-#     message_delete_input = {"token": joe_smith_token, "message_id": message_id}
-#     response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)
+    message_delete_input = {"token": joe_smith_token, "message_id": message_id}
+    response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)
 
-#     # Empty message causes the message to be deleted, which raises 
-#     message_delete_input = {"token": joe_smith_token, "message_id": message_id}
-#     response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)
-#     assert response.json()['code'] == INPUT_ERROR
+    # Empty message causes the message to be deleted, which raises 
+    message_delete_input = {"token": joe_smith_token, "message_id": message_id}
+    response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)
+    assert response.json()['code'] == INPUT_ERROR
 
-# def test_unauthorised_user_delete_message(setup_2):
+def test_unauthorised_user_delete_message():
 
-#     #joe_smith_token = setup_2()[0]
-#     message_id = setup_2()[1]
-#     marry_mae_token = setup_2[2]
+    #joe_smith_token = setup_2()[0]
+    message_id = setup_2()[1]
+    marry_mae_token = setup_2()[2]
 
-#     message_delete_input = {"token": marry_mae_token, "message_id": message_id, "message": "I'm a hacker!"} 
-#     response = requests.put(f'{BASE_URL}/message/delete/v1', json = message_delete_input)
-#     assert response.json()['code'] == ACCESS_ERROR
+    message_delete_input = {"token": marry_mae_token, "message_id": message_id, "message": "I'm a hacker!"} 
+    response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)
+    assert response.json()['code'] == ACCESS_ERROR
 
-# ## the owners can edit any message even if they don't send it
+## the owners can edit any message even if they don't send it
 
-# def test_owner_editing_any_message(setup_2):
+def test_owner_editing_any_message():
 
-#     joe_smith_token = setup_2()[0]
-#     #message_id = setup_2()[1]
-#     marry_mae_token = setup_2[2]
-#     joes_funland_data = setup_2[3]
+    joe_smith_token = setup_2()[0]
+    #message_id = setup_2()[1]
+    marry_mae_token = setup_2()[2]
+    joes_funland_data = setup_2()[3]
 
-#     # Invite Marry to Joe's Private channel
-#     invite_input = {"token": joe_smith_token, "channel_id": joes_funland_data, "u_id": 1}
-#     response = requests.post(f'{BASE_URL}/channel/invite/v2', json = invite_input)
+    # Invite Marry to Joe's Private channel
+    invite_input = {"token": joe_smith_token, "channel_id": joes_funland_data, "u_id": 1}
+    response = requests.post(f'{BASE_URL}/channel/invite/v2', json = invite_input)
 
-#     # Marry send's a message to the channel
-#     message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_data, "message": "Hello everyone, I'm Mrry!"}
-#     response = requests.post(f'{BASE_URL}/message/delete/v1', json = message_send_input)
+    # Marry send's a message to the channel
+    message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_data, "message": "Hello everyone, I'm Mrry!"}
+    response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
 
-#     marrys_message_id = response.json()['message_id']
+    marrys_message_id = response.json()['message_id']
 
-#     # Joe, the owner, deletes Marry's message
-#     message_delete_input = {"token": joe_smith_token, "message_id": marrys_message_id, "message": "Hello everyone, I'm Marry!"} 
-#     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_delete_input)    
+    # Joe, the owner, deletes Marry's message
+    message_delete_input = {"token": joe_smith_token, "message_id": marrys_message_id} 
+    response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)    
 
