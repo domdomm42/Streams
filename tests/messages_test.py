@@ -243,7 +243,7 @@ def test_unauthorised_user_delete_message():
 
 ## the owners can edit any message even if they don't send it
 
-def test_owner_editing_any_message():
+def test_owner_removing_any_message():
 
     joe_smith_token = setup_2()[0]
     #message_id = setup_2()[1]
