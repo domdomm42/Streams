@@ -141,8 +141,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         }
         """
     
-    store = data_store.get()
-    
+
     check_invalid_channel_id(channel_id)
     check_invalid_start(channel_id, start)
     check_autorised_id(auth_user_id, channel_id)
@@ -256,7 +255,7 @@ def check_invalid_channel_id(channel_id):
     store = data_store.get()
     i = 0
 
-    for items in store['channels']['channel_name']:
+    for _ in store['channels']['channel_name']:
 
         if i == channel_id:
             return
