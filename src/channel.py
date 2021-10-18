@@ -191,21 +191,14 @@ def channel_join_v1(token, channel_id):
     """
     store = data_store.get()
     check_channel_id(channel_id)
-<<<<<<< HEAD
     check_exist_member(auth_user_id, channel_id)
     check_channel_status(channel_id, auth_user_id)
-=======
-    check_exist_member(int(token), channel_id)
-    check_join_limit(channel_id, int(token))
->>>>>>> update
 
     store['channels']['all_members'][channel_id].append(int(token))
     data_store.set(store)
 
     return {
     }
-<<<<<<< HEAD
-=======
 
 def channel_leave_v1(token, channel_id):
     store = data_store.get()
@@ -247,7 +240,6 @@ def channels_removeowner_v1(token, channel_id, u_id):
     return {
 
     }
->>>>>>> update
      
 
 # check the channel id is valid
@@ -255,14 +247,10 @@ def check_channel_id(channel_id):
     store = data_store.get()
     i = 0
 
-<<<<<<< HEAD
-    for _ in store['channels']['channel_name']:
-=======
     if channel_id < 0 :
         raise AccessError(description='Invalid Id')
     for element in store['channels']['channel_name']:
 
->>>>>>> update
 
         if i == channel_id:
             return

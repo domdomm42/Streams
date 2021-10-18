@@ -58,7 +58,6 @@ def channels_create():
     channel_id = channels_create_v1(request_data['token'], request_data['name'], request_data['is_public'])
     return dumps(channel_id)
 
-<<<<<<< HEAD
 @APP.route("/channel/invite/v2", methods=['POST'])
 def channels_invite():
     request_data = request.get_json()
@@ -70,18 +69,15 @@ def send_message():
     request_data = request.get_json()
     message_id = message_send_v1(request_data['token'], request_data['channel_id'], request_data['message'])
     return dumps(message_id)
-=======
 @APP.route("/channel/details/v2", methods = ['GET'])
 def channel_details():
     request_data = request.args,get('data')
     details = channel_details_v1(request_data('token'), request_data('channel_id'))
     return dumps(details)
->>>>>>> update
 
 @APP.route("/message/edit/v1", methods=['PUT'])
 def edit_message():
     request_data = request.get_json()
-<<<<<<< HEAD
     message_id = message_edit_v1(request_data['token'], request_data['message_id'], request_data['message'])
     return dumps(message_id)
 
@@ -90,11 +86,17 @@ def delete_message():
     request_data = request.get_json()
     response = message_remove_v1(request_data['token'], request_data['message_id'])
     return dumps(response)
-
-=======
+@APP.route("/channel/join/v2", methods = ['POST'])
+def channel_join():
+    request_data = request.get_json()
     channel_join_v1(request_data['token'], request_data['channel_id'])
-    return dumps({})          
->>>>>>> update
+    return dumps({})  
+
+@APP.route("/user/profile/sethandle/v2", methods=['PUT'])
+def user_profile_sethandle_v2():
+    request_data = request.get_json()
+    user_profile_sethandle_v1(request_data['token'], request_data['handle_str'])
+    return dump({})
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():

@@ -28,6 +28,7 @@ def setup():
 def test__user_handle_too_short(setup):
     response_log_joe, response_log_marry = setup
     sethandle_info = {"token": response_log_joe["token"], "handle_str": "a"}
-    response = requests.put(f'{BASE_URL}//user/profile/sethandle/v2', json = sethandle_info)
+    response = requests.put(f'{BASE_URL}/user/profile/sethandle/v2', json = sethandle_info)
     response_data = response.json()
+    assert response_data['code'] == 400
     
