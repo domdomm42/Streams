@@ -292,3 +292,27 @@ def check_autorised_id(auth_user_id, channel_id):
             return
 
     raise AccessError('Permission denied!')
+
+
+
+
+
+
+
+# IT2
+
+
+def channel_leave_v1(token, channel_id):
+    
+    user_id = check_and_get_user_id(token)
+    
+    store = data_store.get()
+
+    del ['channels']['all_members'][channel_id]    
+    
+    data_store.set(store)
+
+   
+    
+    return {}
+
