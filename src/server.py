@@ -56,6 +56,71 @@ def channels_create():
     channel_id = channels_create_v1(request_data['token'], request_data['name'], request_data['is_public'])
     return dumps(channel_id)
 
+
+
+# List of all users
+@APP.route("/users/all/v1", methods=['GET'])
+def user_all_v1(token):
+
+    request_data = request.get_json()
+
+    user = user_all_v1(request_data['token'])
+
+    return dumps(user)
+
+
+
+# List of all valid users
+@APP.route("/users/profile/v1", methods=['GET'])
+def user_profile_v1(token, u_id):
+    
+    request_data = request.get_json()
+
+    user = user_profile_v1(request_data['token'], request_data['u_id'])
+
+    return dumps(user)
+
+
+# Update name
+@APP.route("/users/profile/setname/v1", methods=['PUT'])
+def user_profile_setname_v1(token, name_first, name_last):
+
+    request_data = request.get_json()
+
+    return dumps()
+
+
+# Update email
+@APP.route("/users/profile/setemail/v1", methods=['PUT'])
+def user_profile_setemail_v1(token, email):
+
+    request_data = request.get_json()
+
+    return dumps()
+
+
+# Update handle
+@APP.route("/users/profile/sethandle/v1", methods=['PUT'])
+def user_profile_sethandle_v1(toke, handle_str):
+
+    request_data = request.get_json()
+
+    return dumps()
+
+
+
+@APP.route("/channel/leave/v1", methods=['POST'])
+def channel_leave_v1(token, channel_id):
+    
+    request_data = request.get_json()
+    
+    channel_id = channel_leave_v1(request_data['token'], request_data['channel_id'])
+    
+    del ['channels']['all_members'][channel_id]
+    
+    
+    return dumps()
+
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
