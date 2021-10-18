@@ -1,10 +1,11 @@
 import pytest
 import requests
-from src.config import *
+
 from src.other import clear_v1
 from src.error import InputError, AccessError
 from src.auth import auth_login_v1, auth_register_v1
 from src.users import user_profile_sethandle_v1
+from src.config import *
 BASE_URL = url
 
 @pytest.fixture

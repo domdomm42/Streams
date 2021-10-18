@@ -9,7 +9,7 @@ from src import config
 from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1
-from src.channel import channel_invite_v1
+from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1
 from src.message import message_send_v1, message_edit_v1, message_remove_v1
 
 def quit_gracefully(*args):
@@ -71,8 +71,8 @@ def send_message():
     return dumps(message_id)
 @APP.route("/channel/details/v2", methods = ['GET'])
 def channel_details():
-    request_data = request.args,get('data')
-    details = channel_details_v1(request_data('token'), request_data('channel_id'))
+    request_data = request.get_json('data')
+    details = channel_details_v1(request_data['token'], request_data['channel_id'])
     return dumps(details)
 
 @APP.route("/message/edit/v1", methods=['PUT'])
