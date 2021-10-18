@@ -197,7 +197,7 @@ def test_valid_channel_id_detail_2(setup):
 #=====Valid case for join==============
 
 def test_valid_channel_id_join(setup):
-    channel_id_joe, channel_id_marry, response_log_joe, response_log_marry = setup
+    channel_id_joe, _, _, response_log_marry = setup
     channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
     requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
