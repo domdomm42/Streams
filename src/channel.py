@@ -94,12 +94,12 @@ def channel_details_v1(token, channel_id):
     members = store['channels']['all_members'][channel_id]
 
     owner_details = []
-    for owner_member in owners:
-        user_email = store['users']['emails'][owners]
-        user_first_name = store['users']['first_names'][owners]
-        user_last_name = store['users']['last_names'][owners]
-        user_handles = store['users']['user_handles'][owners]
-        owner_details.append({'u_id': owners, 'email': user_email,
+    for owner_member_id in owners:
+        user_email = store['users']['emails'][owner_member_id]
+        user_first_name = store['users']['first_names'][owner_member_id]
+        user_last_name = store['users']['last_names'][owner_member_id]
+        user_handles = store['users']['user_handles'][owner_member_id]
+        owner_details.append({'u_id': owner_member_id, 'email': user_email,
                             'name_first': user_first_name, 'name_last': user_last_name, 'handle_str': user_handles})
 
     members_details = []
@@ -198,7 +198,7 @@ def channel_join_v1(token, channel_id):
     # check the authorised user is already a member of the channel
     check_exist_member(user_id, channel_id)
     #check channel_id refers to a channel that is private and the authorised user is not already a channel member and is not a global owner
-    check_channel_status(channel_id, auth_user_id)
+    check_channel_status(channel_id, user_id)
 
     store['channels']['all_members'][channel_id].append(user_id)
     data_store.set(store)
@@ -293,7 +293,7 @@ def check_channel_id(channel_id):
 
     if int(channel_id) < 0 :
         raise AccessError(description='Invalid Id')
-    for element in store['channels']['channel_name']:
+    for _ in store['channels']['channel_name']:
 
 
         if i == channel_id:
@@ -353,7 +353,7 @@ def check_invalid_channel_id(channel_id):
 
 
 # Check invalid u_id
-def check_invalid_u_id(u_id, channel_id):
+def check_invalid_u_id(u_id):
     store = data_store.get()
     if u_id >= len(store['users']['user_handles']):
         raise InputError(description='This user does not exist!')

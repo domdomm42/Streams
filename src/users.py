@@ -32,14 +32,14 @@ def check_len(handle_str):
         raise InputError(description='Invalid User Name')
     
 def check_alphanumeric(handle_str):
-    if isalnum(handle_str) == True:
+    if handle_str.isalnum() == True:
         pass
     else:
         raise InputError(description='Invalid User Name')
 
 def check_duplicate(handle_str):
     store = data_store.get()
-    if handle_str not in store['users'][user_handles]:
+    if handle_str not in store['users'][handle_str]:
         pass
     else:
         raise InputError(description='This name has been used!')

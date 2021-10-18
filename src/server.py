@@ -5,7 +5,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
-
+from src.users import user_profile_sethandle_v1
 from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1
@@ -89,14 +89,14 @@ def delete_message():
 @APP.route("/channel/join/v2", methods = ['POST'])
 def channel_join():
     request_data = request.get_json()
-    channel_join_v1(request_data['token'], request_data['channel_id'])
-    return dumps({})  
+    response = channel_join_v1(request_data['token'], request_data['channel_id'])
+    return dumps(response)  
 
-@APP.route("/user/profile/sethandle/v2", methods=['PUT'])
+@APP.route("/user/sethandle/v2", methods=['PUT'])
 def user_profile_sethandle_v2():
     request_data = request.get_json()
     user_profile_sethandle_v1(request_data['token'], request_data['handle_str'])
-    return dump({})
+    return dumps({})
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
