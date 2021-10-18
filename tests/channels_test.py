@@ -29,7 +29,7 @@ def setup():
 
     # Joe Smith creates a Private channel called 'Joe'
     channel_info = {'token': joe_token, 'name': 'Joe', 'is_public': False}
-    joe_channel_id = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_info).json()['channel_id']
+    requests.post(f'{BASE_URL}/channels/create/v2', json = channel_info).json()['channel_id']
 
     # Create user Marry Joe
     user_info = {'email': 'marryjoe222@gmail.com', 'password': 'passwordM', 'name_first': 'Marry', 'name_last': 'Joe'}
