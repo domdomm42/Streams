@@ -27,7 +27,7 @@ def channel_invite_v1(token, channel_id, u_id):
     store = data_store.get()
 
     check_invalid_channel_id(channel_id)
-    check_invalid_u_id(u_id, channel_id)
+    check_invalid_u_id(u_id, )
     check_member_u_id(channel_id, u_id)
     check_autorised_id(auth_user_id, channel_id)
 
