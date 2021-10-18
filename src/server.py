@@ -5,11 +5,11 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
-
+from src.users import user_profile_sethandle_v1
 from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1
-from src.channel import channel_invite_v1
+from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1
 from src.message import message_send_v1, message_edit_v1, message_remove_v1
 
 def quit_gracefully(*args):
@@ -69,6 +69,11 @@ def send_message():
     request_data = request.get_json()
     message_id = message_send_v1(request_data['token'], request_data['channel_id'], request_data['message'])
     return dumps(message_id)
+@APP.route("/channel/details/v2", methods = ['GET'])
+def channel_details():
+    request_data = request.get_json('data')
+    details = channel_details_v1(request_data['token'], request_data['channel_id'])
+    return dumps(details)
 
 @APP.route("/message/edit/v1", methods=['PUT'])
 def edit_message():
@@ -81,7 +86,17 @@ def delete_message():
     request_data = request.get_json()
     response = message_remove_v1(request_data['token'], request_data['message_id'])
     return dumps(response)
+@APP.route("/channel/join/v2", methods = ['POST'])
+def channel_join():
+    request_data = request.get_json()
+    response = channel_join_v1(request_data['token'], request_data['channel_id'])
+    return dumps(response)  
 
+@APP.route("/user/sethandle/v2", methods=['PUT'])
+def user_profile_sethandle_v2():
+    request_data = request.get_json()
+    user_profile_sethandle_v1(request_data['token'], request_data['handle_str'])
+    return dumps({})
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
