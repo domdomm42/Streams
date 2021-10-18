@@ -38,7 +38,7 @@ def channel_invite_v1(token, channel_id, u_id):
     }
 
 
-def channel_details_v1(auth_user_id, channel_id):
+def channel_details_v1(token, channel_id):
     """
     Given a channel with ID channel_id that the authorised 
     user is a member of, provide basic details about the channel.
@@ -83,7 +83,7 @@ def channel_details_v1(auth_user_id, channel_id):
     store = data_store.get()
 
     check_channel_id(channel_id)
-    check_authority(auth_user_id, channel_id)
+    check_authority(int(token), channel_id)
 
     name = store['channels']['channel_name'][channel_id]
     public = store['channels']['is_public'][channel_id]
@@ -164,7 +164,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     }
 
 
-def channel_join_v1(auth_user_id, channel_id):
+def channel_join_v1(token, channel_id):
     """
     Given a channel_id of a channel that the authorised user can join,
     adds them to that channel.
@@ -191,14 +191,63 @@ def channel_join_v1(auth_user_id, channel_id):
     """
     store = data_store.get()
     check_channel_id(channel_id)
+<<<<<<< HEAD
     check_exist_member(auth_user_id, channel_id)
     check_channel_status(channel_id, auth_user_id)
+=======
+    check_exist_member(int(token), channel_id)
+    check_join_limit(channel_id, int(token))
+>>>>>>> update
 
-    store['channels']['all_members'][channel_id].append(auth_user_id)
+    store['channels']['all_members'][channel_id].append(int(token))
     data_store.set(store)
 
     return {
     }
+<<<<<<< HEAD
+=======
+
+def channel_leave_v1(token, channel_id):
+    store = data_store.get()
+    check_channel_id(channel_id)
+    check_authority(int(token), channel_id)
+    if int(token) in store['channels']['owner_members'][channel_id]:
+        del storep['channels']['owner_members'][channel_id][int(token)]
+    del store['channels']['all_members'][channel_id][int(token)]
+
+    return {
+
+    }
+
+def channels_addowner_v1(token, channel_id, u_id ):
+    check_channel_id(channel_id)
+    check_invalid_u_id(int(token))
+    check_invalid_u_id(u_id)
+    check_authority(int(token), channel_id)
+    check_owner()
+    store = data_store.get()
+    store['channels']['owner_user_id'][channel_id].append(int(token))
+    store['channels']['all_member'][channel_id].append(int(token))
+    data_store.set(store)
+    return {
+
+    }
+
+
+def channels_removeowner_v1(token, channel_id, u_id):
+    check_channel_id(channel_id)
+    check_invalid_u_id(int(token))
+    check_invalid_u_id(u_id)
+    check_authority(int(token), channel_id)
+    check_owner()
+    store = data_store.get()
+    del store['channels']['owner_user_id'][channel_id][int(token)]
+    del store['channels']['all_members'][channel_id][int(token)]
+    data_store.set(store)
+    return {
+
+    }
+>>>>>>> update
      
 
 # check the channel id is valid
@@ -206,7 +255,14 @@ def check_channel_id(channel_id):
     store = data_store.get()
     i = 0
 
+<<<<<<< HEAD
     for _ in store['channels']['channel_name']:
+=======
+    if channel_id < 0 :
+        raise AccessError(description='Invalid Id')
+    for element in store['channels']['channel_name']:
+
+>>>>>>> update
 
         if i == channel_id:
             return

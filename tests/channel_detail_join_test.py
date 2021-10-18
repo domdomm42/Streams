@@ -15,6 +15,7 @@
 
 
 
+<<<<<<< HEAD
 # def test_invalid_channel_id_detail():
 #     with pytest.raises(InputError):
 #         channel_details_v1(1, 100)
@@ -24,8 +25,49 @@
 # def test_invalid_channel_id_join():
 #     with pytest.raises(InputError):
 #         channel_join_v1(1, 100)
+=======
+def test_invalid_channel_id_detail():
+    user_info_reg = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
+    user_info_login = {"email": "joe123@gmail.com", "password": "password"}
+    
+    requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
+    response_log_data = response_log.json()
+    channel_detail_info = {"token": response_log_data['token'], "channel_id": "100"}
+    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_detail_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
 
 
+        
+def test_invalid_channel_id_join():
+    user_info_reg = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
+    user_info_login = {"email": "joe123@gmail.com", "password": "password"}
+    
+    requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg)
+    
+    response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
+    response_log_data = response_log.json()
+    channel_join_info = {"token": response_log_data['token'], "channel_id": "100"}
+    response = requests.get(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_negative_channel_id_in_details():
+    channel_detail_info = {"token": "1", "channel_id": "-1"}
+    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_detail_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+>>>>>>> update
+
+
+def test_negative_channel_id_in_join():
+    channel_join_info = {"token": "1", "channel_id": "-1"}
+    response = requests.get(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
 
 
 # #=====Test member join again===========
