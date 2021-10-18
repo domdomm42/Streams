@@ -331,10 +331,14 @@ def check_channel_status(channel_id, auth_user_id):
     if store['channels']['is_public'][channel_id] == True:
         pass
     elif store['channels']['is_public'][channel_id] == False:
-        if store['users']['is_globle_owner'][auth_user_id] == True:
-            pass
-        else:
-            raise AccessError('This is private channel, permission denied!')
+        i = 0
+        for _ in store['users']['is_globle_owner']:
+            if i == auth_user_id and store['users']['is_globle_owner'][i] == True:
+                return
+            i = i + 1
+        
+        
+        raise AccessError('This is private channel, permission denied!')
 
 
 # InputError

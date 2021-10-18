@@ -126,7 +126,7 @@ def test_join_private_channel(setup):
     channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == 403
 
 
 #=====Valid case for detail===========
@@ -136,14 +136,14 @@ def test_valid_channel_id_detail_1(setup):
     
     channel_details_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id']}
     response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
-    u_id_joe = check_and_get_user_id(response_log_joe['token'])
+    
     details = response.json()
     assert details == {
         'name': 'Joe', 
         'is_public': True, 
         'owner_members': [
             {
-                'u_id': u_id_joe, 
+                'u_id': 0, 
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
@@ -152,7 +152,7 @@ def test_valid_channel_id_detail_1(setup):
         ], 
         'all_members': [
             {
-                'u_id': u_id_joe, 
+                'u_id': 0, 
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
@@ -165,7 +165,7 @@ def test_valid_channel_id_detail_2(setup):
     _, channel_id_marry, _, response_log_marry = setup
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_marry['channel_id']}
     response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
-    u_id_marry = check_and_get_user_id(response_log_marry['token'])
+    
     details = response.json()
     
     
@@ -176,7 +176,7 @@ def test_valid_channel_id_detail_2(setup):
         'is_public': False, 
         'owner_members': [
             {
-                'u_id': u_id_marry, 
+                'u_id': 1, 
                 'email': 'marryjoe222@gmail.com', 
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
@@ -185,7 +185,7 @@ def test_valid_channel_id_detail_2(setup):
         ], 
         'all_members': [
             {
-                'u_id': u_id_marry, 
+                'u_id': 1, 
                 'email': 'marryjoe222@gmail.com', 
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
@@ -200,11 +200,11 @@ def test_valid_channel_id_join(setup):
     channel_id_joe, channel_id_marry, response_log_joe, response_log_marry = setup
     channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
     requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
-    channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_marry['channel_id']}
+    channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
 
     response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
-    u_id_joe = check_and_get_user_id(response_log_joe['token'])
-    u_id_marry = check_and_get_user_id(response_log_marry['token'])
+    
+    
 
     details = response.json()
     
@@ -213,7 +213,7 @@ def test_valid_channel_id_join(setup):
         'is_public': True,
         'owner_members': [
             {
-                'u_id': u_id_joe, 
+                'u_id': 0, 
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
@@ -222,13 +222,13 @@ def test_valid_channel_id_join(setup):
         ], 
         'all_members': [
             {
-                'u_id': u_id_joe, 
+                'u_id': 0, 
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
                 'handle_str': 'joesmith'
             }, 
-            {   'u_id': u_id_marry, 
+            {   'u_id': 1, 
                 'email': 'marryjoe222@gmail.com', 
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
