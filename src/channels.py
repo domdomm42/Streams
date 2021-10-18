@@ -11,7 +11,7 @@ structure that utilize the data store to gather details of all
 existing channels and those that contain a given user ID.
 '''
 
-def channels_list_v1(auth_user_id):
+def channels_list_v1(token):
     '''
     Arguements:
         auth_user_id (int) - idetifying variable for each user 
@@ -21,6 +21,7 @@ def channels_list_v1(auth_user_id):
         id's and names of all existing channels that the given 
         User ID is a member of.
     '''
+    auth_user_id = check_and_get_user_id(token)
 
     new_list = {'channels':[]}
 
@@ -42,7 +43,7 @@ def channels_list_v1(auth_user_id):
     return new_list
 
 # Works like the previous function with the ommission of User Filter
-def channels_listall_v1(auth_user_id):
+def channels_listall_v1(token):
     '''
     Arguements:
         auth_user_id (int) - idetifying variable for each user 
@@ -52,6 +53,8 @@ def channels_listall_v1(auth_user_id):
         id's and names of all existing channels.
     '''
 
+    check_and_get_user_id(token)
+    
     new_list = {'channels':[]}
 
     store = data_store.get()

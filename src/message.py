@@ -36,6 +36,35 @@ def message_send_v1(token, channel_id, message):
         'message_id': message_id
     }
 
+# def dm_send_v1(token, dm_id, message):
+
+#     user_id = check_and_get_user_id(token)
+#     check_channel_id(channel_id)
+#     check_user_authority_in_dm(user_id, dm_id)
+#     check_if_message_too_long(message)
+#     check_if_message_too_short(message)
+
+#     store = data_store.get()
+    
+#     message_id = 0
+#     if store['messages'] != []: #MESSAGES IS NOT EMPTY
+#         message_id = store['messages'][-1]['message_id'] + 1
+
+#     time_created = datetime.datetime.now().timestamp()
+
+#     message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created}
+
+#     store['messages'].append(message_info)
+
+#     idx = store['dms']['dm_id'].index(dm_id)
+#     store['dms']['messages'][idx].append(dm_id)
+    
+#     data_store.set(store)
+
+#     return {
+#         'message_id': message_id
+#     }
+
 def message_edit_v1(token, message_id, message):
 
     if message == "":

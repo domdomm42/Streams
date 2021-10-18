@@ -1,8 +1,12 @@
 from src.data_store import data_store
 from src.error import InputError
 from src.auth_auth_helpers import hash, generate_jwt
+from src.other import print_store_debug
+import jwt
 
 import re
+
+SECRET = 'BEAGLE'
 
 def auth_login_v1(email, password):
     ''' 
@@ -107,6 +111,16 @@ def auth_register_v1(email, password, name_first, name_last):
         'token': generate_jwt(user_id),
         'auth_user_id': user_id
     }
+
+# def auth_logout_v1(token):
+#     decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
+#     user_id = decoded_token['user_id']
+#     session_id = decoded_token['session_id']
+
+#     store = data_store.get()
+#     for data in store['logged_in_users']:
+#         if user_id == data['user_id'] and session_id == data['session_id']:
+#             store['logged_in_users'].remove({'user_id': user_id, 'session_id': session_id})
 
 # --- Check email ---
 # This function takes in an email (string) and checks if email is
@@ -225,7 +239,10 @@ def check_valid_password(email, password):
     raise InputError('Invalid Password!')
 
 # if __name__ == '__main__':
-#     auth_register_v1('joejim123@gmail.com', 'password', '1234567890', 'a1234567890')
-#     auth_register_v1('joejim1234@gmail.com', 'password', '1234567890', 'a1234567890')
-#     store = data_store.get()
-#     print(store)
+#     token = auth_register_v1('joejim123@gmail.com', 'password', 'Jim', 's')['token']
+#     auth_register_v1('joejim123234@gmail.com', 'password', 'SEW', 's')
+    
+#     print_store_debug()
+
+#     auth_logout_v1(token)
+#     print_store_debug()
