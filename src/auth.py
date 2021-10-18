@@ -238,11 +238,11 @@ def check_valid_password(email, password):
 
     raise InputError('Invalid Password!')
 
-if __name__ == '__main__':
-    token = auth_register_v1('joejim123@gmail.com', 'password', 'Jim', 's')['token']
-    auth_register_v1('joejim123234@gmail.com', 'password', 'SEW', 's')
+# if __name__ == '__main__':
+#     token = auth_register_v1('joejim123@gmail.com', 'password', 'Jim', 's')['token']
+#     auth_register_v1('joejim123234@gmail.com', 'password', 'SEW', 's')
     
-    print_store_debug()
+#     print_store_debug()
 
-    auth_logout_v1(token)
-    print_store_debug()
+#     auth_logout_v1(token)
+#     print_store_debug()
