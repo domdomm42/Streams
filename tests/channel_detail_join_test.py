@@ -126,8 +126,9 @@ def test_join_private_channel(setup):
     channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
+    print(response_data)
     assert response_data['code'] == 403
-
+    # print(response_data)
 
 #=====Valid case for detail===========
 def test_valid_channel_id_detail_1(setup):

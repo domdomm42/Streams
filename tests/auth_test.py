@@ -380,7 +380,7 @@ def test_double_logout():
     response_data = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
 
     user_info_logout = response_data.json()
-    user_info_logout = user_info_logout['token']
+    user_info_logout = {'token': user_info_logout['token']} 
 
     requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
     return_value = requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
