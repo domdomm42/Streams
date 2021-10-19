@@ -1,11 +1,12 @@
 import pytest
 import requests
 import jwt
-from src.auth import auth_login_v1, auth_register_v1
-from src.error import InputError
+from src.auth import auth_login_v1, auth_register_v1, auth_logout_v1
+from src.error import InputError, AccessError
 from src.other import clear_v1
 from src.config import *
 from src.auth_auth_helpers import SECRET
+from src.data_store import *
 
 
 BASE_URL = url
@@ -335,3 +336,55 @@ def test_wrong_password_3():
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log_data = response_log.json()
     assert response_log_data['code'] == 400
+
+#Testing Logout function
+
+def test_simple_logout():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    
+    response_data = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+
+    user_info_logout = response_data.json()
+    user_info_logout = user_info_logout['token']
+
+    requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
+
+    store = data_store.get()
+    assert user_info_logout not in store['logged_in_users']
+
+def test_multiple_user_logout():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    store = data_store.get()
+    user_info_reg_1 = {"email": "marryjane@gmail.com", "password": "passwordM", "name_first": "Marry", "name_last": "Jane"}
+    user_info_reg_2 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    user_info_logout_1 = response_data_1.json()
+    # user_info_logout_1 = user_info_logout_1['token']
+
+    user_info_logout_2 = response_data_2.json()
+    # user_info_logout_2 = user_info_logout_2['token']
+
+    requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout_2['token'])
+
+    assert {'user_id': 1, 'session_id': 2} in store['logged_in_users']
+
+
+def test_double_logout():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    
+    response_data = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+
+    user_info_logout = response_data.json()
+    user_info_logout = user_info_logout['token']
+
+    requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
+    requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
+
+
+    store = data_store.get()
+    assert user_info_logout not in store['logged_in_users']
