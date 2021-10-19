@@ -39,7 +39,9 @@ initial_object = {
         'first_names': [],
         'last_names': [],
         'user_handles': [],
-        'is_globle_owner':[]
+        'is_global_owner': [],
+        'removed_user': [],
+        'permissions': [] # NEW
     },
 
 
@@ -53,7 +55,7 @@ initial_object = {
         'owner_user_id': [],
         'is_public': [],
         'all_members': [],
-        'messages': []
+        'messages': [],
     },
 
     # Contains the messages of all the channels and DMs

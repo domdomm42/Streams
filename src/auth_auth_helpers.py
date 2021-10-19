@@ -42,5 +42,5 @@ def check_and_get_user_id(token):
     for token in store['logged_in_users']:
         if token['user_id'] == user_id and token['session_id'] == session_id:
             return user_id
-    else:
-        raise AccessError('Invalid token!')
+    
+    raise AccessError('Invalid token!')

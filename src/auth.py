@@ -1,5 +1,5 @@
 from src.data_store import data_store
-from src.error import InputError
+from src.error import InputError, AccessError
 from src.auth_auth_helpers import hash, generate_jwt
 from src.other import print_store_debug
 import jwt
@@ -111,16 +111,26 @@ def auth_register_v1(email, password, name_first, name_last):
         'token': generate_jwt(user_id),
         'auth_user_id': user_id
     }
+    
+def auth_logout_v1(token):
+    decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
+    user_id = decoded_token['user_id']
+    session_id = decoded_token['session_id']
 
-# def auth_logout_v1(token):
-#     decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
-#     user_id = decoded_token['user_id']
-#     session_id = decoded_token['session_id']
+    store = data_store.get()
 
-#     store = data_store.get()
-#     for data in store['logged_in_users']:
-#         if user_id == data['user_id'] and session_id == data['session_id']:
-#             store['logged_in_users'].remove({'user_id': user_id, 'session_id': session_id})
+    counter = 0
+    for data in store['logged_in_users']:
+        if user_id == data['user_id'] and session_id == data['session_id']:
+            store['logged_in_users'].remove({'user_id': user_id, 'session_id': session_id})
+            counter = counter + 1
+
+    if counter == 0:
+        raise AccessError('Invalid token!')
+
+    data_store.set(store)
+    return ({})
+
 
 # --- Check email ---
 # This function takes in an email (string) and checks if email is
@@ -238,11 +248,15 @@ def check_valid_password(email, password):
 
     raise InputError('Invalid Password!')
 
-# if __name__ == '__main__':
-#     token = auth_register_v1('joejim123@gmail.com', 'password', 'Jim', 's')['token']
-#     auth_register_v1('joejim123234@gmail.com', 'password', 'SEW', 's')
-    
-#     print_store_debug()
+if __name__ == '__main__':
+    token = auth_register_v1('joejim123@gmail.com', 'password', 'Jim', 's')['token']
+    # auth_register_v1('joejim123234@gmail.com', 'password', 'SEW', 's')
 
-#     auth_logout_v1(token)
-#     print_store_debug()
+    auth_logout_v1(token)
+    print_store_debug()
+    
+    auth_logout_v1(token)
+    print_store_debug()
+
+    # auth_logout_v1(token)
+    # print_store_debug()
