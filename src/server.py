@@ -52,6 +52,11 @@ def auth_login():
     token_and_auth_user_id = auth_login_v1(request_data['email'], request_data['password'])
     return dumps(token_and_auth_user_id)
 
+@APP.route("/auth/logout/v1", methods=['POST'])
+def auth_logout():
+    request_data = request.get_json()
+    logging_out = auth_logout_v1(request_data['token'])
+
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create():
     request_data = request.get_json()
