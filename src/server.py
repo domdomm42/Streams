@@ -92,11 +92,11 @@ def channel_join():
     response = channel_join_v1(request_data['token'], request_data['channel_id'])
     return dumps(response)  
 
-@APP.route("/user/sethandle/v2", methods=['PUT'])
-def user_profile_sethandle_v2():
+@APP.route("/user/sethandle/v1", methods=['PUT'])
+def user_profile_sethandle():
     request_data = request.get_json()
-    user_profile_sethandle_v1(request_data['token'], request_data['handle_str'])
-    return dumps({})
+    response = user_profile_sethandle_v1(request_data['token'], request_data['handle_str'])
+    return dumps(response)
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():

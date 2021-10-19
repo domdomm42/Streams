@@ -8,7 +8,15 @@ def user_profile_sethandle_v1(token, handle_str):
     check_alphanumeric(handle_str)
     check_duplicate(handle_str)
     store = data_store.get()
-    store['users']['user_handles'][user_id] = handle_str
+    for idx in store['users']['user_handles']:
+        if idx == user_id:
+            store['users']['user_handles'][idx] = handle_str
+            break
+
+
+
+
+    
     data_store.set(store)
     return {
 
@@ -26,7 +34,7 @@ def user_profile_sethandle_v1(token, handle_str):
 
 
 def check_len(handle_str):
-    if len(handle_str) not in range(3, 20):
+    if len(handle_str)  in range(3, 20):
         pass
     else:
         raise InputError(description='Invalid User Name')
@@ -39,7 +47,7 @@ def check_alphanumeric(handle_str):
 
 def check_duplicate(handle_str):
     store = data_store.get()
-    if handle_str not in store['users'][handle_str]:
+    if handle_str not in store['users']['user_handles']:
         pass
     else:
         raise InputError(description='This name has been used!')
