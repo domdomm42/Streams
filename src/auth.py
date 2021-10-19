@@ -2,7 +2,16 @@ from src.data_store import data_store
 from src.error import InputError
 from src.auth_auth_helpers import hash, generate_jwt
 
+from src.server import *
+import requests
+import jwt
+
+from src.config import *
+
 import re
+
+SECRET = 'BEAGLE'
+BASE_URL = url
 
 def auth_login_v1(email, password):
     ''' 
@@ -47,6 +56,10 @@ def auth_login_v1(email, password):
 
         user_id = store['users']['user_id'][counter]
 
+        # session_id + 1 
+        # store['logged_in_users'].append('user_id': user_id)
+        # store['logged_in_users'].append('session_id': )
+
         return {
             'token': generate_jwt(user_id),
             'auth_user_id': user_id,
@@ -90,9 +103,13 @@ def auth_register_v1(email, password, name_first, name_last):
     if store['users']['user_id'] == []: # First user to register
         store['users']['user_id'].append(0)
         store['users']['is_global_owner'].append(True) 
+        #Dom's added line
+        store['users']['permissions'].append(1)
     else:
         store['users']['user_id'].append(store['users']['user_id'][-1] + 1)
         store['users']['is_global_owner'].append(False) 
+        #Dom's added line
+        store['users']['permissions'].append(2)
 
     store['users']['emails'].append(email)
     store['users']['passwords'].append(hash(password))
@@ -108,6 +125,18 @@ def auth_register_v1(email, password, name_first, name_last):
         'auth_user_id': user_id
     }
 
+def auth_logout_v1(token):
+    decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
+    user_id = decoded_token['user_id']
+    session_id = decoded_token['session_id']
+
+    store = data_store.get()
+    for data in store['logged_in_users']:
+        if user_id == data['user_id'] and session_id == data['session_id']:
+            store['logged_in_users'].remove({'user_id': user_id, 'session_id': session_id})
+
+    data_store.set(store)
+
 # --- Check email ---
 # This function takes in an email (string) and checks if email is
 # in the correct format and unique
@@ -121,7 +150,7 @@ def check_email(email):
     if re.fullmatch(regex, email) and email not in store['users']['emails']:
         pass
     else:
-        raise InputError(description = 'This email is already registered!')
+        raise InputError(description='This email is already registered!')
 
 # --- Check password ---
 # This function takes in a password (string) and checks if the 
@@ -151,7 +180,7 @@ def check_last_name(name_last):
     if len(name_last) >= 1 and len(name_last) <= 50:
         pass
     else:
-        raise InputError('Invalid last name!')
+        raise InputError(description='Invalid last name!')
 
 # --- Create user_handle ---
 # This function takes in the user's first and last name (strings)
@@ -195,7 +224,7 @@ def check_valid_email(email):
             
             return 1
     
-    raise InputError('Email not registered!')
+    raise InputError(description='Email not registered!')
 
 # --- Checks if password matches registered email ---
 # This function takes in password and check if 
@@ -222,10 +251,35 @@ def check_valid_password(email, password):
         else:
             counter = counter + 1
 
-    raise InputError('Invalid Password!')
+    raise InputError(description='Invalid Password!')
 
-# if __name__ == '__main__':
-#     auth_register_v1('joejim123@gmail.com', 'password', '1234567890', 'a1234567890')
-#     auth_register_v1('joejim1234@gmail.com', 'password', '1234567890', 'a1234567890')
+if __name__ == '__main__':
+#     data = first = auth_register_v1('joejim123@gmail.com', 'passwordJ', '123456789', '1234567890')
+#     second = auth_register_v1('joejim1234@gmail.com', 'password', '1234567890', 'a1234567890')
+
 #     store = data_store.get()
 #     print(store)
+#     auth_logout_v1(data['token'])
+    
+#     print(store)
+###############################################
+    # store = data_store.get()
+    # print(store['logged_in_users'])
+    # requests.delete(f'{BASE_URL}/clear/v1')
+    
+    # user_info_reg_1 = {"email": "marryjane@gmail.com", "password": "passwordM", "name_first": "Marry", "name_last": "Jane"}
+    # user_info_reg_2 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    
+    # response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    # response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+    # print(store)
+
+    # user_info_logout_1 = response_data_1.json()
+    # # user_info_logout_1 = user_info_logout_1['token']
+
+    # user_info_logout_2 = response_data_2.json()
+    # # user_info_logout_2 = user_info_logout_2['token']
+
+    # requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout_2['token'])
+
+    # print(store['logged_in_users'])
