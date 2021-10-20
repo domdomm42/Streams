@@ -330,12 +330,17 @@ def check_channel_status(channel_id, auth_user_id):
     store = data_store.get()
     if store['channels']['is_public'][channel_id] == True:
         pass
-    elif store['channels']['is_public'][channel_id] == False:
-        i = 0
-        for _ in store['users']['is_global_owner']:
-            if i == auth_user_id and store['users']['is_global_owner'][i] == True:
-                return
-            i = i + 1
+    else:
+        if auth_user_id not in store['channels']['all_members'][channel_id]:
+            raise AccessError(description="User is not authorised to join channel")
+
+    # elif store['channels']['is_public'][channel_id] == False:
+    #     i = 0
+    #     for _ in store['users']['is_global_owner']:
+    #         if i == auth_user_id and store['users']['is_global_owner'][i] == True:
+    #             return
+    #         i = i + 1
+        
         
         
         #raise AccessError('This is private channel, permission denied!')
