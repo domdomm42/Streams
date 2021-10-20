@@ -24,11 +24,6 @@ def setup():
     user_info = {'email': 'sam123@gmail.com', 'password': 'password', 'name_first': 'Sam', 'name_last': 'Smith'}
     sam_token = {'token': requests.post(f'{BASE_URL}/auth/register/v2', json = user_info).json()['token']}
 
-    # Set User handles for each User
-    # user_sethandle(joe_token, 'Joe')
-    # user_sethandle(marry_token, 'Marry')
-    # user_sethandle(sam_token, 'Sam')
-
     # Create a DM by Joe
     dm1_info = {'token': joe_token, 'u_ids': [0, 1]}
     dm_id = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm_info).json()['dm_id']}
@@ -183,8 +178,6 @@ def messages_not_member_test(setup):
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
-
-
 '''
 SAMPLE TESTING FOR DM_CREATE
 '''
@@ -233,7 +226,7 @@ def simple_dm_details_test(setup):
     dm_details = {"token": joe, "dm_id": '0'}
     response_create = requests.post(f'{BASE_URL}/dm/details/v1', json = dm_details)
     response_create_data = response_create.json()
-    assert response_create_data['name'] == 'Joe, Marry, Sam' 
+    assert response_create_data['name'] == 'joesmith, marrysmith' 
     assert response_create_data['members'] == [
         {
             'u_id': 0,
@@ -254,6 +247,24 @@ def simple_dm_details_test(setup):
 SAMPLE TESTING FOR DM_LEAVE
 '''
 
-def simple_dm_remove_test(setup):
+def simple_dm_leave_test(setup):
     _, joe, _, _ = setup
-    
+    dm_leave = {"token": joe, "dm_id": '0'}
+    requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
+
+    dm_details = {"token": joe, "dm_id": '0'}
+    response_create = requests.post(f'{BASE_URL}/dm/details/v1', json = dm_details)
+    response_create_data = response_create.json()
+    assert response_create_data['name'] == 'joesmith, marrysmith' 
+    assert response_create_data['members'] == [
+        {
+            'u_id': 1,
+            'email': 'marry123@gmail.com',
+            'name_first': 'Marry', 
+            'name_last': 'Smith',
+            'handle_str': 'marrysmith'
+        }
+    ]
+
+
+
