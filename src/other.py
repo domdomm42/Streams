@@ -74,7 +74,7 @@ def print_store_debug():
     print("Printing user_handles:")
     print(store['users']['user_handles'])
     print("Printing is_global_owner")
-    print(store['users']['is_globle_owner'])
+    print(store['users']['is_global_owner'])
     print("Printing Permissions")
     print(store['users']['permissions'])
 

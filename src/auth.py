@@ -93,13 +93,13 @@ def auth_register_v1(email, password, name_first, name_last):
 
     if store['users']['user_id'] == []: # First user to register
         store['users']['user_id'].append(0)
-        store['users']['is_globle_owner'].append(True) 
+        store['users']['is_global_owner'].append(True) 
         #dom's added line
         store['users']['permissions'].append(1)
         store['users']['removed_user'].append(False)
     else:
         store['users']['user_id'].append(store['users']['user_id'][-1] + 1)
-        store['users']['is_globle_owner'].append(False)
+        store['users']['is_global_owner'].append(False)
         #dom's added line 
         store['users']['permissions'].append(2)
         store['users']['removed_user'].append(False)

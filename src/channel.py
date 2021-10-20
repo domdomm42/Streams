@@ -332,8 +332,8 @@ def check_channel_status(channel_id, auth_user_id):
         pass
     elif store['channels']['is_public'][channel_id] == False:
         i = 0
-        for _ in store['users']['is_globle_owner']:
-            if i == auth_user_id and store['users']['is_globle_owner'][i] == True:
+        for _ in store['users']['is_global_owner']:
+            if i == auth_user_id and store['users']['is_global_owner'][i] == True:
                 return
             i = i + 1
         

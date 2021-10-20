@@ -9,7 +9,7 @@ def admin_user_remove_v1(token, user_id):
     remover_id = check_and_get_user_id(token)
 
     list_user_id = []
-    list_globle_owner = []
+    list_global_owner = []
 
     # Stores all user_id in a seperate list
     for user_data_id in store["users"]["user_id"]:
@@ -23,22 +23,22 @@ def admin_user_remove_v1(token, user_id):
             idx_of_user_id = idx_of_user_id + 1
 
 
-    num_of_globle_owner = 0
+    num_of_global_owner = 0
 
-    # Stores all globle owner in a seperate list and counts no. of globle owner.
-    for globle_owner in store["users"]["is_globle_owner"]:
-        if globle_owner == True:
-            num_of_globle_owner = num_of_globle_owner + 1
+    # Stores all global owner in a seperate list and counts no. of global owner.
+    for global_owner in store["users"]["is_global_owner"]:
+        if global_owner == True:
+            num_of_global_owner = num_of_global_owner + 1
 
-        list_globle_owner.append(globle_owner)
+        list_global_owner.append(global_owner)
 
     # Invalid User_ID
     if user_id not in list_user_id:
         raise InputError('user_id does not refer to a valid user!')
         
-    # User_id is the only globle owner
-    if user_id in list_globle_owner and num_of_globle_owner == 1:
-        raise InputError('user_id refers to a user who is the only globle owner!')
+    # User_id is the only global owner
+    if user_id in list_global_owner and num_of_global_owner == 1:
+        raise InputError('user_id refers to a user who is the only global owner!')
 
     # Finds the index of the Remover_ID
     counter = 0
@@ -48,12 +48,12 @@ def admin_user_remove_v1(token, user_id):
         else:
             counter = counter + 1
 
-    # Checks if the remover is globle Owner
-    check_if_globle_owner = store['users']['is_globle_owner'][counter]
+    # Checks if the remover is global Owner
+    check_if_global_owner = store['users']['is_global_owner'][counter]
 
-    # Raise error if Remover is not globle owner
-    if check_if_globle_owner is False:
-        raise AccessError(description='The authorised user is not a globle owner!')
+    # Raise error if Remover is not global owner
+    if check_if_global_owner is False:
+        raise AccessError(description='The authorised user is not a global owner!')
 
     # Set messages sent by removed user to be 'Removed User'
     for message in store['messages']:
@@ -72,7 +72,7 @@ def admin_user_remove_v1(token, user_id):
     store['users']['emails'][idx_of_user_id] = 'X'
     store['users']['passwords'][idx_of_user_id] = 'X'
     store['users']['user_handles'][idx_of_user_id] = 'X'
-    store['users']['is_globle_owner'][idx_of_user_id] = False
+    store['users']['is_global_owner'][idx_of_user_id] = False
     store['users']['removed_user'][idx_of_user_id] = True
     store['users']['permissions'][idx_of_user_id] = 3
 
@@ -93,7 +93,7 @@ def admin_userpermission_change_v1(token, user_id, permission_id):
         raise InputError(description='User_id does not refer to a valid user')
 
     list_user_id = []
-    list_globle_owner = []
+    list_global_owner = []
 
     # Stores user_ids in a list
     for user_data_id in store["users"]["user_id"]:
@@ -108,19 +108,19 @@ def admin_userpermission_change_v1(token, user_id, permission_id):
             num_of_user_id = num_of_user_id + 1
 
     
-    num_of_globle_owner = 0
+    num_of_global_owner = 0
 
-    check_if_globle_owner = store['users']['is_globle_owner'][num_of_user_id]
+    check_if_global_owner = store['users']['is_global_owner'][num_of_user_id]
 
-    # Stores all globle owner in a seperate list and counts no. of globle owner.
-    for globle_owner in store["users"]["is_globle_owner"]:
-        if globle_owner == True:
-            num_of_globle_owner = num_of_globle_owner + 1
+    # Stores all global owner in a seperate list and counts no. of global owner.
+    for global_owner in store["users"]["is_global_owner"]:
+        if global_owner == True:
+            num_of_global_owner = num_of_global_owner + 1
 
-        list_globle_owner.append(globle_owner)
+        list_global_owner.append(global_owner)
 
-    if permission_id == 2 and check_if_globle_owner == 1 and num_of_globle_owner == 1:
-        raise InputError(description='u_id refers to a user who is the only globle owner and they are being demoted to a user')
+    if permission_id == 2 and check_if_global_owner == 1 and num_of_global_owner == 1:
+        raise InputError(description='u_id refers to a user who is the only global owner and they are being demoted to a user')
 
     changer_id = check_and_get_user_id(token)
 
@@ -128,16 +128,16 @@ def admin_userpermission_change_v1(token, user_id, permission_id):
         if all_user_id == changer_id:
             changer_idx = store['users']['user_id'].index(all_user_id)
 
-    if list_globle_owner[changer_idx] == False:
-        raise AccessError(description='the authorised user is not a globle owner')
+    if list_global_owner[changer_idx] == False:
+        raise AccessError(description='the authorised user is not a global owner')
 
 
     store['users']['permissions'][num_of_user_id] = permission_id
     
     if permission_id == 1:
-        store['users']['is_globle_owner'][num_of_user_id] = True
+        store['users']['is_global_owner'][num_of_user_id] = True
     else:
-        store['users']['is_globle_owner'][num_of_user_id] = False
+        store['users']['is_global_owner'][num_of_user_id] = False
 
     data_store.set(store)
 
