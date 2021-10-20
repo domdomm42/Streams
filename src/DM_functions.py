@@ -145,17 +145,17 @@ def dm_details_v1(token, dm_id):
     #u_id is just he index they are in the users library for this iteration
     for u_id in store['dms']['all_members'][index]:
         new_dict = {
-            'u_id': store['users']['user_id'][u_id]
-            'email': store['users']['emails'][u_id]
-            'name_first': store['users']['first_names'][u_id]
-            'name_last': store['users']['last_names'][u_id]
+            'u_id': store['users']['user_id'][u_id],
+            'email': store['users']['emails'][u_id],
+            'name_first': store['users']['first_names'][u_id],
+            'name_last': store['users']['last_names'][u_id],
             'handle_str': store['users']['user_handles'][u_id]
         }
         u_id_list.append(new_dict)
             
 
     return {
-        'name': name
+        'name': name,
         'members': u_id_list
     }
 
@@ -235,9 +235,9 @@ def dm_messages_v1(token, dm_id, start):
 
     while num_message < 50 or num_message < len(store['dms']['messages']):
         new_dict = {
-            'message_id': store['dms']['message_id'][index]
-            'u_id': store['dms']['u_id'][index]
-            'message': store['dms']['message'][index]
+            'message_id': store['dms']['message_id'][index],
+            'u_id': store['dms']['u_id'][index],
+            'message': store['dms']['message'][index],
             'time_created': store['dms']['time_created'][index]
         }
         messages.append(new_dict)

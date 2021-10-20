@@ -191,7 +191,8 @@ def multiple_dm_create_test(setup):
     #create a DM by Joe
     dm1_info = {'token': marry, 'u_ids': [0, 1]}
     dm2 = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm_info).json()['dm_id']}
-    assert dm1 == 0 and assert dm2 == 1
+    assert dm1 == 0 
+    assert dm2 == 1
 
 '''
 SAMPLE TESTING FOR DM_LIST
@@ -202,7 +203,7 @@ def simple_dm_list_test(setup):
     dm_list = {"token": joe}
     response_create = requests.get(f'{BASE_URL}/dm/list/v1', json = dm_list)
     response_create_data = response_create.json()
-    assert response_create_data['dms'] = {[
+    assert response_create_data['dms'] == {[
         {'dm_id': 0, 'dm_name': 'joesmith, marrysmith'}
     ]}
 
@@ -218,7 +219,7 @@ def simple_dm_remove_test(setup):
     dm_list = {"token": marry}
     response_create = requests.get(f'{BASE_URL}/dm/list/v1', json = dm_list)
     response_create_data = response_create.json()
-    assert response_create_data['dms'] = {[]}
+    assert response_create_data['dms'] == {[]}
 '''
 SAMPLE TESTING FOR DM_DETAILS
 '''
@@ -287,19 +288,19 @@ def simple_dm_messages_test(setup):
     dm_messages = {"token": joe, "dm_id": 0, 'start': 0}
     response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
     response_create_data = response_create.json()
-    assert response_create_data['start'] = 0
-    assert response_create_data['end'] = -1
-    assert response_create_data['messages'] = [
+    assert response_create_data['start'] == 0
+    assert response_create_data['end'] == -1
+    assert response_create_data['messages'] == [
         {
-            'message_id': message_id1
-            'u_id': 0
-            'message': 'big tings bruv'
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
             'time_created': timestamp1
         },
         {
-            'message_id': message_id2
-            'u_id': 1
-            'message': 'small tings bruv'
+            'message_id': message_id2,
+            'u_id': 1,
+            'message': 'small tings bruv',
             'time_created': timestamp2
         }
     ]
