@@ -342,6 +342,7 @@ def check_channel_status(channel_id, auth_user_id):
     #         i = i + 1
         
         
+        
         #raise AccessError('This is private channel, permission denied!')
 
 

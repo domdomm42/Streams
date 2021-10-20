@@ -39,7 +39,10 @@ initial_object = {
         'first_names': [],
         'last_names': [],
         'user_handles': [],
-        'is_global_owner':[]
+        'is_global_owner':[],
+        'removed_user': [],
+        'permissions': [] # NEW
+
     },
 
 

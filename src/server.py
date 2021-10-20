@@ -6,11 +6,12 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 from src.users import user_profile_sethandle_v1
-from src.auth import auth_register_v1, auth_login_v1
+from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
 from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1
 from src.message import message_send_v1, message_edit_v1, message_remove_v1
+from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -51,6 +52,13 @@ def auth_login():
     request_data = request.get_json()
     token_and_auth_user_id = auth_login_v1(request_data['email'], request_data['password'])
     return dumps(token_and_auth_user_id)
+
+@APP.route("/auth/logout/v1", methods=['POST'])
+def auth_logout():
+    request_data = request.get_json()
+    logging_out = auth_logout_v1(request_data['token'])
+    return dumps(logging_out)
+
 
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create():
@@ -111,6 +119,19 @@ def user_profile_sethandle_v2():
     request_data = request.get_json()
     user_profile_sethandle_v1(request_data['token'], request_data['handle_str'])
     return dumps({})
+
+@APP.route("/admin/user/remove/v1", methods=['DELETE'])
+def adminuser_remove_v1():
+    request_data = request.get_json()
+    response = admin_user_remove_v1(request_data['token'], request_data['u_id'])
+    return dumps(response)
+
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def userpermission_change_v1():
+    request_data = request.get_json()
+    response = admin_userpermission_change_v1(request_data['token'], request_data['u_id'], request_data['permission_id'])
+    return dumps(response)
+
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():

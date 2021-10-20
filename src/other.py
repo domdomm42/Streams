@@ -75,6 +75,8 @@ def print_store_debug():
     print(store['users']['user_handles'])
     print("Printing is_global_owner")
     print(store['users']['is_global_owner'])
+    print("Printing Permissions")
+    print(store['users']['permissions'])
 
     print(" ")
 
@@ -116,4 +118,8 @@ def print_store_debug():
     print(store['dms']['all_members'])
     print("Printing messages:")
     print(store['dms']['messages'])
+
+
+
+
 
