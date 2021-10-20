@@ -96,11 +96,13 @@ def auth_register_v1(email, password, name_first, name_last):
         store['users']['is_globle_owner'].append(True) 
         #dom's added line
         store['users']['permissions'].append(1)
+        store['users']['removed_user'].append(False)
     else:
         store['users']['user_id'].append(store['users']['user_id'][-1] + 1)
         store['users']['is_globle_owner'].append(False)
         #dom's added line 
         store['users']['permissions'].append(2)
+        store['users']['removed_user'].append(False)
 
     store['users']['emails'].append(email)
     store['users']['passwords'].append(hash(password))

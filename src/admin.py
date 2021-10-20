@@ -61,10 +61,10 @@ def admin_user_remove_v1(token, user_id):
             idx = store['messages'].index(message)
             store['messages'][idx]['message'] = 'Removed User'
 
-    # Loop through removed users
-    idx_of_removed_users = 0
-    for removed in store['users']['removed_user']:
-        idx_of_removed_users = idx_of_removed_users + 1
+    # # Loop through removed users
+    # idx_of_removed_users = 0
+    # for removed in store['users']['removed_user']:
+    #     idx_of_removed_users = idx_of_removed_users + 1
         
 
     store['users']['first_names'][idx_of_user_id] = 'Removed'
@@ -73,7 +73,8 @@ def admin_user_remove_v1(token, user_id):
     store['users']['passwords'][idx_of_user_id] = 'X'
     store['users']['user_handles'][idx_of_user_id] = 'X'
     store['users']['is_globle_owner'][idx_of_user_id] = False
-    # store['users']['removed_user'][idx_of_removed_users].append(True)
+    store['users']['removed_user'][idx_of_user_id] = True
+    store['users']['permissions'][idx_of_user_id] = 3
 
     data_store.set(store)
     return ({})

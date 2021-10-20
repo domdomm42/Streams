@@ -18,19 +18,12 @@ def test_remove_admin():
     response_data_1 = response_data_1.json()
     response_data_2 = response_data_2.json()
 
-#     user_2_data = response_data_2.json()
+    kick_data = {'token': response_data_2['token'], 'u_id': response_data_1['auth_user_id']}
+    delete_data = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
+    delete_data = delete_data.json()
+    print(delete_data)
 
-    user_2_data = {"token": response_data_1['token'], "user_id": response_data_2['auth_user_id'], "permission_id": 1} 
+    assert delete_data['code'] == 400
 
-    requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = user_2_data)
-
-
-    kick_data = {'token': response_data_2['token'], 'user_id': response_data_1['auth_user_id']}
-    requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
-
-    kick_data = {'token': response_data_2['token'], 'user_id': response_data_1['auth_user_id']}
-    return_value = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
-    return_value = return_value.json()
-    assert return_value['code'] == 400
 
 

@@ -123,13 +123,13 @@ def user_profile_sethandle_v2():
 @APP.route("/admin/user/remove/v1", methods=['DELETE'])
 def admin_user_remove_v1():
     request_data = request.get_json()
-    response = admin_user_remove_v1(request_data['token'], request_data['message_id'])
+    response = admin_user_remove_v1(request_data['token'], request_data['u_id'], )
     return dumps(response)
 
 @APP.route("/admin/userpermission/change/v1", methods=['DELETE'])
 def admin_userpermission_change_v1():
     request_data = request.get_json()
-    response = admin_userpermission_change_v1(request_data['token'], request_data['message_id'])
+    response = admin_userpermission_change_v1(request_data['token'], request_data['u_id'], request_data['permission_id'])
     return dumps(response)
 
 # Example
