@@ -10,9 +10,11 @@ from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1
 
+
 def quit_gracefully(*args):
     '''For coverage'''
     exit(0)
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -25,30 +27,36 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 
+
 APP = Flask(__name__)
 CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
+
 #### NO NEED TO MODIFY ABOVE THIS POINT, EXCEPT IMPORTS
 
 @APP.route("/auth/register/v2", methods=['POST'])
 def register_user():
     request_data = request.get_json()
-    token_and_auth_user_id = auth_register_v1(request_data['email'], request_data['password'], request_data['name_first'], request_data['name_last'])
+    token_and_auth_user_id = auth_register_v1(request_data['email'], request_data['password'],
+                                              request_data['name_first'], request_data['name_last'])
     return dumps(token_and_auth_user_id)
+
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear_everything():
     clear_v1()
     return dumps({})
 
+
 @APP.route("/auth/login/v2", methods=['POST'])
 def auth_login():
     request_data = request.get_json()
     token_and_auth_user_id = auth_login_v1(request_data['email'], request_data['password'])
     return dumps(token_and_auth_user_id)
+
 
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create():
@@ -57,11 +65,9 @@ def channels_create():
     return dumps(channel_id)
 
 
-
 # List of all users
 @APP.route("/users/all/v1", methods=['GET'])
 def user_all_v1(token):
-
     request_data = request.get_json()
 
     user = user_all_v1(request_data['token'])
@@ -69,11 +75,9 @@ def user_all_v1(token):
     return dumps(user)
 
 
-
 # List of all valid users
 @APP.route("/users/profile/v1", methods=['GET'])
 def user_profile_v1(token, u_id):
-    
     request_data = request.get_json()
 
     user = user_profile_v1(request_data['token'], request_data['u_id'])
@@ -84,7 +88,6 @@ def user_profile_v1(token, u_id):
 # Update name
 @APP.route("/users/profile/setname/v1", methods=['PUT'])
 def user_profile_setname_v1(token, name_first, name_last):
-
     request_data = request.get_json()
 
     return dumps()
@@ -93,7 +96,6 @@ def user_profile_setname_v1(token, name_first, name_last):
 # Update email
 @APP.route("/users/profile/setemail/v1", methods=['PUT'])
 def user_profile_setemail_v1(token, email):
-
     request_data = request.get_json()
 
     return dumps()
@@ -102,37 +104,35 @@ def user_profile_setemail_v1(token, email):
 # Update handle
 @APP.route("/users/profile/sethandle/v1", methods=['PUT'])
 def user_profile_sethandle_v1(toke, handle_str):
-
     request_data = request.get_json()
 
     return dumps()
-
 
 
 @APP.route("/channel/leave/v1", methods=['POST'])
 def channel_leave_v1(token, channel_id):
-    
     request_data = request.get_json()
-    
+
     channel_id = channel_leave_v1(request_data['token'], request_data['channel_id'])
-    
+
     del ['channels']['all_members'][channel_id]
-    
-    
+
     return dumps()
+
 
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
     data = request.args.get('data')
     if data == 'echo':
-   	    raise InputError(description='Cannot echo "echo"')
+        raise InputError(description='Cannot echo "echo"')
     return dumps({
         'data': data
     })
 
+
 #### NO NEED TO MODIFY BELOW THIS POINT
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, quit_gracefully) # For coverage
-    APP.run(port=config.port) # Do not edit this port
+    signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
+    APP.run(port=config.port)  # Do not edit this port
