@@ -120,6 +120,41 @@ def echo():
     return dumps({
     })
 
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    request_data = request.get_json()
+    dm_id = dm_create_v1(request_data['token'], request_data['u_ids'])
+    return dumps({dm_id})
+
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_create():
+    request_data = request.get_json()
+    dms = dm_list_v1(request_data['token'])
+    return dumps({dms})
+
+@APP.route("/dm/remove/v1", methods=['DELETE'])
+def dm_create():
+    request_data = request.get_json()
+    dm_remove_v1(request_data['token'], request_data['dm_id'])
+    return dumps({})
+
+@APP.route("/dm/details/v1", methods=['GET'])
+def dm_create():
+    request_data = request.get_json()
+    details = dm_details_v1(request_data['token'], request_data['dm_id'])
+    return dumps({details})
+
+@APP.route("/dm/leave/v1", methods=['POST'])
+def dm_create():
+    request_data = request.get_json()
+    dm_leave_v1(request_data['token'], request_data['dm_id'])
+    return dumps({})
+
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_create():
+    request_data = request.get_json()
+    messages = dm_create_v1(request_data['token'], request_data['dm_id'], request_data['start'])
+    return dumps({messages})
 #### NO NEED TO MODIFY BELOW THIS POINT
 
 if __name__ == "__main__":
