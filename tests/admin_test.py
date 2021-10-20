@@ -46,8 +46,8 @@ def test_change_permission():
     permission_change_data_1 = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id'], 'permission_id': 1}
     permission_change_data_2 = {'token': response_data_2['token'], 'u_id': response_data_1['auth_user_id'], 'permission_id': 2}
 
-    response_data_permissions_1 = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
-    response_data_permissions_2 = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_2)
+    requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
+    requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_2)
 
     kick_data = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id']}
     
