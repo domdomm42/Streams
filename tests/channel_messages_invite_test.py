@@ -46,7 +46,7 @@ def test_invalid_channel(setup):
 
 def test_invalid_u_id(setup):
 
-    joe_smith_data, joes_funland_data, marry_mae_data = setup
+    joe_smith_data, joes_funland_data, _ = setup
     channel_invite_info = {'token': joe_smith_data['token'], 'channel_id': joes_funland_data['channel_id'], 'u_id': 20}
     response = requests.post(f'{BASE_URL}/channel/invite/v2', json = channel_invite_info)
     response_data = response.json()

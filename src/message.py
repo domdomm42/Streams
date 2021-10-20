@@ -108,7 +108,7 @@ def message_remove_v1(token, message_id):
 def message_senddm_v1(token, dm_id, message):
 
     user_id = check_and_get_user_id(token)
-    check_channel_id(channel_id)
+    check_channel_id(dm_id)
     check_user_authority_in_dm(user_id, dm_id)
     check_if_message_too_long(message)
     check_if_message_too_short(message)
@@ -205,7 +205,7 @@ def check_user_authority_in_channel(user_id, channel_id):
 
 def check_user_authority_in_dm(user_id, dm_id):
     store = data_store.get()
-    idx = store['dms']['dm_id'].index(channel_id)
+    idx = store['dms']['dm_id'].index(dm_id)
 
     if user_id not in store['dms']['all_members'][idx]:
         raise AccessError(description="User not a part of the DM members")
