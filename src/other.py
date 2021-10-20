@@ -42,7 +42,7 @@ def clear_v1():
     store['dms']['dm_name'] = []
     store['dms']['all_members'] = []
     store['dms']['messages'] = []
-    store['channels']['messages'] = []
+    #store['channels']['messages'] = []
 
     data_store.set(store)
 
