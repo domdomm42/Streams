@@ -138,7 +138,6 @@ def admin_userpermission_change_v1(token, user_id, permission_id):
     else:
         store['users']['is_globle_owner'][num_of_user_id] = False
 
-
     data_store.set(store)
 
     return ({})
@@ -171,6 +170,9 @@ if __name__ == '__main__':
 
     admin_user_remove_v1(data_2['token'], data_1['auth_user_id'])
     print_store_debug()
+
+    # admin_user_remove_v1(data_2['token'],data_2['auth_user_id'])
+    # print_store_debug()
 
 
 

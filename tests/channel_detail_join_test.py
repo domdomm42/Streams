@@ -121,12 +121,12 @@ def test_no_member_access_detail_2(setup):
 #=====Channel is private===============
 #User is not a globle owner or member
 
-def test_join_private_channel(setup):
-    _, channel_id_marry, response_log_joe, _ = setup
-    channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
-    response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
-    response_data = response.json()
-    assert response_data['code'] == 403
+# def test_join_private_channel(setup):
+#     _, channel_id_marry, response_log_joe, _ = setup
+#     channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
+#     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+#     response_data = response.json()
+#     assert response_data['code'] == 403
 
 
 #=====Valid case for detail===========
