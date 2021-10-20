@@ -1,6 +1,10 @@
-from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
-import jwt
+import pytest
 import requests
+import jwt
+
+from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
+from src.auth import auth_register_v1
+from src.other import clear_v1
 from src.error import InputError, AccessError
 from src.config import *
 from src.auth_auth_helpers import SECRET
@@ -19,6 +23,7 @@ def test_remove_admin():
     response_data_2 = response_data_2.json()
 
     kick_data = {'token': response_data_2['token'], 'u_id': response_data_1['auth_user_id']}
+    
     delete_data = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     delete_data = delete_data.json()
     print(delete_data)
