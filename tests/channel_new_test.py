@@ -93,12 +93,7 @@ def test_u_id_not_member_add(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
-def test_u_id_not_member_add(setup):
-    channel_id_joe, _, response_log_joe, response_log_marry = setup
-    channel_add_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id'], "u_id": response_log_marry['auth_user_id']}
-    response = requests.post(f'{BASE_URL}/channel/addowner/v1', json = channel_add_info)
-    response_data = response.json()
-    assert response_data['code'] == 400
+
 
 def test_owner_member_add(setup):
     channel_id_joe, _, response_log_joe, _ = setup
