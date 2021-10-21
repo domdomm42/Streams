@@ -27,16 +27,16 @@ def setup():
 
     # Create a DM by Joe
     dm1_info = {'token': joe_token, 'u_ids': [0, 1]}
-    dm_id = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm_info).json()['dm_id']}
+    dm1_id = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm1_info).json()['dm_id']}
 
-    return dm_id, joe_token, marry_token, sam_token
+    return dm1_id, joe_token, marry_token, sam_token
 
 
 '''
 INVALIDITY TESTS FOR DM_CREATE
 '''
 u_ids = [0, 1, 2]
-def dm_create_invalid_token_test():
+def test_dm_create_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_creation = {"token": '-1', "u_ids": u_ids}
@@ -44,7 +44,7 @@ def dm_create_invalid_token_test():
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
-def dm_create_invalid_list_test():
+def test_dm_create_invalid_list():
     requests.delete(f'{BASE_URL}/clear/v1')
     user_info = {'email': 'joe123@gmail.com', 'password': 'password', 'name_first': 'Joe', 'name_last': 'Smith'}
     joe_token = {'token': requests.post(f'{BASE_URL}/auth/register/v2', json = user_info).json()['token']}
@@ -58,7 +58,7 @@ def dm_create_invalid_list_test():
 INVALIDITY TESTS FOR DM_LIST
 '''
 
-def dm_list_invalid_token_test():
+def test_dm_list_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_list = {"token": '-1'}
@@ -71,7 +71,7 @@ def dm_list_invalid_token_test():
 INVALIDITY TESTS FOR DM_REMOVE
 '''
 
-def dm_remove_invalid_token_test():
+def test_dm_remove_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_remove = {"token": '-1', "dm_id": 1}
@@ -79,7 +79,7 @@ def dm_remove_invalid_token_test():
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
-def dm_invalid_dm_id_test(setup):
+def test_dm_invalid_dm_id(setup):
     _, joe, _, _ = setup
 
     dm_remove = {"token": joe, "dm_id": 1}
@@ -87,7 +87,7 @@ def dm_invalid_dm_id_test(setup):
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
-def dm_unoriginal_owner_test(setup):
+def test_dm_unoriginal_owner(setup):
     dm_id, _, marry, _ = setup
     dm_remove = {'token': marry, 'dm_id': dm_id}
     response_create = requests.delete(f'{BASE_URL}/dm/remove/v1', json = dm_remove)
@@ -97,14 +97,14 @@ def dm_unoriginal_owner_test(setup):
 '''
 INVALIDITY TEST FOR DM_DETAILS
 '''
-def details_invalid_dm_test(setup):
+def test_details_invalid_dm(setup):
     _, joe, _, _ = setup
     dm_details = {"token": joe, "dm_id": 1}
     response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
-def details_invalid_token_test():
+def test_details_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_details = {"token": '-1', "dm_id": 1}
@@ -112,7 +112,7 @@ def details_invalid_token_test():
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
-def details_not_member_test(setup):
+def test_details_not_member(setup):
     _, _, _, sam = setup
     dm_details = {"token": sam, "dm_id": 0}
     response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
@@ -122,14 +122,14 @@ def details_not_member_test(setup):
 '''
 INVALIDITY TESTS FOR DM_LEAVE
 '''
-def leave_invalid_dm_test(setup):
+def test_leave_invalid_dm(setup):
     _, joe, _, _ = setup
     dm_leave = {"token": joe, "dm_id": 1}
     response_create = requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
-def leave_invalid_token_test():
+def test_leave_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_leave = {"token": '-1', "dm_id": 1}
@@ -137,7 +137,7 @@ def leave_invalid_token_test():
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
-def leave_not_member_test(setup):
+def test_leave_not_member(setup):
     _, _, _, sam = setup
     dm_leave = {"token": sam, "dm_id": 0}
     response_create = requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
@@ -148,14 +148,14 @@ def leave_not_member_test(setup):
 INVALIDITY TESTS FOR DM_MESSAGES
 '''
 
-def messages_invalid_dm_id_test(setup):
+def test_messages_invalid_dm_id(setup):
     _, joe, _, _ = setup
     dm_messages = {"token": joe, "dm_id": 1, 'start': 0}
     response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
-def messages_invalid_token_test():
+def test_messages_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_messages = {"token": '-1', "dm_id": 1, 'start': 0}
@@ -163,7 +163,7 @@ def messages_invalid_token_test():
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
-def messages_invalid_start_test(setup):
+def test_messages_invalid_start(setup):
     _, joe, _, _ = setup
 
     dm_messages = {"token": joe, "dm_id": 0, 'start': 5}
@@ -171,7 +171,7 @@ def messages_invalid_start_test(setup):
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
-def messages_not_member_test(setup):
+def test_messages_not_member(setup):
     _, _, _, sam = setup
 
     dm_messages = {"token": sam, "dm_id": 0, 'start': 0}
@@ -183,21 +183,21 @@ def messages_not_member_test(setup):
 SAMPLE TESTING FOR DM_CREATE
 '''
 
-def simple_dm_create_test(setup):
+def test_simple_dm_create(setup):
     assert setup == 0
 
-def multiple_dm_create_test(setup):
+def test_multiple_dm_create(setup):
     dm1, _, marry, _= setup
     #create a DM by Joe
     dm1_info = {'token': marry, 'u_ids': [0, 1]}
-    dm2 = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm_info).json()['dm_id']}
+    dm2 = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm1_info).json()['dm_id']}
     assert dm1 == 0 
     assert dm2 == 1
 
 '''
 SAMPLE TESTING FOR DM_LIST
 '''    
-def simple_dm_list_test(setup):
+def test_simple_dm_list(setup):
     _, joe, _, _ = setup
 
     dm_list = {"token": joe}
@@ -210,7 +210,7 @@ def simple_dm_list_test(setup):
 '''
 SAMPLE TESTING FOR DM_REMOVE
 ''' 
-def simple_dm_remove_test(setup):
+def test_simple_dm_remove(setup):
     _, joe, marry, _ = setup
 
     dm_remove = {'token': joe, 'dm_id': 0}
@@ -223,7 +223,7 @@ def simple_dm_remove_test(setup):
 '''
 SAMPLE TESTING FOR DM_DETAILS
 '''
-def simple_dm_details_test(setup):
+def test_simple_dm_details(setup):
     _, joe, _, _ = setup
     dm_details = {"token": joe, "dm_id": 0}
     response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
@@ -249,7 +249,7 @@ def simple_dm_details_test(setup):
 SAMPLE TESTING FOR DM_LEAVE
 '''
 
-def simple_dm_leave_test(setup):
+def test_simple_dm_leave(setup):
     _, joe, _, _ = setup
     dm_leave = {"token": joe, "dm_id": 0}
     requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
@@ -272,7 +272,7 @@ def simple_dm_leave_test(setup):
 SAMPLE TESTING FOR DM_MESSAGES
 '''
 
-def simple_dm_messages_test(setup):
+def test_simple_dm_messages(setup):
     _, joe, marry, _ = setup
     send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
     send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}

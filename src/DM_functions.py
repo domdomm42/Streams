@@ -48,7 +48,7 @@ def dm_create_v1(token, u_ids):
     store['dms']['owner_user_id'].append(auth_user_id)
     store['dms']['all_members'].append(all_users)
 
-    return dm_id
+    return {'dm_id': dm_id}
 
 def dm_list_v1(token):
     '''
