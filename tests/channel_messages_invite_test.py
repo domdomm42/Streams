@@ -3,6 +3,7 @@ import requests
 
 from src.config import *
 from src.other import print_store_debug
+from datetime import datetime, timezone
 
 BASE_URL = url
 INPUT_ERROR = 400
@@ -70,21 +71,39 @@ def test_auth_user_not_apart_of_channel(setup):
     print(response_data)
     assert response_data['code'] == 403
 
-# def test_send_valid_messages(setup):
+def test_send_valid_messages(setup):
 
-#     joe_smith_data, joes_funland_data, _ = setup
+    joe_smith_data, joes_funland_data, _ = setup
 
-#     joe_smith_token = joe_smith_data['token']
-#     joes_funland_channel_id = joes_funland_data['channel_id']
-#     #marry_mae_token = setup()[2]['token']
+    joe_smith_token = joe_smith_data['token']
+    joes_funland_channel_id = joes_funland_data['channel_id']
+    #marry_mae_token = setup()[2]['token']
 
-#     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
-#     requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+    message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
+    requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+    message_0_time = datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
-#     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
-#     requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+    message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
+    requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+    message_1_time = datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
-#     channel_messages_input = {'token': joe_smith_token, 'channel_id': joes_funland_channel_id, 'start': 0}
-#     response = requests.get(f'{BASE_URL}/channel/messages/v2', json = channel_messages_input)
-#     print(response.json())
-#     assert response == 0
+    channel_messages_input = {'token': joe_smith_token, 'channel_id': joes_funland_channel_id, 'start': 0}
+    response = requests.get(f'{BASE_URL}/channel/messages/v2', json = channel_messages_input)
+    assert response.json() == {
+        'messages': [
+            {
+                'message_id': 1, 
+                'u_id': 0, 
+                'message': 'Please pick your favourite book, ready for Monday 2pm.', 
+                'time_created': message_1_time
+            }, 
+            {
+                'message_id': 0, 
+                'u_id': 0, 
+                'message': 'Hi everyone!', 
+                'time_created': message_0_time
+            }
+        ], 
+            'start': 0, 
+            'end': -1
+    }

@@ -4,7 +4,7 @@ from src.auth_auth_helpers import check_and_get_user_id
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.other import print_store_debug
-import datetime
+from datetime import datetime, timezone
 
 
 def message_send_v1(token, channel_id, message):
@@ -21,7 +21,7 @@ def message_send_v1(token, channel_id, message):
     if store['messages'] != []: #MESSAGES IS NOT EMPTY
         message_id = store['messages'][-1]['message_id'] + 1
 
-    time_created = datetime.datetime.now().timestamp()
+    time_created = datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
     message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created}
 
@@ -119,7 +119,7 @@ def message_senddm_v1(token, dm_id, message):
     if store['messages'] != []: #MESSAGES IS NOT EMPTY
         message_id = store['messages'][-1]['message_id'] + 1
 
-    time_created = datetime.datetime.now().timestamp()
+    time_created = datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
     message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created}
 

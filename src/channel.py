@@ -1,6 +1,9 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
+from src.message import message_send_v1
+from src.channels import channels_create_v1
+from src.auth import auth_register_v1
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -155,13 +158,13 @@ def channel_messages_v1(token, channel_id, start):
     store = data_store.get()
     messages = []
 
-    end = start + 51
+    end = start + 50
     # get the 50 messages
-    for idx in range(start, end):
+    for idx in range(start, start + 51):
         try: 
             idx = store['channels']['messages'][channel_id][-1 - idx]
-        except ValueError:
-            end = idx - 1
+        except IndexError:
+            end = -1
             break
 
         messages.append(get_message(idx))
@@ -383,7 +386,7 @@ def check_member_u_id(channel_id, u_id):
 def check_invalid_start(channel_id, start):
     store = data_store.get()
     no_msgs_in_channel = len(store['channels']['messages'][channel_id])
-    if start > no_msgs_in_channel:
+    if start >= no_msgs_in_channel:
         raise InputError(description='Start is greater than the total number of messages in the channel')
 
 
@@ -400,3 +403,11 @@ def get_message(message_id):
     for msg in store['messages']:
         if msg['message_id'] == message_id:
             return msg
+
+# if __name__ == '__main__':
+#     token = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')['token']
+#     channel_id = channels_create_v1(token, 'abc', True)['channel_id']
+#     for i in range(0, 75):
+#         message_send_v1(token, channel_id, "Hello" + str(i))
+
+#     print(channel_messages_v1(token, channel_id, 40))
