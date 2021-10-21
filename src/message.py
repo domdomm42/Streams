@@ -4,7 +4,7 @@ from src.auth_auth_helpers import check_and_get_user_id
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.other import print_store_debug
-import datetime
+from datetime import datetime, timezone
 
 
 def message_send_v1(token, channel_id, message):
@@ -21,7 +21,7 @@ def message_send_v1(token, channel_id, message):
     if store['messages'] != []: #MESSAGES IS NOT EMPTY
         message_id = store['messages'][-1]['message_id'] + 1
 
-    time_created = datetime.datetime.now().timestamp()
+    time_created = datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
     message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created}
 
@@ -35,35 +35,6 @@ def message_send_v1(token, channel_id, message):
     return {
         'message_id': message_id
     }
-
-# def dm_send_v1(token, dm_id, message):
-
-#     user_id = check_and_get_user_id(token)
-#     check_channel_id(channel_id)
-#     check_user_authority_in_dm(user_id, dm_id)
-#     check_if_message_too_long(message)
-#     check_if_message_too_short(message)
-
-#     store = data_store.get()
-    
-#     message_id = 0
-#     if store['messages'] != []: #MESSAGES IS NOT EMPTY
-#         message_id = store['messages'][-1]['message_id'] + 1
-
-#     time_created = datetime.datetime.now().timestamp()
-
-#     message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created}
-
-#     store['messages'].append(message_info)
-
-#     idx = store['dms']['dm_id'].index(dm_id)
-#     store['dms']['messages'][idx].append(dm_id)
-    
-#     data_store.set(store)
-
-#     return {
-#         'message_id': message_id
-#     }
 
 def message_edit_v1(token, message_id, message):
 
@@ -134,6 +105,34 @@ def message_remove_v1(token, message_id):
 
     return {}
 
+def message_senddm_v1(token, dm_id, message):
+
+    user_id = check_and_get_user_id(token)
+    check_channel_id(dm_id)
+    check_user_authority_in_dm(user_id, dm_id)
+    check_if_message_too_long(message)
+    check_if_message_too_short(message)
+
+    store = data_store.get()
+    
+    message_id = 0
+    if store['messages'] != []: #MESSAGES IS NOT EMPTY
+        message_id = store['messages'][-1]['message_id'] + 1
+
+    time_created = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created}
+
+    store['messages'].append(message_info)
+
+    idx = store['dms']['dm_id'].index(dm_id)
+    store['dms']['messages'][idx].append(dm_id)
+    
+    data_store.set(store)
+
+    return {
+        'message_id': message_id
+    }
 
 def check_channel_id(channel_id):
     store = data_store.get()
@@ -204,12 +203,19 @@ def check_user_authority_in_channel(user_id, channel_id):
     if user_id not in store['channels']['all_members'][idx]:
         raise AccessError(description="User not a part of the channel members")
 
-if __name__ == '__main__':
-    token = auth_register_v1("joe123@gmail.com", "password", "Joe", "Jim")['token']
-    token2 = auth_register_v1("joe1233@gmail.com", "password", "Marry", "Jim")['token']
-    channel_id = channels_create_v1(token, "Funland", True)['channel_id']
-    #print_store_debug()
-    message_id = message_send_v1(token, channel_id, "Yo")['message_id']
-    #print_store_debug()
-    message_remove_v1(token2, message_id)
-    #print_store_debug()
+def check_user_authority_in_dm(user_id, dm_id):
+    store = data_store.get()
+    idx = store['dms']['dm_id'].index(dm_id)
+
+    if user_id not in store['dms']['all_members'][idx]:
+        raise AccessError(description="User not a part of the DM members")
+
+# if __name__ == '__main__':
+#     token = auth_register_v1("joe123@gmail.com", "password", "Joe", "Jim")['token']
+#     token2 = auth_register_v1("joe1233@gmail.com", "password", "Marry", "Jim")['token']
+#     channel_id = channels_create_v1(token, "Funland", True)['channel_id']
+#     #print_store_debug()
+#     message_id = message_send_v1(token, channel_id, "Yo")['message_id']
+#     #print_store_debug()
+#     message_remove_v1(token2, message_id)
+#     #print_store_debug()
