@@ -9,8 +9,8 @@ from src.users import user_profile_sethandle_v1
 from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
-from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, channel_messages_v1
-from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_senddm_v1
+from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, channel_leave_v1, channel_addowner_v1, channel_removeowner_v1, channel_messages_v1
+from src.message import message_send_v1, message_edit_v1, message_remove_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 
 def quit_gracefully(*args):
@@ -89,6 +89,24 @@ def channel_messages():
     request_data = request.get_json('data')
     details = channel_messages_v1(request_data['token'], request_data['channel_id'], request_data['start'])
     return dumps(details)
+    
+@APP.route("/channel/leave/v1", methods = ['POST'])
+def channel_leave():
+    request_data = request.get_json('data')
+    response = channel_leave_v1(request_data['token'], request_data['channel_id'])
+    return dumps(response)
+    
+@APP.route("/channel/addowner/v1", methods = ['POST'])
+def channel_addowner():
+    request_data = request.get_json('data')
+    response = channel_addowner_v1(request_data['token'], request_data['channel_id'], request_data['u_id'])
+    return dumps(response)
+
+@APP.route("/channel/removeowner/v1", methods = ['POST'])
+def channel_removeowner():
+    request_data = request.get_json('data')
+    response = channel_removeowner_v1(request_data['token'], request_data['channel_id'], request_data['u_id'])
+    return dumps(response)
 
 @APP.route("/message/edit/v1", methods=['PUT'])
 def edit_message():
@@ -120,11 +138,11 @@ def channel_listall():
     channels = channels_listall_v1(request_data['token'])
     return dumps(channels)  
 
-@APP.route("/user/sethandle/v2", methods=['PUT'])
-def user_profile_sethandle_v2():
+@APP.route("/user/profile/sethandle/v1", methods=['PUT'])
+def user_profile_sethandle():
     request_data = request.get_json()
-    user_profile_sethandle_v1(request_data['token'], request_data['handle_str'])
-    return dumps({})
+    response = user_profile_sethandle_v1(request_data['token'], request_data['handle_str'])
+    return dumps(response)
 
 @APP.route("/admin/user/remove/v1", methods=['DELETE'])
 def adminuser_remove_v1():

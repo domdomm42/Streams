@@ -88,20 +88,24 @@ def test_send_valid_messages(setup):
     message_1_time = datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
     channel_messages_input = {'token': joe_smith_token, 'channel_id': joes_funland_channel_id, 'start': 0}
-    response = requests.get(f'{BASE_URL}/channel/messages/v2', json = channel_messages_input)
-    assert response.json() == {
+    response = requests.get(f'{BASE_URL}/channel/messages/v2', json = channel_messages_input).json()
+
+    response['messages'][0]['time_created'] = int(response['messages'][0]['time_created'])
+    response['messages'][1]['time_created'] = int(response['messages'][1]['time_created'])
+
+    assert response == {
         'messages': [
             {
                 'message_id': 1, 
                 'u_id': 0, 
                 'message': 'Please pick your favourite book, ready for Monday 2pm.', 
-                'time_created': message_1_time
+                'time_created': int(message_1_time)
             }, 
             {
                 'message_id': 0, 
                 'u_id': 0, 
                 'message': 'Hi everyone!', 
-                'time_created': message_0_time
+                'time_created': int(message_0_time)
             }
         ], 
             'start': 0, 
