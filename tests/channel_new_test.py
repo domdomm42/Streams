@@ -102,5 +102,130 @@ def test_owner_member_add(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+def test_owner_permission_add(setup):
+    channel_id_joe, _, _, response_log_marry = setup
+    user_milly_reg = {"email": "milly3@gmail.com", "password": "passwordS", "name_first": "Milly", "name_last": "Mae"}
+    milly_token = requests.post(f'{BASE_URL}/auth/register/v2', json = user_milly_reg).json()['token']
+    channel_join_info1 = {"token": milly_token, "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info1)
+    channel_join_info2 = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info2)
+    channel_add_info = {"token": milly_token, "channel_id": channel_id_joe['channel_id'], "u_id": response_log_marry['auth_user_id']}
+    response = requests.post(f'{BASE_URL}/channel/addowner/v1', json = channel_add_info)
+    response_data = response.json()
+    assert response_data['code'] == 403
 
+def test_no_owner_remove(setup):
+    channel_id_joe, _, response_log_joe, response_log_marry = setup
+    channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    channel_remove_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id'], "u_id": response_log_marry['auth_user_id']}
+    response = requests.post(f'{BASE_URL}/channel/removeowner/v1', json = channel_remove_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
 
+def test_last_owner_remove(setup):
+    channel_id_joe, _, response_log_joe, _ = setup
+    channel_remove_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id'], "u_id": response_log_joe['auth_user_id']}
+    response = requests.post(f'{BASE_URL}/channel/removeowner/v1', json = channel_remove_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_owner_permission_remove(setup):
+    channel_id_joe, _, response_log_joe, response_log_marry = setup
+    channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    channel_remove_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id'], "u_id": response_log_joe['auth_user_id']}
+    response = requests.post(f'{BASE_URL}/channel/removeowner/v1', json = channel_remove_info)
+    response_data = response.json()
+    assert response_data['code'] == 403
+
+#==========================================
+#    valid input test
+#==========================================
+
+def test_valid_input_leave(setup):
+    channel_id_joe, _, response_log_joe, response_log_marry = setup
+    channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    channel_leave_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/leave/v1', json = channel_leave_info)
+    channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+
+    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    details = response.json()
+    assert details == {
+        'all_members': [{   'email': 'marryjoe222@gmail.com',
+                            'handle_str': 'marryjoe',
+                            'name_first': 'Marry',
+                            'name_last': 'Joe',
+                            'u_id': 1}],
+        'is_public': True,
+        'name': 'Joe',
+        'owner_members': [],
+    }
+
+def test_valid_input_add(setup):
+    channel_id_joe, _, response_log_joe, response_log_marry = setup
+    channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    channel_add_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id'], "u_id": response_log_marry['auth_user_id']}
+    requests.post(f'{BASE_URL}/channel/addowner/v1', json = channel_add_info)
+    channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+
+    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    details = response.json()
+    assert details == {
+        'all_members': [{'email': 'joe123@gmail.com',
+                        'handle_str': 'joesmith',
+                        'name_first': 'Joe',
+                        'name_last': 'Smith',
+                        'u_id': 0},
+                        {'email': 'marryjoe222@gmail.com',
+                        'handle_str': 'marryjoe',
+                        'name_first': 'Marry',
+                        'name_last': 'Joe',
+                        'u_id': 1}],
+        'is_public': True,
+        'name': 'Joe',
+        'owner_members': [{'email': 'joe123@gmail.com',
+                            'handle_str': 'joesmith',
+                            'name_first': 'Joe',
+                            'name_last': 'Smith',
+                            'u_id': 0},
+                        {'email': 'marryjoe222@gmail.com',
+                            'handle_str': 'marryjoe',
+                            'name_first': 'Marry',
+                            'name_last': 'Joe',
+                            'u_id': 1}],
+    }
+def test_valid_input_remove(setup):
+    channel_id_joe, _, response_log_joe, response_log_marry = setup
+    channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    channel_test_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id'], "u_id": response_log_marry['auth_user_id']}
+    requests.post(f'{BASE_URL}/channel/addowner/v1', json = channel_test_info)
+    channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
+    requests.post(f'{BASE_URL}/channel/removeowner/v1', json = channel_test_info)
+    
+    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    details = response.json()
+    assert details == {
+        'all_members': [{'email': 'joe123@gmail.com',
+                        'handle_str': 'joesmith',
+                        'name_first': 'Joe',
+                        'name_last': 'Smith',
+                        'u_id': 0},
+                        {'email': 'marryjoe222@gmail.com',
+                        'handle_str': 'marryjoe',
+                        'name_first': 'Marry',
+                        'name_last': 'Joe',
+                        'u_id': 1}],
+        'is_public': True,
+        'name': 'Joe',
+        'owner_members': [{'email': 'joe123@gmail.com',
+                            'handle_str': 'joesmith',
+                            'name_first': 'Joe',
+                            'name_last': 'Smith',
+                            'u_id': 0}],
+    }

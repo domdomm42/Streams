@@ -46,7 +46,7 @@ def setup():
 #Test access details a channel with an invalid id(100 is not exist in data_store)
 def test_invalid_channel_id_detail(setup):
     _, _, response_log_joe, _ = setup
-    channel_detail_info = {"token": response_log_joe['token'], "channel_id": "100"}
+    channel_detail_info = {"token": response_log_joe['token'], "channel_id": 100}
     response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_detail_info)
     response_data = response.json()
     assert response_data['code'] == 400
@@ -55,7 +55,7 @@ def test_invalid_channel_id_detail(setup):
 #Test join a channel with an invalid id(100 is not exist in data_store)        
 def test_invalid_channel_id_join(setup):
     _, _, response_log_joe, _ = setup
-    channel_join_info = {"token": response_log_joe['token'], "channel_id": "100"}
+    channel_join_info = {"token": response_log_joe['token'], "channel_id": 100}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
     assert response_data['code'] == 400
@@ -63,7 +63,7 @@ def test_invalid_channel_id_join(setup):
 
 def test_negative_channel_id_in_details(setup):
     _, _, response_log_joe, _ = setup
-    channel_detail_info = {"token": response_log_joe["token"], "channel_id": "-1"}
+    channel_detail_info = {"token": response_log_joe["token"], "channel_id": -1}
     response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_detail_info)
     response_data = response.json()
     assert response_data['code'] == 403
@@ -71,7 +71,7 @@ def test_negative_channel_id_in_details(setup):
 
 def test_negative_channel_id_in_join(setup):
     _, _, response_log_joe, _ = setup
-    channel_join_info = {"token": response_log_joe['token'], "channel_id": "-1"}
+    channel_join_info = {"token": response_log_joe['token'], "channel_id": -1}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
     assert response_data['code'] == 403
@@ -130,6 +130,41 @@ def test_join_private_channel(setup): # making joe join marry's channel
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
     assert response_data['code'] == 403
+
+def test_global_owner_join_private(setup):
+    _, channel_id_marry, response_log_joe, _ = setup
+    channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    channel_details_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
+    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    details = response.json()
+    assert details == {
+        'name': 'Marry',
+        'is_public': False,
+        'owner_members': [
+            {   
+                'email': 'marryjoe222@gmail.com',
+                'handle_str': 'marryjoe',
+                'name_first': 'Marry',
+                'name_last': 'Joe',
+                'u_id': 1
+            }
+        ],
+        'all_members': [
+            {   'email': 'marryjoe222@gmail.com',
+                'handle_str': 'marryjoe',
+                'name_first': 'Marry',
+                'name_last': 'Joe',
+                'u_id': 1
+            },
+            {   'email': 'joe123@gmail.com',
+                'handle_str': 'joesmith',
+                'name_first': 'Joe',
+                'name_last': 'Smith',
+                'u_id': 0
+            }
+        ],
+    }
 
 
 #=====Valid case for detail===========
@@ -239,6 +274,7 @@ def test_valid_channel_id_join(setup):
             }
         ]
     }
+
 
 
 

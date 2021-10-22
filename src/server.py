@@ -10,8 +10,8 @@ from src.users import *
 from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
-from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, channel_leave_v1, channel_addowner_v1, channel_removeowner_v1
-from src.message import message_send_v1, message_edit_v1, message_remove_v1
+from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, channel_leave_v1, channel_addowner_v1, channel_removeowner_v1, channel_messages_v1
+from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_senddm_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 
 
@@ -86,6 +86,12 @@ def channel_details():
     details = channel_details_v1(request_data['token'], request_data['channel_id'])
     return dumps(details)
 
+@APP.route("/channel/messages/v2", methods = ['GET'])
+def channel_messages():
+    request_data = request.get_json('data')
+    details = channel_messages_v1(request_data['token'], request_data['channel_id'], request_data['start'])
+    return dumps(details)
+    
 @APP.route("/channel/leave/v1", methods = ['POST'])
 def channel_leave():
     request_data = request.get_json('data')
@@ -152,66 +158,11 @@ def userpermission_change_v1():
     response = admin_userpermission_change_v1(request_data['token'], request_data['u_id'], request_data['permission_id'])
     return dumps(response)
 
-
-
-# List of all users
-@APP.route("/user/all/v1", methods=['GET'])
-def user_all(token):
+@APP.route("/message/senddm/v1", methods=['POST'])
+def send_dm():
     request_data = request.get_json()
-
-    user = user_all_v1(request_data['token'])
-
-    return dumps(user)
-
-
-# List of all valid users
-@APP.route("/user/profile/v1", methods=['GET'])
-def user_profile():
-    request_data = request.get_json()
-
-    user = user_profile_v1(request_data['token'], request_data['user_id'])
-
-    return dumps(user)
-
-
-# Update name
-@APP.route("/user/profile/setname/v1", methods=['PUT'])
-def user_profile_setname():
-    request_data = request.get_json()
-
-    response = user_profile_setname_v1(request_data['token'], request_data['first_names'], request_data['last_names'])
-    return dumps(response)
-
-
-# Update email
-@APP.route("/user/profile/setemail/v1", methods=['PUT'])
-def user_profile_setemail():
-    request_data = request.get_json()
-    response = user_profile_setemail_v1(request_data['token'], request_data['emails'])
-
-    return dumps(response)
-
-
-# # Update handle
-# @APP.route("/users/profile/sethandle/v1", methods=['PUT'])
-# def user_profile_sethandle_v1(toke, handle_str):
-#     request_data = request.get_json()
-
-#     return dumps()
-
-
-# @APP.route("/channel/leave/v1", methods=['POST'])
-# def channel_leave_v1(token, channel_id):
-#     request_data = request.get_json()
-
-#     channel_id = channel_leave_v1(request_data['token'], request_data['channel_id'])
-
-#     del ['channels']['all_members'][channel_id]
-
-#     return dumps()
-
-
-
+    message_id = message_senddm_v1(request_data['token'], request_data['dm_id'], request_data['message'])
+    return dumps(message_id)
 
 # Example
 @APP.route("/echo", methods=['GET'])

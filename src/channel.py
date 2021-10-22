@@ -1,6 +1,9 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
+from src.message import message_send_v1
+from src.channels import channels_create_v1
+from src.auth import auth_register_v1
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -27,9 +30,10 @@ def channel_invite_v1(token, channel_id, u_id):
     store = data_store.get()
 
     check_invalid_channel_id(channel_id)
-    check_invalid_u_id(u_id, )
-    check_member_u_id(channel_id, u_id)
     check_autorised_id(auth_user_id, channel_id)
+    check_invalid_u_id(u_id)
+    check_member_u_id(channel_id, u_id)
+    
 
     store['channels']['all_members'][channel_id].append(u_id)
 
@@ -120,7 +124,7 @@ def channel_details_v1(token, channel_id):
 
     }
 
-def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v1(token, channel_id, start):
     """
         Given a channel with channel_id that the authorised user is a member of ,
         return up to 50 messages between index of  start and end.
@@ -145,24 +149,31 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         }
         """
     
+    auth_user_id = check_and_get_user_id(token)
 
     check_invalid_channel_id(channel_id)
     check_invalid_start(channel_id, start)
     check_autorised_id(auth_user_id, channel_id)
 
-    # store['channels']['messages'].append[list_message]
-    # for message in store['channels']['messages'][channel_id]:
-    #     messages_list.append(message)
-    #     place += 1
-    #     if place == 50:
-    #         break
-    # if place < 50:
-    #     place = -1
+    store = data_store.get()
+    messages = []
+
+    end = start + 50
+    # get the 50 messages
+    for idx in range(start, start + 51):
+        try: 
+            idx = store['channels']['messages'][channel_id][-1 - idx]
+        except IndexError:
+            end = -1
+            break
+
+        messages.append(get_message(idx))
+
 
     return {
-        'messages': [],
+        'messages': messages,
         'start': start,
-        'end': (start + 50),
+        'end': end,
     }
 
 
@@ -211,10 +222,10 @@ def channel_leave_v1(token, channel_id):
     user_id = check_and_get_user_id(token)
     check_channel_id(channel_id)
     check_authority(user_id, channel_id)
-    if user_id in store['channels']['owner_members'][channel_id]:
-        del store['channels']['owner_members'][channel_id][user_id]
-    del store['channels']['all_members'][channel_id][user_id]
-
+    store['channels']['all_members'][channel_id].remove(user_id)
+    if user_id in store['channels']['owner_user_id'][channel_id]:
+        store['channels']['owner_user_id'][channel_id].remove(user_id)
+    data_store.set(store)
     return {
 
     }
@@ -255,12 +266,12 @@ def channel_removeowner_v1(token, channel_id, u_id):
     #check owner permssion
     check_owner_permission(channel_id, user_id)
     #check last owner
-    if store['channels']['owner_user_id'][channel_id][-1] == store['channels']['owner_user_id'][channel_id][1]:
+    if store['channels']['owner_user_id'][channel_id][-1] == store['channels']['owner_user_id'][channel_id][0]:
         raise InputError(description='User is last owner of this channel')
 
     
-    del store['channels']['owner_user_id'][channel_id][u_id]
-    del store['channels']['all_members'][channel_id][u_id]
+    store['channels']['owner_user_id'][channel_id].remove(u_id)
+    
     data_store.set(store)
     return {
 
@@ -343,7 +354,7 @@ def check_channel_status(channel_id, auth_user_id):
     if store['channels']['is_public'][channel_id] == True:
         pass
     else:
-        if auth_user_id not in store['channels']['all_members'][channel_id]:
+        if auth_user_id not in store['channels']['all_members'][channel_id] and store['users']['is_global_owner'][auth_user_id] == False:
             raise AccessError(description="User is not authorised to join channel")
 
     # elif store['channels']['is_public'][channel_id] == False:
@@ -362,15 +373,8 @@ def check_channel_status(channel_id, auth_user_id):
 # Check invalid channel_id
 def check_invalid_channel_id(channel_id):
     store = data_store.get()
-    i = 0
-
-    for _ in store['channels']['channel_name']:
-
-        if i == channel_id:
-            return
-
-        i += 1
-    raise InputError(description='Invalid channel id')
+    if channel_id not in store['channels']['channel_id']:
+        raise InputError(description='Channel ID does not exist')
 
 
 # Check invalid u_id
@@ -385,15 +389,17 @@ def check_member_u_id(channel_id, u_id):
     store = data_store.get()
 
     if u_id in store['channels']['all_members'][channel_id]:
-        raise InputError('User not apart of channel')
+        raise InputError('User already apart of channel')
     else:
         pass
 
 
 # Check start
 def check_invalid_start(channel_id, start):
-    if start > 0:
-        raise InputError(description='Permission denied!')
+    store = data_store.get()
+    no_msgs_in_channel = len(store['channels']['messages'][channel_id])
+    if start >= no_msgs_in_channel:
+        raise InputError(description='Start is greater than the total number of messages in the channel')
 
 
 # AccessError
@@ -401,8 +407,19 @@ def check_invalid_start(channel_id, start):
 def check_autorised_id(auth_user_id, channel_id):
     store = data_store.get()
 
-    for user in store['channels']['all_members'][channel_id]:
-        if user == auth_user_id:
-            return
+    if auth_user_id not in store['channels']['all_members'][channel_id]:
+        raise AccessError(description='Permission denied!')
+    
+def get_message(message_id):
+    store = data_store.get()
+    for msg in store['messages']:
+        if msg['message_id'] == message_id:
+            return msg
 
-    raise AccessError(description='Permission denied!')
+# if __name__ == '__main__':
+#     token = auth_register_v1('abc1531@gmail.com', 'password', 'abc', '123')['token']
+#     channel_id = channels_create_v1(token, 'abc', True)['channel_id']
+#     for i in range(0, 75):
+#         message_send_v1(token, channel_id, "Hello" + str(i))
+
+#     print(channel_messages_v1(token, channel_id, 40))
