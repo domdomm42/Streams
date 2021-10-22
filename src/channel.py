@@ -222,10 +222,10 @@ def channel_leave_v1(token, channel_id):
     user_id = check_and_get_user_id(token)
     check_channel_id(channel_id)
     check_authority(user_id, channel_id)
-    if user_id in store['channels']['owner_members'][channel_id]:
-        del store['channels']['owner_members'][channel_id][user_id]
-    del store['channels']['all_members'][channel_id][user_id]
-
+    store['channels']['all_members'][channel_id].remove(user_id)
+    if user_id in store['channels']['owner_user_id'][channel_id]:
+        store['channels']['owner_user_id'][channel_id].remove(user_id)
+    data_store.set(store)
     return {
 
     }
@@ -266,12 +266,12 @@ def channel_removeowner_v1(token, channel_id, u_id):
     #check owner permssion
     check_owner_permission(channel_id, user_id)
     #check last owner
-    if store['channels']['owner_user_id'][channel_id][-1] == store['channels']['owner_user_id'][channel_id][1]:
+    if store['channels']['owner_user_id'][channel_id][-1] == store['channels']['owner_user_id'][channel_id][0]:
         raise InputError(description='User is last owner of this channel')
 
     
-    del store['channels']['owner_user_id'][channel_id][u_id]
-    del store['channels']['all_members'][channel_id][u_id]
+    store['channels']['owner_user_id'][channel_id].remove(u_id)
+    
     data_store.set(store)
     return {
 
