@@ -163,14 +163,17 @@ def admin_userpermission_change_v1(token, user_id, permission_id):
 
 #     data_1 = auth_register_v1("marryjoe@gmail.com", "password", "Marry", "Joe")
 #     data_2 = auth_register_v1("marryjane@gmail.com", "passwordJ", "Marry", "Jane")
+#     data_2 = auth_register_v1("marryjane2@gmail.com", "passwordJ2", "Marrye", "Janez")
+
+#     admin_userpermission_change_v1(data_1['token'], data_2['auth_user_id'], 1)
 
 #     print_store_debug()
 
 #     admin_user_remove_v1(data_2['token'], data_1['auth_user_id'])
-#     print_store_debug()
+#     # print_store_debug()
 
-# #     # admin_user_remove_v1(data_2['token'],data_2['auth_user_id'])
-# #     # print_store_debug()
+#     # admin_user_remove_v1(data_2['token'],data_2['auth_user_id'])
+#     # print_store_debug()
 
 
 

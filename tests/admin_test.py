@@ -26,7 +26,7 @@ def test_remove_admin():
     
     delete_data = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     delete_data = delete_data.json()
-    print(delete_data)
+    #print(delete_data)
 
     assert delete_data['code'] == 400
 
@@ -53,7 +53,24 @@ def test_change_permission():
     
     delete_data = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     delete_data = delete_data.json()
-    print(delete_data)
+    #print(delete_data)
 
     assert delete_data['code'] == 400
+
+def test_admin_change_permission_pass():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+
+    permission_change_data_1 = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id'], 'permission_id': 1}
+
+    requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
+
+
 
