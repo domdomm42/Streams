@@ -156,7 +156,7 @@ def userpermission_change_v1():
 
 # List of all users
 @APP.route("/user/all/v1", methods=['GET'])
-def user_all_v1(token):
+def user_all(token):
     request_data = request.get_json()
 
     user = user_all_v1(request_data['token'])
