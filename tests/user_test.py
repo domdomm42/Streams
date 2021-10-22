@@ -96,10 +96,19 @@ def test_user_handle_duplicate(setup):
 
 
 
-# # Test for u_id
-# def test_user_u_id_invalid(setup):
-#     response_log_joe, response_log_marry = setup
+# Test for u_id
+def test_user_u_id_invalid(setup):
+    
+    response_log_joe, _ = setup
 
+    setuid_info = {"token": response_log_joe["token"], 'user_id': '100'}
+
+    response = requests.get(f'{BASE_URL}user/profile/v1', json = setuid_info)
+    
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+        
 
 
 # Test for name
@@ -153,6 +162,16 @@ def test_user_email_invalid(setup):
     response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
     response_data = response.json()
     assert response_data['code'] == 400
+
+
+
+
+# def test_user_all_correct(setup):
+#     response_log_joe, _ = setup
+
+
+
+
 
 
 # Test for handle

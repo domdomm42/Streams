@@ -62,10 +62,11 @@ def user_profile_v1(token, u_id):
 
     for x in store['users']:
 
-        if u_id < len(store['users']['user_handles']):
+        if int(u_id) < len(store['users']['user_handles']):
             user.append({ 'user_id': store['users']['user_id'][x], 'emails': store['users']['emails'][x], 'first_names': store['users']['first_names'][x], 'last_names': store['users']['last_names'][x],
                      'user_handles': store['users']['user_handles'][x]})
-
+        else: 
+            raise InputError(description='Invalid User ID')
     data_store.set(store)
 
     return {user}
@@ -213,6 +214,7 @@ def check_invalid_emails(email):
         pass
     else:
         raise InputError(description = 'This email is already registered!')
+
 
 
 

@@ -169,7 +169,7 @@ def user_all(token):
 def user_profile():
     request_data = request.get_json()
 
-    user = user_profile_v1(request_data['token'], request_data['u_id'])
+    user = user_profile_v1(request_data['token'], request_data['user_id'])
 
     return dumps(user)
 
