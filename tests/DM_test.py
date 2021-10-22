@@ -26,7 +26,7 @@ def setup():
     sam_token = {'token': requests.post(f'{BASE_URL}/auth/register/v2', json = user_info).json()['token']}
 
     # Create a DM by Joe
-    dm1_info = {'token': joe_token, 'u_ids': [1]}
+    dm1_info = {'token': joe_token['token'], 'u_ids': [1]}
     dm1_id = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm1_info).json()['dm_id']}
 
     return dm1_id['dm_id'], joe_token['token'], marry_token['token'], sam_token['token']
@@ -186,15 +186,16 @@ SAMPLE TESTING FOR DM_CREATE
 '''
 
 def test_simple_dm_create(setup):
-    assert setup == 0
+    dm1, _, _, _= setup
+    assert dm1 == 0
 
 def test_multiple_dm_create(setup):
     dm1, _, marry, _= setup
     #create a DM by Joe
     dm1_info = {'token': marry, 'u_ids': [0, 1]}
     dm2 = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm1_info).json()['dm_id']}
-    assert dm1 == 0 
-    assert dm2 == 1
+    assert dm1 == 0  
+    assert dm2['dm_id'] == 1
 
 '''
 SAMPLE TESTING FOR DM_LIST
@@ -205,9 +206,9 @@ def test_simple_dm_list(setup):
     dm_list = {"token": joe}
     response_create = requests.get(f'{BASE_URL}/dm/list/v1', json = dm_list)
     response_create_data = response_create.json()
-    assert response_create_data['dms'] == {[
+    assert response_create_data['dms'] == [
         {'dm_id': 0, 'dm_name': 'joesmith, marrysmith'}
-    ]}
+    ]
 
 '''
 SAMPLE TESTING FOR DM_REMOVE
@@ -221,7 +222,7 @@ def test_simple_dm_remove(setup):
     dm_list = {"token": marry}
     response_create = requests.get(f'{BASE_URL}/dm/list/v1', json = dm_list)
     response_create_data = response_create.json()
-    assert response_create_data['dms'] == {[]}
+    assert response_create_data['dms'] == []
 '''
 SAMPLE TESTING FOR DM_DETAILS
 '''

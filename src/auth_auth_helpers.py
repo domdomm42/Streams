@@ -32,7 +32,12 @@ def generate_jwt(user_id):
 #     return jwt.decode(encoded_jwt, SECRET, algorithm=['HS256'])
 
 def check_and_get_user_id(token):
-    decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
+    
+    try:
+        decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
+
+    except:
+        raise AccessError('Invalid token')
     user_id = decoded_token['user_id']
     session_id = decoded_token['session_id']
 
