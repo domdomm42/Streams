@@ -207,7 +207,7 @@ def test_simple_dm_list(setup):
     response_create = requests.get(f'{BASE_URL}/dm/list/v1', json = dm_list)
     response_create_data = response_create.json()
     assert response_create_data['dms'] == [
-        {'dm_id': 0, 'dm_name': 'joesmith, marrysmith'}
+        {'dm_id': 0, 'name': 'joesmith, marrysmith'}
     ]
 
 '''
