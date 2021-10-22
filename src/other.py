@@ -46,7 +46,7 @@ def clear_v1():
 
     data_store.set(store)
 
-    return {}
+    return 
 
 def print_store_debug():
     # store = data_store.get()

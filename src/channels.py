@@ -23,7 +23,7 @@ def channels_list_v1(token):
     '''
     auth_user_id = check_and_get_user_id(token)
 
-    new_list = {'channels':[]}
+    new_list = []
 
     store = data_store.get()
     i = 0
@@ -31,16 +31,16 @@ def channels_list_v1(token):
 
         # Tracks the Channel ID by its index in the 'channel' data_store
         name = store['channels']['channel_name'][i]
-        new_dict = { 'channel_id': i, 'name': name}
+        new_dict = {'channel_id': i, 'name': name}
 
         # Filters the added channels by the existance of User in 
         # the members
         if auth_user_id in members:
-            new_list['channels'].append(new_dict)
+            new_list.append(new_dict)
 
         i += 1
 
-    return new_list
+    return {'channels': new_list}
 
 # Works like the previous function with the ommission of User Filter
 def channels_listall_v1(token):
@@ -119,9 +119,7 @@ def channels_create_v1(token, name, is_public):
 
     data_store.set(store)
 
-    return {
-        'channel_id': channel_id,
-    } 
+    return {'channel_id': channel_id} 
 
 
 

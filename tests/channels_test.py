@@ -150,6 +150,13 @@ def test_empty_channels():
     response = requests.get(f'{BASE_URL}/channels/listall/v2', json = joe_token).json()
     assert response == {'channels': []}
 
+def test_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    info = {'token': '-1'}
+    response = requests.get(f'{BASE_URL}/channels/list/v2', json = info).json()
+    assert response['code'] == 403
+
 # Testing Invalid names for channel creation
 def test_empty_name1():
 

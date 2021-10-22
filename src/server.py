@@ -13,6 +13,7 @@ from src.channels import channels_create_v1, channels_list_v1, channels_listall_
 from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, channel_leave_v1, channel_addowner_v1, channel_removeowner_v1, channel_messages_v1
 from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_senddm_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
+from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1
 
 
 def quit_gracefully(*args):
@@ -210,6 +211,41 @@ def user_profile_setemail():
 
     return dumps(response)
 
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    request_data = request.get_json()
+    dm_id = dm_create_v1(request_data['token'], request_data['u_ids'])
+    return dumps(dm_id)
+
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    request_data = request.get_json()
+    dms = dm_list_v1(request_data['token'])
+    return dumps(dms)
+
+@APP.route("/dm/remove/v1", methods=['DELETE'])
+def dm_remove():
+    request_data = request.get_json()
+    dm_remove_v1(request_data['token'], request_data['dm_id'])
+    return dumps({})
+
+@APP.route("/dm/details/v1", methods=['GET'])
+def dm_details():
+    request_data = request.get_json()
+    details = dm_details_v1(request_data['token'], request_data['dm_id'])
+    return dumps(details)
+
+@APP.route("/dm/leave/v1", methods=['POST'])
+def dm_leave():
+    request_data = request.get_json()
+    dm_leave_v1(request_data['token'], request_data['dm_id'])
+    return dumps({})
+
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages():
+    request_data = request.get_json()
+    messages = dm_messages_v1(request_data['token'], request_data['dm_id'], request_data['start'])
+    return dumps(messages)
 #### NO NEED TO MODIFY BELOW THIS POINT
 
 if __name__ == "__main__":
