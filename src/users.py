@@ -42,9 +42,9 @@ def user_all_v1(token):
 
     user = []
 
-    for x in store['users']['user_id']:
-        user.append({'u_id': owners, 'email': user_email, 'name_first': user_first_name, 'name_last': user_last_name,
-                     'handle_str': user_handles})
+    for x in store['users']:
+        user.append({ 'user_id': store[users][user_id][x], 'email': store[users][emails][x], 'name_first': store[users][first_names][x], 'name_last': store[users][last_names][x],
+                     'handle_str': store[users][user_handles][x]})
 
     data_store.set(store)
 
@@ -62,9 +62,8 @@ def user_profile_v1(token, u_id):
     for x in store['users']['user_id']:
 
         if u_id < len(store['users']['user_handles']):
-            user.append(
-                {'user_id': owners, 'email': user_email, 'name_first': user_first_name, 'name_last': user_last_name,
-                 'handle_str': user_handles})
+            user.append({ 'user_id': store[users][user_id][x], 'email': store[users][emails][x], 'name_first': store[users][first_names][x], 'name_last': store[users][last_names][x],
+                     'handle_str': store[users][user_handles][x]})
 
     data_store.set(store)
 

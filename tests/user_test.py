@@ -104,14 +104,14 @@ def test_user_handle_duplicate(setup):
 
 # Test for name
 def test_user_name_first_too_short(setup):
-    response_log_joe, response_log_marry = setup
+    response_log_joe, _ = setup
     setname_info = {"token": response_log_joe["token"], "first_names": "", "last_names":"a"}
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
     response_data = response.json()
     assert response_data['code'] == 400
 
 def test_user_name_last_too_short(setup):
-    response_log_joe, response_log_marry = setup
+    response_log_joe, _ = setup
     setname_info = {"token": response_log_joe["token"], "first_names":"a", "last_names": ""}
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
     response_data = response.json()
@@ -119,7 +119,7 @@ def test_user_name_last_too_short(setup):
 
 
 def test_user_name_first_too_long(setup):
-    response_log_joe, response_log_marry = setup
+    response_log_joe, _ = setup
     setname_info = {"token": response_log_joe["token"], "first_names": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz", "last_names": "a"}
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
     response_data = response.json()
@@ -127,7 +127,7 @@ def test_user_name_first_too_long(setup):
 
 
 def test_user_name_last_too_long(setup):
-    response_log_joe, response_log_marry = setup
+    response_log_joe, _ = setup
     setname_info = {"token": response_log_joe["token"], "first_names":'a', "last_names": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz"}
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
     response_data = response.json()
@@ -148,7 +148,7 @@ def test_user_email_duplication(setup):
     assert response_data['code'] == 400
 
 def test_user_email_invalid(setup):
-    response_log_joe, response_log_marry = setup
+    response_log_joe, _ = setup
     setemail_info = {"token": response_log_joe["token"], "emails": "abcde"}
     response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
     response_data = response.json()
