@@ -6,6 +6,7 @@ from src.other import print_store_debug
 BASE_URL = url
 INPUT_ERROR = 400
 ACCESS_ERROR = 403
+SUCCESS = 200
 
 '''
 the member has to be part of the channel
@@ -155,6 +156,22 @@ def test_unauthorised_message_send_and_invalid_channel():
 
 ###################
 # TESTING EDIT MESSAGE
+
+def test_edit_invalid_message():
+    
+    joe_smith_token = setup_2()[0]
+
+    message_edit_input = {"token": joe_smith_token, "message_id": 3, "message": "Hi!"}
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    assert response.json()['code'] == INPUT_ERROR
+
+def test_edit_valid_message():
+    
+    joe_smith_token = setup_2()[0]
+    message_id = setup_2()[1]
+
+    message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi!"}
+    requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
 
 def test_edit_long_message():
     

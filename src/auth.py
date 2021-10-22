@@ -32,31 +32,28 @@ def auth_login_v1(email, password):
     email_list = []
     user_handles_list = []
 
+    check_valid_email(email) 
+    check_valid_password(email, hash(password))
 
-    if check_valid_email(email) == 1 and check_valid_password(email, hash(password)) == 1:
+    for data_email in store["users"]["emails"]:
+        email_list.append(data_email)
 
+    for data_user_handles in store["users"]["user_handles"]:
+        user_handles_list.append(data_user_handles)
 
-        for data_email in store["users"]["emails"]:
-            email_list.append(data_email)
+    counter = 0
+    for list_emails in email_list:
+        if list_emails == email:
+            break
+        else:
+            counter = counter + 1
 
-        for data_user_handles in store["users"]["user_handles"]:
-            user_handles_list.append(data_user_handles)
+    user_id = store['users']['user_id'][counter]
 
-        counter = 0
-        for list_emails in email_list:
-            if list_emails == email:
-                break
-            else:
-                counter = counter + 1
-
-        user_id = store['users']['user_id'][counter]
-
-        return {
-            'token': generate_jwt(user_id),
-            'auth_user_id': user_id,
-        }
-    else:
-        raise InputError('Wrong email and/or password!')
+    return {
+        'token': generate_jwt(user_id),
+        'auth_user_id': user_id,
+    }
 
 
 def auth_register_v1(email, password, name_first, name_last):
@@ -127,7 +124,7 @@ def auth_logout_v1(token):
 
     counter = 0
     for data in store['logged_in_users']:
-        if user_id == data['user_id'] and session_id == data['session_id']:
+        if data['user_id'] == user_id and data['session_id'] == session_id:
             store['logged_in_users'].remove({'user_id': user_id, 'session_id': session_id})
             counter = counter + 1
 

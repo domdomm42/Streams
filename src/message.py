@@ -155,14 +155,6 @@ def check_if_message_id_exists_and_get_sender_id(message_id):
             return message['u_id']
     raise InputError(description="Message does not exist")
 
-def check_if_message_in_channel(message_id):
-    store = data_store.get()
-    for messages_group in store['channels']['messages']:
-        if message_id in messages_group:
-            return True
-    return False
-
-
 def get_dm_or_channel_id_of_message(message_id):
     # OWNER OF CHANNEL/DM CAN EDIT MESSAGE
     store = data_store.get()
