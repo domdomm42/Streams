@@ -117,10 +117,11 @@ def test_invalid_user():
     response_data_1 = response_data_1.json()
     response_data_2 = response_data_2.json()
 
-    kick_data = {'token': response_data_2['token'], 'u_id': response_data_1['auth_user_id'] + 3}
+    kick_data = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id'] + 3}
     response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     response = response.json()
-    assert response['code'] == 403
+    print(response)
+    assert response['code'] == 400
 
 
 def test_wrong_permission_ID():
@@ -196,6 +197,41 @@ def test_auth_not_global_owner():
     data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_2).json()
 
     assert data['code'] == 403
+
+def test_messages():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+
+
+    channel_create_reg = {'token': response_data_1['token'], 'name': 'domchannel', 'is_public': True}
+    channel_create_data = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_create_reg)
+    channel_create_data = channel_create_data.json()
+
+    channel_inv_reg = {'token': response_data_1['token'], 'channel_id': channel_create_data['channel_id'], 'u_id': response_data_2['auth_user_id']}
+    channel_inv_data = requests.post(f'{BASE_URL}/channel/invite/v2', json = channel_inv_reg)
+    channel_inv_data = channel_inv_data.json()
+
+    
+    message_send_reg = {'token': response_data_2['token'], 'channel_id': channel_create_data['channel_id'], 'message': 'HelloWorld'}
+    message_send_data = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_reg)
+    message_send_data = message_send_data.json()
+
+    kick_data = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id']}
+    response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
+    response = response.json()
+
+
+
+
+
+
 
 
 
