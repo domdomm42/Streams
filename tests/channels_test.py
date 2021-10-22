@@ -150,6 +150,15 @@ def test_empty_channels():
     response = requests.get(f'{BASE_URL}/channels/listall/v2', json = joe_token).json()
     assert response == {'channels': []}
 
+def test_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info = {'email': 'joe123@gmail.com', 'password': 'password', 'name_first': 'Joe', 'name_last': 'Smith'}
+    joe_token = {'token': requests.post(f'{BASE_URL}/auth/register/v2', json = user_info).json()['token']}
+
+    response = requests.get(f'{BASE_URL}/channels/list/v2', json = joe_token).json()
+    print(response)
+
 # Testing Invalid names for channel creation
 def test_empty_name1():
 

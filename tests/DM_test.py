@@ -6,9 +6,9 @@ from src.error import InputError, AccessError
 from src.other import clear_v1
 from src.config import *
 from src.auth_auth_helpers import SECRET
-import src.DM_functions
-import datetime
+from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1
 
+import datetime
 BASE_URL = url
 
 @pytest.fixture
@@ -26,19 +26,20 @@ def setup():
     sam_token = {'token': requests.post(f'{BASE_URL}/auth/register/v2', json = user_info).json()['token']}
 
     # Create a DM by Joe
-    dm1_info = {'token': joe_token, 'u_ids': [0, 1]}
+    dm1_info = {'token': joe_token, 'u_ids': [1]}
     dm1_id = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm1_info).json()['dm_id']}
 
-    return dm1_id, joe_token, marry_token, sam_token
+    return dm1_id['dm_id'], joe_token['token'], marry_token['token'], sam_token['token']
 
 
 '''
 INVALIDITY TESTS FOR DM_CREATE
 '''
-u_ids = [0, 1, 2]
+
 def test_dm_create_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
+    u_ids = [0, 1, 2]
     dm_creation = {"token": '-1', "u_ids": u_ids}
     response_create = requests.post(f'{BASE_URL}/dm/create/v1', json = dm_creation)
     response_create_data = response_create.json()
@@ -49,10 +50,11 @@ def test_dm_create_invalid_list():
     user_info = {'email': 'joe123@gmail.com', 'password': 'password', 'name_first': 'Joe', 'name_last': 'Smith'}
     joe_token = {'token': requests.post(f'{BASE_URL}/auth/register/v2', json = user_info).json()['token']}
 
-    dm_creation = {"token": joe_token, "u_ids": u_ids}
+    u_ids = [0, 1, 2]
+    dm_creation = {"token": joe_token['token'], "u_ids": u_ids}
     response_create = requests.post(f'{BASE_URL}/dm/create/v1', json = dm_creation)
     response_create_data = response_create.json()
-    assert response_create_data['code'] == 400    
+    assert response_create_data['code'] == 400
 
 '''
 INVALIDITY TESTS FOR DM_LIST
@@ -304,4 +306,10 @@ def test_simple_dm_messages(setup):
             'time_created': timestamp2
         }
     ]
+
+
+
+
+
+
 
