@@ -37,6 +37,16 @@ def setup():
 
     return joe_smith_data, joes_funland_data, marry_mae_data
 
+def test_invalid_token(setup):
+
+    joe_smith_data, joes_funland_data, marry_mae_data = setup
+    user_info_logout = {'token': marry_mae_data['token']} 
+    requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
+
+    channel_invite_info = {'token': marry_mae_data['token'], 'channel_id': joes_funland_data['channel_id'], 'u_id': joe_smith_data['auth_user_id']}
+    response = requests.post(f'{BASE_URL}/channel/invite/v2', json = channel_invite_info).json()
+    assert response['code'] == 403
+
 def test_invalid_channel(setup):
 
     joe_smith_data, _, marry_mae_data = setup
@@ -68,7 +78,6 @@ def test_auth_user_not_apart_of_channel(setup):
     channel_invite_info = {'token': marry_mae_data['token'], 'channel_id': joes_funland_data['channel_id'], 'u_id': joe_smith_data['auth_user_id']}
     response = requests.post(f'{BASE_URL}/channel/invite/v2', json = channel_invite_info)
     response_data = response.json()
-    print(response_data)
     assert response_data['code'] == 403
 
 def test_send_valid_messages(setup):
@@ -111,3 +120,21 @@ def test_send_valid_messages(setup):
             'start': 0, 
             'end': -1
     }
+
+def test_invalid_start(setup):
+
+    joe_smith_data, joes_funland_data, _ = setup
+
+    joe_smith_token = joe_smith_data['token']
+    joes_funland_channel_id = joes_funland_data['channel_id']
+    #marry_mae_token = setup()[2]['token']
+
+    message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
+    requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+
+    message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
+    requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+
+    channel_messages_input = {'token': joe_smith_token, 'channel_id': joes_funland_channel_id, 'start': 20}
+    response = requests.get(f'{BASE_URL}/channel/messages/v2', json = channel_messages_input).json()
+    assert response['code'] == 400
