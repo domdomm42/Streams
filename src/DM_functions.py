@@ -145,9 +145,9 @@ def dm_details_v1(token, dm_id):
     store = data_store.get()
     u_id_list = []
 
-    check_and_get_user_id(token)
+    auth_user_id = check_and_get_user_id(token)
     check_valid_dm(dm_id, store)
-    check_user_in_dm(token, dm_id, store)
+    check_user_in_dm(auth_user_id, dm_id, store)
 
     index = index_from_dm_id(dm_id, store)
     name = store['dms']['dm_name'][index]
@@ -246,18 +246,27 @@ def dm_messages_v1(token, dm_id, start):
         raise InputError('invalid start, fewer messages than expected.')
 
     messages = []
-    index = store['dms']['messages'][start]
+    message_index = store['dms']['messages'][start:]
+
     num_message = 0
+    for index in message_index:
+        if num_message >= 50:
+            break
+        i = 0
+        while i < len(store['messages']):
 
-    while num_message < 50 or num_message < len(store['dms']['messages']):
-        new_dict = {
-            'message_id': store['dms']['message_id'][index],
-            'u_id': store['dms']['u_id'][index],
-            'message': store['dms']['message'][index],
-            'time_created': store['dms']['time_created'][index]
-        }
-        messages.append(new_dict)
-
+            if index == store['messages'][i]['message_id']:
+                new_dict = {
+                    'message_id': store['messages'][i]['message_id'],
+                    'u_id': store['messages'][i]['u_id'],
+                    'message': store['messages'][i]['message'],
+                    'time_created': store['messages'][i]['time_created']
+                }
+                messages.append(new_dict)
+                num_message += 1
+                break
+            i += 1
+            
     if num_message < 50:
         end = -1
     else:

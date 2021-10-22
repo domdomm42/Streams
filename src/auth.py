@@ -53,7 +53,7 @@ def auth_login_v1(email, password):
 
         return {
             'token': generate_jwt(user_id),
-            'auth_user_id': user_id,
+            'auth_user_id': user_id
         }
     else:
         raise InputError('Wrong email and/or password!')
