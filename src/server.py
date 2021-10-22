@@ -172,6 +172,43 @@ def echo():
    	    raise InputError(description='Cannot echo "echo"')
     return dumps({
     })
+    
+# List of all users
+@APP.route("/user/all/v1", methods=['GET'])
+def user_all(token):
+    request_data = request.get_json()
+
+    user = user_all_v1(request_data['token'])
+
+    return dumps(user)
+
+
+# List of all valid users
+@APP.route("/user/profile/v1", methods=['GET'])
+def user_profile():
+    request_data = request.get_json()
+
+    user = user_profile_v1(request_data['token'], request_data['user_id'])
+
+    return dumps(user)
+
+
+# Update name
+@APP.route("/user/profile/setname/v1", methods=['PUT'])
+def user_profile_setname():
+    request_data = request.get_json()
+
+    response = user_profile_setname_v1(request_data['token'], request_data['first_names'], request_data['last_names'])
+    return dumps(response)
+
+
+# Update email
+@APP.route("/user/profile/setemail/v1", methods=['PUT'])
+def user_profile_setemail():
+    request_data = request.get_json()
+    response = user_profile_setemail_v1(request_data['token'], request_data['emails'])
+
+    return dumps(response)
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
