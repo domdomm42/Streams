@@ -143,6 +143,22 @@ def test_user_name_last_too_long(setup):
     assert response_data['code'] == 400
 
 
+def test_user_name_both_short(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe["token"], "first_names":"", "last_names": ""}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_user_name_both_long(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe["token"], "first_names":"abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz", "last_names": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz"}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+
 
 # Test for email
 def test_user_email_duplication(setup):
@@ -166,12 +182,42 @@ def test_user_email_invalid(setup):
 
 
 
-# def test_user_all_correct(setup):
-#     response_log_joe, _ = setup
 
 
 
 
+def test_user_all_correct(setup):
+    response_log_joe, _ = setup
+    
+    setname_info = {"token": response_log_joe["token"], "first_names": "a", "last_names":"a"}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+
+    
+    setemail_info = {"token": response_log_joe["token"], "emails": "abcde"}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "KobeBryant"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_user_all_wrong(setup):
+    response_log_joe, _ = setup
+    
+    setname_info = {"token": response_log_joe["token"], "first_names": "", "last_names":""}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+
+    
+    setemail_info = {"token": response_log_joe["token"], "emails": ""}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": ""}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+
+    response_data = response.json()
+    assert response_data['code'] == 400
 
 
 # Test for handle
