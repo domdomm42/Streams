@@ -28,7 +28,7 @@ def test_remove_admin():
     delete_data = delete_data.json()
     #print(delete_data)
 
-    assert delete_data['code'] == 400
+    assert delete_data['code'] == 403
 
 
 
@@ -55,7 +55,7 @@ def test_change_permission():
     delete_data = delete_data.json()
     #print(delete_data)
 
-    assert delete_data['code'] == 400
+    assert delete_data['code'] == 403
 
 def test_admin_change_permission_pass():
     requests.delete(f'{BASE_URL}/clear/v1')
@@ -71,6 +71,148 @@ def test_admin_change_permission_pass():
     permission_change_data_1 = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id'], 'permission_id': 1}
 
     requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
+
+def test_kick_pass():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+
+    kick_data = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id']}
+    requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
+
+    print(requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data).json())
+
+def test_access_error1():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+
+    kick_data = {'token': response_data_2['token'], 'u_id': response_data_1['auth_user_id']}
+    response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
+    response = response.json()
+    print(response)
+    assert response['code'] == 403
+
+
+def test_invalid_user():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+
+    kick_data = {'token': response_data_2['token'], 'u_id': response_data_1['auth_user_id'] + 3}
+    response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
+    response = response.json()
+    assert response['code'] == 403
+
+
+def test_wrong_permission_ID():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+
+    permission_change_data_1 = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id'], 'permission_id': 3}
+
+    data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
+    data = data.json()
+    assert data['code'] == 400
+
+def test_non_existent_user_id():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+
+    permission_change_data_1 = {'token': response_data_1['token'], 'u_id': 10, 'permission_id': 1}
+
+    data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
+    data = data.json()
+    assert data['code'] == 400
+
+def test_uid_only_global_owner():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+
+    permission_change_data_1 = {'token': response_data_2['token'], 'u_id': response_data_1['auth_user_id'], 'permission_id': 2}
+
+    data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
+    data = data.json()
+    assert data['code'] == 400
+
+def test_auth_not_global_owner():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
+    user_info_reg_3 = {"email": "marry@gmail.com", "password": "passwordz", "name_first": "Marry", "name_last": "Tom"}
+
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+    response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_2)
+    response_data_3 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_3)
+
+    response_data_1 = response_data_1.json()
+    response_data_2 = response_data_2.json()
+    response_data_3 = response_data_3.json()
+
+    permission_change_data_1 = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id'], 'permission_id': 1}
+    requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
+
+    permission_change_data_2 = {'token': response_data_3['token'], 'u_id': response_data_2['auth_user_id'], 'permission_id': 2}
+    data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_2).json()
+
+    assert data['code'] == 403
+
+
+
+
+    
+
+
+
+ 
+
+    
+
+
+    
+
+
+
 
 
 
