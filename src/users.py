@@ -43,8 +43,8 @@ def user_all_v1(token):
     user = []
 
     for x in store['users']:
-        user.append({ 'user_id': store[users][user_id][x], 'email': store[users][emails][x], 'name_first': store[users][first_names][x], 'name_last': store[users][last_names][x],
-                     'handle_str': store[users][user_handles][x]})
+        user.append({ 'user_id': store[users][user_id][x], 'emails': store[users][emails][x], 'first_names': store[users][first_names][x], 'last_names': store[users][last_names][x],
+                     'user_handles': store[users][user_handles][x]})
 
     data_store.set(store)
 
@@ -59,11 +59,11 @@ def user_profile_v1(token, u_id):
 
     user = []
 
-    for x in store['users']['user_id']:
+    for x in store['users']:
 
         if u_id < len(store['users']['user_handles']):
-            user.append({ 'user_id': store[users][user_id][x], 'email': store[users][emails][x], 'name_first': store[users][first_names][x], 'name_last': store[users][last_names][x],
-                     'handle_str': store[users][user_handles][x]})
+            user.append({ 'user_id': store[users][user_id][x], 'emails': store[users][emails][x], 'first_names': store[users][first_names][x], 'last_names': store[users][last_names][x],
+                     'user_handles': store[users][user_handles][x]})
 
     data_store.set(store)
 
@@ -85,9 +85,26 @@ def user_profile_setname_v1(token, name_first, name_last):
 
     store = data_store.get()
 
-    new_name = {'first_names': name_first, 'last_names': name_last}
+    # new_name = {'first_names': name_first, 'last_names': name_last}
 
-    store['users']['user_id'].append(new_name)
+    # store['users']['user_id'].append(new_name)
+
+
+
+
+    idx = 0
+    for _ in store['users']:
+        if idx == user_id:
+            store['users']['first_names'][idx] = name_first
+            store['users']['last_names'][idx] = name_last
+
+
+            break
+        idx = idx + 1
+
+
+
+
 
     data_store.set(store)
 
