@@ -335,3 +335,21 @@ def test_wrong_password_3():
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log_data = response_log.json()
     assert response_log_data['code'] == 400
+
+
+# Logout Tests
+def test_double_logout():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    
+    response_data = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+
+    user_info_logout = response_data.json()
+    user_info_logout = {'token': user_info_logout['token']} 
+
+    requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
+    return_value = requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
+
+    return_value = return_value.json()
+    assert return_value['code'] == 403
+
