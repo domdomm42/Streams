@@ -60,6 +60,20 @@ def test_user_handle_duplicate(setup):
     assert response_data['code'] == 400
 
 
+def test_valid_handle(setup):
+    response_log_joe, _ = setup
+    sethandle_info = {"token": response_log_joe['token'], "handle_str": "KobeBryant"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'joe123@gmail.com',
+        'first_names': 'Joe',
+        'last_names': 'Smith',
+        'user_handles': 'KobeBryant',
+        'user_id': 0,
+        }
 
 # import pytest
 
@@ -162,8 +176,8 @@ def test_user_name_both_long(setup):
 # Test for email
 def test_user_email_duplication(setup):
     response_log_joe, response_log_marry = setup
-    setemail_info1 = {"token": response_log_joe["token"], "emails": "abcde"}
-    setemail_info2 = {"token": response_log_marry["token"], "emails": "abcde"}
+    setemail_info1 = {"token": response_log_joe["token"], "emails": "kobebryant24881@gmail.com"}
+    setemail_info2 = {"token": response_log_marry["token"], "emails": "kobebryant24881@gmail.com"}
 
     requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info1)
     response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info2)
@@ -192,14 +206,21 @@ def test_user_all_correct(setup):
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
 
     
-    setemail_info = {"token": response_log_joe["token"], "emails": "abcde"}
-    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+    setemail_info = {"token": response_log_joe["token"], "emails": "kobebryant24881@gmail.com"}
+    requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
 
     sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "KobeBryant"}
     requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
-
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data == {
+        'emails': 'kobebryant24881@gmail.com',
+        'first_names': 'a',
+        'last_names': 'a',
+        'user_handles': 'KobeBryant',
+        'user_id': 0,
+    }
 
 
 def test_user_all_wrong(setup):
