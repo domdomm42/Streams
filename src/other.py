@@ -27,6 +27,8 @@ def clear_v1():
     store['users']['last_names'] = []
     store['users']['user_handles'] = []
     store['users']['is_global_owner'] = []
+    store['users']['removed_user'] = []
+    store['users']['permissions'] = []
 
     store['channels']['channel_id'] = []
     store['channels']['channel_name'] = []

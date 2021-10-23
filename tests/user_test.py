@@ -101,10 +101,9 @@ def test_user_u_id_invalid(setup):
     
     response_log_joe, _ = setup
 
-    setuid_info = {"token": response_log_joe["token"], 'user_id': '100'}
-
-    response = requests.get(f'{BASE_URL}user/profile/v1', params = setuid_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 100}
     
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
     response_data = response.json()
     assert response_data['code'] == 400
 
@@ -224,7 +223,34 @@ def test_user_all_output(setup):
     user_all_info = {"token": response_log_joe["token"]}
     response = requests.get(f'{BASE_URL}users/all/v1', json = user_all_info)
     response_data = response.json()
-    assert response_data == {}
+    assert response_data == [
+        {'email': 'joe123@gmail.com',
+        'handle_str': 'joesmith',
+         'is_remove': False,
+         'name_first': 'Joe',
+         'name_last': 'Smith',
+         'u_id': 0},
+        {'email': 'marryjoe222@gmail.com',
+         'handle_str': 'marryjoe',
+         'is_remove': False,
+         'name_first': 'Marry',
+         'name_last': 'Joe',
+         'u_id': 1}
+    ]
+    
+def test_user_profile_output(setup):
+    response_log_joe, _ = setup
+    
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 1}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {   
+        'emails': 'marryjoe222@gmail.com',
+        'first_names': 'Marry',
+        'last_names': 'Joe',
+        'user_handles': 'marryjoe',
+        'user_id': 1}
 
 
 # Test for handle

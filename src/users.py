@@ -60,7 +60,7 @@ def user_all_v1(token):
 
     data_store.set(store)
 
-    return {'users': users}
+    return  users
 
 
 # List of all valid users
@@ -70,18 +70,20 @@ def user_profile_v1(token, u_id):
 
     store = data_store.get()
 
-    user = []
     
-    for x in store['users']:
+    
+    
 
-        if int(u_id) < len(store['users']['user_handles']):
-            user.append({ 'user_id': store['users']['user_id'][x], 'emails': store['users']['emails'][x], 'first_names': store['users']['first_names'][x], 'last_names': store['users']['last_names'][x],
-                     'user_handles': store['users']['user_handles'][x]})
-        else: 
-            raise InputError(description='Invalid User ID')
-    data_store.set(store)
+    check_invalid_u_id(u_id)
+   
+    
+    
 
-    return user
+    return {'user_id': store['users']['user_id'][u_id], 
+            'emails': store['users']['emails'][u_id], 
+            'first_names': store['users']['first_names'][u_id], 
+            'last_names': store['users']['last_names'][u_id],
+            'user_handles': store['users']['user_handles'][u_id]}
 
 
 # Update name
@@ -227,7 +229,10 @@ def check_invalid_emails(email):
     else:
         raise InputError(description = 'This email is already registered!')
 
-
+def check_invalid_u_id(u_id):
+    store = data_store.get()
+    if u_id >= len(store['users']['user_handles']):
+        raise InputError(description='This user does not exist!')
 
 
 # def check_duplicate_email(email):
