@@ -152,7 +152,7 @@ def test_valid_input_leave(setup):
     requests.post(f'{BASE_URL}/channel/leave/v1', json = channel_leave_info)
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
 
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     details = response.json()
     assert details == {
         'all_members': [{   'email': 'marryjoe222@gmail.com',
@@ -173,7 +173,7 @@ def test_valid_input_add(setup):
     requests.post(f'{BASE_URL}/channel/addowner/v1', json = channel_add_info)
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
 
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     details = response.json()
     assert details == {
         'all_members': [{'email': 'joe123@gmail.com',
@@ -208,7 +208,7 @@ def test_valid_input_remove(setup):
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
     requests.post(f'{BASE_URL}/channel/removeowner/v1', json = channel_test_info)
     
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     details = response.json()
     assert details == {
         'all_members': [{'email': 'joe123@gmail.com',

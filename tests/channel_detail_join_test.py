@@ -47,7 +47,7 @@ def setup():
 def test_invalid_channel_id_detail(setup):
     _, _, response_log_joe, _ = setup
     channel_detail_info = {"token": response_log_joe['token'], "channel_id": 100}
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_detail_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_detail_info)
     response_data = response.json()
     assert response_data['code'] == 400
 
@@ -64,7 +64,7 @@ def test_invalid_channel_id_join(setup):
 def test_negative_channel_id_in_details(setup):
     _, _, response_log_joe, _ = setup
     channel_detail_info = {"token": response_log_joe["token"], "channel_id": -1}
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_detail_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_detail_info)
     response_data = response.json()
     assert response_data['code'] == 403
 
@@ -104,7 +104,7 @@ def test_no_member_access_detail_1(setup):
     _, channel_id_marry, response_log_joe, _ = setup
         #create channel and auth_user
     channel_details_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     response_data = response.json()
     assert response_data['code'] == 403
 
@@ -114,7 +114,7 @@ def test_no_member_access_detail_2(setup):
     channel_id_joe, _, _, response_log_marry = setup
         #create channel and auth_user
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     response_data = response.json()
     assert response_data['code'] == 403
     
@@ -136,7 +136,7 @@ def test_global_owner_join_private(setup):
     channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
     requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     channel_details_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     details = response.json()
     assert details == {
         'name': 'Marry',
@@ -173,7 +173,7 @@ def test_valid_channel_id_detail_1(setup):
     channel_id_joe, _, response_log_joe, _ = setup
     
     channel_details_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id']}
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     
     details = response.json()
     assert details == {
@@ -202,7 +202,7 @@ def test_valid_channel_id_detail_1(setup):
 def test_valid_channel_id_detail_2(setup):
     _, channel_id_marry, _, response_log_marry = setup
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_marry['channel_id']}
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     
     details = response.json()
     
@@ -240,7 +240,7 @@ def test_valid_channel_id_join(setup):
     requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
 
-    response = requests.get(f'{BASE_URL}/channel/details/v2', json = channel_details_info)
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     
     
 

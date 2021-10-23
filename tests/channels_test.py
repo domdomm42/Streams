@@ -88,7 +88,7 @@ def setup():
 def test_all_channels(setup):
     
     marry_token = setup
-    response = requests.get(f'{BASE_URL}/channels/listall/v2', json = marry_token).json()
+    response = requests.get(f'{BASE_URL}/channels/listall/v2', params = marry_token).json()
     assert response == {
         'channels': [
         	{
@@ -117,7 +117,7 @@ def test_all_channels(setup):
 # Simple listing tests to return all channels that the given id is a part of
 def test_mary_channels(setup):
     marry_token = setup
-    response = requests.get(f'{BASE_URL}/channels/list/v2', json = marry_token).json()
+    response = requests.get(f'{BASE_URL}/channels/list/v2', params = marry_token).json()
     assert response == {
         'channels': [
         	{
@@ -144,17 +144,17 @@ def test_empty_channels():
     user_info = {'email': 'joe123@gmail.com', 'password': 'password', 'name_first': 'Joe', 'name_last': 'Smith'}
     joe_token = {'token': requests.post(f'{BASE_URL}/auth/register/v2', json = user_info).json()['token']}
 
-    response = requests.get(f'{BASE_URL}/channels/list/v2', json = joe_token).json()
+    response = requests.get(f'{BASE_URL}/channels/list/v2', params = joe_token).json()
     assert response == {'channels': []}
 
-    response = requests.get(f'{BASE_URL}/channels/listall/v2', json = joe_token).json()
+    response = requests.get(f'{BASE_URL}/channels/listall/v2', params = joe_token).json()
     assert response == {'channels': []}
 
 def test_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     info = {'token': '-1'}
-    response = requests.get(f'{BASE_URL}/channels/list/v2', json = info).json()
+    response = requests.get(f'{BASE_URL}/channels/list/v2', params = info).json()
     assert response['code'] == 403
 
 # Testing Invalid names for channel creation

@@ -83,14 +83,17 @@ def send_message():
 
 @APP.route("/channel/details/v2", methods = ['GET'])
 def channel_details():
-    request_data = request.get_json('data')
-    details = channel_details_v1(request_data['token'], request_data['channel_id'])
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    details = channel_details_v1(token, channel_id)
     return dumps(details)
 
 @APP.route("/channel/messages/v2", methods = ['GET'])
 def channel_messages():
-    request_data = request.get_json('data')
-    details = channel_messages_v1(request_data['token'], request_data['channel_id'], request_data['start'])
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    start = request.args.get('start')
+    details = channel_messages_v1(token, channel_id, start)
     return dumps(details)
     
 @APP.route("/channel/leave/v1", methods = ['POST'])
@@ -131,14 +134,14 @@ def channel_join():
 
 @APP.route("/channels/list/v2", methods = ['GET'])
 def channel_list():
-    request_data = request.get_json()
-    channels = channels_list_v1(request_data['token'])
+    token = request.args.get('token')
+    channels = channels_list_v1(token)
     return dumps(channels)  
 
 @APP.route("/channels/listall/v2", methods = ['GET'])
 def channel_listall():
-    request_data = request.get_json()
-    channels = channels_listall_v1(request_data['token'])
+    token = request.args.get('token')
+    channels = channels_listall_v1(token)
     return dumps(channels)  
 
 @APP.route("/user/profile/sethandle/v1", methods=['PUT'])
@@ -175,22 +178,19 @@ def echo():
     })
     
 # List of all users
-@APP.route("/user/all/v1", methods=['GET'])
-def user_all(token):
-    request_data = request.get_json()
-
-    user = user_all_v1(request_data['token'])
-
+@APP.route("/users/all/v1", methods=['GET'])
+def user_all():
+    token = request.args.get('token')
+    user = user_all_v1(token)
     return dumps(user)
 
 
 # List of all valid users
 @APP.route("/user/profile/v1", methods=['GET'])
 def user_profile():
-    request_data = request.get_json()
-
-    user = user_profile_v1(request_data['token'], request_data['user_id'])
-
+    token = request.get_json('token')
+    user_id = request.args.get('user_id')
+    user = user_profile_v1(token, user_id)
     return dumps(user)
 
 
@@ -219,20 +219,21 @@ def dm_create():
 
 @APP.route("/dm/list/v1", methods=['GET'])
 def dm_list():
-    request_data = request.get_json()
-    dms = dm_list_v1(request_data['token'])
+    token = request.args.get('token')
+    dms = dm_list_v1(token)
     return dumps(dms)
 
 @APP.route("/dm/remove/v1", methods=['DELETE'])
 def dm_remove():
     request_data = request.get_json()
-    dm_remove_v1(request_data['token'], request_data['dm_id'])
-    return dumps({})
+    response = dm_remove_v1(request_data['token'], request_data['dm_id'])
+    return dumps(response)
 
 @APP.route("/dm/details/v1", methods=['GET'])
 def dm_details():
-    request_data = request.get_json()
-    details = dm_details_v1(request_data['token'], request_data['dm_id'])
+    token = request.args.get('token')
+    dm_id = request.args.get('dm_id')
+    details = dm_details_v1(token, dm_id)
     return dumps(details)
 
 @APP.route("/dm/leave/v1", methods=['POST'])
@@ -243,8 +244,10 @@ def dm_leave():
 
 @APP.route("/dm/messages/v1", methods=['GET'])
 def dm_messages():
-    request_data = request.get_json()
-    messages = dm_messages_v1(request_data['token'], request_data['dm_id'], request_data['start'])
+    token = request.args.get('token')
+    start = request.args.get('start')
+    dm_id = request.args.get('dm_id')
+    messages = dm_messages_v1(token, dm_id, start)
     return dumps(messages)
 #### NO NEED TO MODIFY BELOW THIS POINT
 
