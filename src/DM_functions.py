@@ -58,11 +58,13 @@ def dm_create_v1(token, u_ids):
     store['dms']['all_members'].append(all_users)
     store['dms']['messages'].append([])
 
+    data_store.set(store)
+
     return {'dm_id': dm_id}
 
 def dm_list_v1(token):
     '''
-    Creates a list of dictionaries that contain the name and ID of all DMs
+    Creates a list of dictionaries that contain the name and ID of all DMs that the user is a member of
     
     Arguments:
         token <string>:  identifying value for the calling user
@@ -75,15 +77,17 @@ def dm_list_v1(token):
     
     '''
     # Checks token for validity
-    check_and_get_user_id(token)
+    auth_user_id = check_and_get_user_id(token)
 
     store = data_store.get()
     new_list = {'dms':[]}
 
     # creates a list of dictionaries using the index given by the dm_id in data_store
     for idx in range(len(store['dms']['dm_id'])):
-        new_dict = {'dm_id': store['dms']['dm_id'][idx], 'name': store['dms']['dm_name'][idx]}
-        new_list['dms'].append(new_dict)
+        index = index_from_dm_id(idx, store)
+        if auth_user_id in store['dms']['all_members'][index]:
+            new_dict = {'dm_id': store['dms']['dm_id'][index], 'name': store['dms']['dm_name'][index]}
+            new_list['dms'].append(new_dict)
 
     return new_list
 
@@ -119,6 +123,7 @@ def dm_remove_v1(token, dm_id):
     del store['dms']['all_members'][index]
 
     #might neeed to add something to delete from the messages dictionary    
+    data_store.set(store)
 
     return {
     }
@@ -144,7 +149,7 @@ def dm_details_v1(token, dm_id):
     '''
     store = data_store.get()
     u_id_list = []
-
+    dm_id = int(dm_id)
     auth_user_id = check_and_get_user_id(token)
     check_valid_dm(dm_id, store)
     check_user_in_dm(auth_user_id, dm_id, store)
@@ -201,8 +206,8 @@ def dm_leave_v1(token, dm_id):
     if store['dms']['owner_user_id'][index] == auth_user_id:
         # -1 states that there is no owner in the dm
         store['dms']['owner_user_id'][index] = -1
-
     
+    data_store.set(store)
     return {}
     
 
@@ -235,12 +240,13 @@ def dm_messages_v1(token, dm_id, start):
     # messages data_store is just a list of lists containing the messages by index based on whether they are in dm_id 1 or dm_id 2, etc.
     # this function just redirects to the messages data_store to get the details of the messages
     store = data_store.get()
-    
+    dm_id = int(dm_id)
+    start = int(start)
     auth_user_id = check_and_get_user_id(token)
     check_valid_dm(dm_id, store)
     check_user_in_dm(auth_user_id, dm_id, store)
     
-
+   
     # if start is greater than number of functions return InputError
     if start > len(store['dms']['messages']):
         raise InputError('invalid start, fewer messages than expected.')
@@ -280,8 +286,7 @@ def dm_messages_v1(token, dm_id, start):
 def check_valid_dm(dm_id, store):
     if dm_id not in store['dms']['dm_id']:
         raise InputError('Invalid DM ID given')
-    else:
-        return    
+    
 
 # Checks if the authorised user (token) is a member of the DM
 def check_user_in_dm(u_id, dm_id, store):

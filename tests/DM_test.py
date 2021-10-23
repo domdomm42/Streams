@@ -7,6 +7,7 @@ from src.other import clear_v1
 from src.config import *
 from src.auth_auth_helpers import SECRET
 from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1
+from src.data_store import data_store
 
 import datetime
 BASE_URL = url
@@ -64,7 +65,7 @@ def test_dm_list_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_list = {"token": '-1'}
-    response_create = requests.get(f'{BASE_URL}/dm/list/v1', json = dm_list)
+    response_create = requests.get(f'{BASE_URL}/dm/list/v1', params = dm_list)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
@@ -102,7 +103,7 @@ INVALIDITY TEST FOR DM_DETAILS
 def test_details_invalid_dm(setup):
     _, joe, _, _ = setup
     dm_details = {"token": joe, "dm_id": 1}
-    response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
+    response_create = requests.get(f'{BASE_URL}/dm/details/v1', params = dm_details)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
@@ -110,14 +111,19 @@ def test_details_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_details = {"token": '-1', "dm_id": 1}
-    response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
+    response_create = requests.get(f'{BASE_URL}/dm/details/v1', params = dm_details)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
 def test_details_not_member(setup):
-    _, _, _, sam = setup
+    _, joe, _, sam = setup
+    dm_list = {"token": joe}
+    response_create = requests.get(f'{BASE_URL}/dm/list/v1', params = dm_list)
+    response_create_data = response_create.json()
+    print(response_create_data)
+    
     dm_details = {"token": sam, "dm_id": 0}
-    response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
+    response_create = requests.get(f'{BASE_URL}/dm/details/v1', params = dm_details)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
@@ -153,7 +159,7 @@ INVALIDITY TESTS FOR DM_MESSAGES
 def test_messages_invalid_dm_id(setup):
     _, joe, _, _ = setup
     dm_messages = {"token": joe, "dm_id": 1, 'start': 0}
-    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
@@ -161,7 +167,7 @@ def test_messages_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     dm_messages = {"token": '-1', "dm_id": 1, 'start': 0}
-    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
@@ -169,15 +175,18 @@ def test_messages_invalid_start(setup):
     _, joe, _, _ = setup
 
     dm_messages = {"token": joe, "dm_id": 0, 'start': 5}
-    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
 def test_messages_not_member(setup):
-    _, _, _, sam = setup
-
+    _, joe, _, sam = setup
+    dm_list = {"token": joe}
+    response_create = requests.get(f'{BASE_URL}/dm/list/v1', params = dm_list)
+    response_create_data = response_create.json()
+    print(response_create_data)
     dm_messages = {"token": sam, "dm_id": 0, 'start': 0}
-    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == 403
 
@@ -194,6 +203,7 @@ def test_multiple_dm_create(setup):
     #create a DM by Joe
     dm1_info = {'token': marry, 'u_ids': [0, 1]}
     dm2 = {'dm_id': requests.post(f'{BASE_URL}/dm/create/v1', json = dm1_info).json()['dm_id']}
+
     assert dm1 == 0  
     assert dm2['dm_id'] == 1
 
@@ -204,7 +214,7 @@ def test_simple_dm_list(setup):
     _, joe, _, _ = setup
 
     dm_list = {"token": joe}
-    response_create = requests.get(f'{BASE_URL}/dm/list/v1', json = dm_list)
+    response_create = requests.get(f'{BASE_URL}/dm/list/v1', params = dm_list)
     response_create_data = response_create.json()
     assert response_create_data['dms'] == [
         {'dm_id': 0, 'name': 'joesmith, marrysmith'}
@@ -215,22 +225,25 @@ SAMPLE TESTING FOR DM_REMOVE
 ''' 
 def test_simple_dm_remove(setup):
     _, joe, marry, _ = setup
-
+    
     dm_remove = {'token': joe, 'dm_id': 0}
     response_create = requests.delete(f'{BASE_URL}/dm/remove/v1', json = dm_remove)
 
     dm_list = {"token": marry}
-    response_create = requests.get(f'{BASE_URL}/dm/list/v1', json = dm_list)
+    response_create = requests.get(f'{BASE_URL}/dm/list/v1', params = dm_list)
     response_create_data = response_create.json()
+    
+    
     assert response_create_data['dms'] == []
 '''
 SAMPLE TESTING FOR DM_DETAILS
 '''
 def test_simple_dm_details(setup):
     _, joe, _, _ = setup
-    dm_details = {"token": joe, "dm_id": 0}
-    response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
+    dm_details = {'token': joe, 'dm_id': 0}
+    response_create = requests.get(f'{BASE_URL}/dm/details/v1', params = dm_details)
     response_create_data = response_create.json()
+    
     assert response_create_data['name'] == 'joesmith, marrysmith' 
     assert response_create_data['members'] == [
         {
@@ -259,7 +272,7 @@ def test_simple_dm_details(setup):
 #     response_create_data = response_create.json()
 #     assert response_create_data == {}
 #     dm_details = {"token": joe, "dm_id": 0}
-#     response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
+#     response_create = requests.get(f'{BASE_URL}/dm/details/v1', params = dm_details)
 #     response_create_data = response_create.json()
 #     assert response_create_data['name'] == 'joesmith, marrysmith' 
 #     assert response_create_data['members'] == [
@@ -272,42 +285,43 @@ def test_simple_dm_details(setup):
 #         }
 #     ]
 
-# '''
-# SAMPLE TESTING FOR DM_MESSAGES
-# '''
+'''
+SAMPLE TESTING FOR DM_MESSAGES
+'''
 
-# def test_simple_dm_messages(setup):
-#     _, joe, marry, _ = setup
-#     send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
-#     send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}
+def test_simple_dm_messages(setup):
+    _, joe, marry, _ = setup
+    send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
+    send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}
 
-#     response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
-#     timestamp1 = datetime.datetime.now().timestamp()
-#     message_id1 = response_create.json()
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
+    timestamp1 = datetime.datetime.now().timestamp()
+    message_id1 = response_create.json()
 
-#     response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
-#     timestamp2 = datetime.datetime.now().timestamp()
-#     message_id2 = response_create.json()
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
+    timestamp2 = datetime.datetime.now().timestamp()
+    message_id2 = response_create.json()
 
-#     dm_messages = {"token": joe, "dm_id": 0, 'start': 0}
-#     response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
-#     response_create_data = response_create.json()
-#     assert response_create_data['start'] == 0
-#     assert response_create_data['end'] == -1
-#     assert response_create_data['messages'] == [
-#         {
-#             'message_id': message_id1,
-#             'u_id': 0,
-#             'message': 'big tings bruv',
-#             'time_created': timestamp1
-#         },
-#         {
-#             'message_id': message_id2,
-#             'u_id': 1,
-#             'message': 'small tings bruv',
-#             'time_created': timestamp2
-#         }
-#     ]
+    dm_messages = {"token": joe, "dm_id": 0, 'start': 0}
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
+    response_create_data = response_create.json()
+    print(response_create_data)
+    assert response_create_data['start'] == 0
+    assert response_create_data['end'] == -1
+    assert response_create_data['messages'] == [
+        {
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
+            'time_created': timestamp1
+        },
+        {
+            'message_id': message_id2,
+            'u_id': 1,
+            'message': 'small tings bruv',
+            'time_created': timestamp2
+        }
+    ]
 
 
 

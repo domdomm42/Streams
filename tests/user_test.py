@@ -103,7 +103,7 @@ def test_user_u_id_invalid(setup):
 
     setuid_info = {"token": response_log_joe["token"], 'user_id': '100'}
 
-    response = requests.get(f'{BASE_URL}user/profile/v1', json = setuid_info)
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = setuid_info)
     
     response_data = response.json()
     assert response_data['code'] == 400
