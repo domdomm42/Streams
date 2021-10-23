@@ -84,15 +84,15 @@ def send_message():
 @APP.route("/channel/details/v2", methods = ['GET'])
 def channel_details():
     token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
+    channel_id = int(request.args.get('channel_id'))
     details = channel_details_v1(token, channel_id)
     return dumps(details)
 
 @APP.route("/channel/messages/v2", methods = ['GET'])
 def channel_messages():
     token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
-    start = request.args.get('start')
+    channel_id = int(request.args.get('channel_id'))
+    start = int(request.args.get('start'))
     details = channel_messages_v1(token, channel_id, start)
     return dumps(details)
     
@@ -174,8 +174,7 @@ def echo():
     data = request.args.get('data')
     if data == 'echo':
    	    raise InputError(description='Cannot echo "echo"')
-    return dumps({
-    })
+    return dumps({})
     
 # List of all users
 @APP.route("/users/all/v1", methods=['GET'])
@@ -189,7 +188,7 @@ def user_all():
 @APP.route("/user/profile/v1", methods=['GET'])
 def user_profile():
     token = request.get_json('token')
-    user_id = request.args.get('user_id')
+    user_id = int(request.args.get('user_id'))
     user = user_profile_v1(token, user_id)
     return dumps(user)
 
@@ -232,21 +231,21 @@ def dm_remove():
 @APP.route("/dm/details/v1", methods=['GET'])
 def dm_details():
     token = request.args.get('token')
-    dm_id = request.args.get('dm_id')
+    dm_id = int(request.args.get('dm_id'))
     details = dm_details_v1(token, dm_id)
     return dumps(details)
 
 @APP.route("/dm/leave/v1", methods=['POST'])
 def dm_leave():
     request_data = request.get_json()
-    dm_leave_v1(request_data['token'], request_data['dm_id'])
-    return dumps({})
+    response = dm_leave_v1(request_data['token'], request_data['dm_id'])
+    return dumps(response)
 
 @APP.route("/dm/messages/v1", methods=['GET'])
 def dm_messages():
     token = request.args.get('token')
-    start = request.args.get('start')
-    dm_id = request.args.get('dm_id')
+    start = int(request.args.get('start'))
+    dm_id = int(request.args.get('dm_id'))
     messages = dm_messages_v1(token, dm_id, start)
     return dumps(messages)
 #### NO NEED TO MODIFY BELOW THIS POINT
