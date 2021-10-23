@@ -48,7 +48,7 @@ def user_all_v1(token):
 
     data_store.set(store)
 
-    return {user}
+    return {'users': user}
 
 
 # List of all valid users
@@ -69,7 +69,7 @@ def user_profile_v1(token, u_id):
             raise InputError(description='Invalid User ID')
     data_store.set(store)
 
-    return {user}
+    return {'users': user}
 
 
 # Update name
@@ -225,10 +225,6 @@ def check_invalid_emails(email):
 #             raise InputError(description='This name has been used!')
     
 #     pass
-
-
-
-
 
 
 

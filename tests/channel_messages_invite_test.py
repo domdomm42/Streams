@@ -97,7 +97,7 @@ def test_send_valid_messages(setup):
     message_1_time = datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
     channel_messages_input = {'token': joe_smith_token, 'channel_id': joes_funland_channel_id, 'start': 0}
-    response = requests.get(f'{BASE_URL}/channel/messages/v2', json = channel_messages_input).json()
+    response = requests.get(f'{BASE_URL}/channel/messages/v2', params = channel_messages_input).json()
 
     response['messages'][0]['time_created'] = int(response['messages'][0]['time_created'])
     response['messages'][1]['time_created'] = int(response['messages'][1]['time_created'])
@@ -136,5 +136,5 @@ def test_invalid_start(setup):
     requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
 
     channel_messages_input = {'token': joe_smith_token, 'channel_id': joes_funland_channel_id, 'start': 20}
-    response = requests.get(f'{BASE_URL}/channel/messages/v2', json = channel_messages_input).json()
+    response = requests.get(f'{BASE_URL}/channel/messages/v2', params = channel_messages_input).json()
     assert response['code'] == 400
