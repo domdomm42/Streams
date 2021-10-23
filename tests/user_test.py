@@ -219,6 +219,13 @@ def test_user_all_wrong(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+def test_user_all_output(setup):
+    response_log_joe, _ = setup
+    user_all_info = {"token": response_log_joe["token"]}
+    response = requests.get(f'{BASE_URL}users/all/v1', json = user_all_info)
+    response_data = response.json()
+    assert response_data == {}
+
 
 # Test for handle
 # def test_user_handle_too_short(setup):

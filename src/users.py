@@ -40,15 +40,27 @@ def user_all_v1(token):
 
     store = data_store.get()
 
-    user = []
+    users = []
+    for user_id in store['users']['user_id']:
+        if store['users']['removed_user'][user_id] == False:
+            
+            user_email = store['users']['emails'][user_id]
+            user_name_first = store['users']['first_names'][user_id]
+            user_name_last = store['users']['last_names'][user_id]
+            user_handle_str = store['users']['user_handles'][user_id]
+            users.append({'u_id': user_id, 'email': user_email, 'is_remove': store['users']['removed_user'][user_id],
+                            'name_first': user_name_first, 'name_last': user_name_last, 'handle_str': user_handle_str})
 
-    for x in store['users']:
-        user.append({ 'user_id': store['users']['user_id'][x], 'emails': store['users']['emails'][x], 'first_names': store['users']['first_names'][x], 'last_names': store['users']['last_names'][x],
-                     'user_handles': store['users']['user_handles'][x]})
+
+    
+
+    #for x in store['users']:
+    #    users.append({ 'user_id': store['users']['user_id'][x], 'emails': store['users']['emails'][x], 'first_names': store['users']['first_names'][x], 'last_names': store['users']['last_names'][x],
+    #                 'user_handles': store['users']['user_handles'][x]})
 
     data_store.set(store)
 
-    return {'users': user}
+    return {'users': users}
 
 
 # List of all valid users
@@ -59,7 +71,7 @@ def user_profile_v1(token, u_id):
     store = data_store.get()
 
     user = []
-
+    
     for x in store['users']:
 
         if int(u_id) < len(store['users']['user_handles']):
@@ -69,7 +81,7 @@ def user_profile_v1(token, u_id):
             raise InputError(description='Invalid User ID')
     data_store.set(store)
 
-    return {'users': user}
+    return user
 
 
 # Update name
