@@ -28,7 +28,7 @@ def admin_user_remove_v1(token, user_id):
 
     # Set messages sent by removed user to be 'Removed User'
     for message in store['messages']:
-        if message['u_id'] == remover_id:
+        if message['u_id'] == user_id:
             idx = store['messages'].index(message)
             store['messages'][idx]['message'] = 'Removed User'
 

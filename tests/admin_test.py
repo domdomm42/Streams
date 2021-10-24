@@ -223,13 +223,37 @@ def test_messages():
     message_send_data = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_reg)
     message_send_data = message_send_data.json()
 
+    message_send_reg = {'token': response_data_1['token'], 'channel_id': channel_create_data['channel_id'], 'message': 'HelloWorld'}
+    message_send_data = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_reg)
+    message_send_data = message_send_data.json()
+
     kick_data = {'token': response_data_1['token'], 'u_id': response_data_2['auth_user_id']}
     response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     response = response.json()
 
+def test_only_one_global_owner():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
 
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1).json()
 
+    kick_data = {'token': response_data_1['token'], 'u_id': response_data_1['auth_user_id']}
+    response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
+    response = response.json()
+    assert response['code'] == 400
+
+def test_only_one_global_owner():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+
+    response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1).json()
+
+    kick_data = {'token': response_data_1['token'], 'u_id': response_data_1['auth_user_id']}
+    response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
+    response = response.json()
+    assert response['code'] == 400
 
 
 
