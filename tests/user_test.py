@@ -276,6 +276,21 @@ def test_user_name_last_number(setup):
 
 
 
+def test_user_name_duplication(setup):
+    response_log_joe, response_log_marry = setup
+    setname_info1 = {"token": response_log_joe["token"], "first_names": "a","last_names": "Smith"}
+    setname_info2 = {"token": response_log_marry["token"], "first_names": "a","last_names": "Smith"}
+
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info1)
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info2)
+
+    response_data = response.json()
+    assert response_data == {}
+
+
+
+
+
 def test_valid_first_name(setup):
     response_log_joe, _ = setup
     setname_info = {"token": response_log_joe['token'], "first_names": "a","last_names": "Smith"}
