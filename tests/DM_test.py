@@ -382,7 +382,7 @@ def test_simple_dm_messages(setup):
     ]
 
 def test_multiple_dm_messages(setup):
-    _, joe, marry, _ = setup
+    _, joe, _, _ = setup
     i = 0
     while i < 55:
         # sends messages from joe to dm_1
