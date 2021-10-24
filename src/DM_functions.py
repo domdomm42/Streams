@@ -137,7 +137,7 @@ def dm_details_v1(token, dm_id):
 
     Arguments:
         token <string>:  identifying value for the calling user
-        dm_id <integer>: identifying value for the dm being removed
+        dm_id <integer>: identifying value for the dm being called
 
     Exceptions:
         AccessError: where the token given is invalid or doesnt exist in database
@@ -189,7 +189,7 @@ def dm_leave_v1(token, dm_id):
 
     Arguments:
         token <string>:  identifying value for the calling user
-        dm_id <integer>: identifying value for the dm being removed
+        dm_id <integer>: identifying value for the dm being called
 
     Exceptions:
         AccessError: where the token given is invalid or doesnt exist in database
@@ -228,7 +228,7 @@ def dm_messages_v1(token, dm_id, start):
 
     Arguments:
         token <string>:  identifying value for the calling user
-        dm_id <integer>: identifying value for the dm being removed
+        dm_id <integer>: identifying value for the dm being called
         start <integer>: the message_id where the caller wants to begin extracting the most
                          recent 50 messages
     Exceptions:
@@ -295,66 +295,148 @@ def dm_messages_v1(token, dm_id, start):
 
 # Helper functions
 
-# Checks if the dm is stored in the database/is a valid dm_id
+ 
 def check_valid_dm(dm_id, store):
+    '''
+    Checks if the dm is stored in the database/is a valid dm_id
+
+    Arguments:
+            dm_id <int>: dm ID being checked
+            store <dictionary>: the data_store used to save all info
+
+    Exceptions:
+            InputError: for invalid dm_id        
+
+    '''
     if dm_id not in store['dms']['dm_id']:
         raise InputError('Invalid DM ID given')
     
 
-# Checks if the authorised user (token) is a member of the DM
 def check_user_in_dm(u_id, dm_id, store):
+    '''
+    Checks if the authorised user (token) is a member of the DM
+
+    Arguments:
+            u_id <int>: indetifying integer of the user
+            dm_id <int>: dm ID being checked
+            store <dictionary>: the data_store used to save all info
+
+    Exceptions:
+            InputError: for invalid dm_id        
+
+    '''
     index = index_from_dm_id(dm_id, store)
     
     if u_id not in store['dms']['all_members'][index]:
         raise AccessError('Given User is not a memeber of DM')
-    else:
-        return
+    
 
 # Checks if the authorised user (token) is the original owner of the DM
 def check_original_dm(u_id, dm_id, store):
+    '''
+    Checks if the authorised user (token) is a member of the DM
+
+    Arguments:
+            u_id <int>: indetifying integer of the user
+            dm_id <int>: dm ID being checked
+            store <dictionary>: the data_store used to save all info
+
+    Exceptions:
+            InputError: for invalid dm_id        
+
+    '''
     index = index_from_dm_id(dm_id, store)
 
     if u_id != store['dms']['owner_user_id'][index]:
         raise AccessError('Only the original DM creator can remove a DM')
-    else:
-        return
+    
 
-# Checks if the token given appears in the data store, if not it must be invalid
+
 def check_valid_token(token, store):
+    '''
+    Checks if the token given appears in the data store, if not it must be invalid
+
+    Arguments:
+            token <string>: stringated identifer being checked
+            store <dictionary>: the data_store used to save all info
+
+    Exceptions:
+            AccessError: for invalid token        
+
+    '''
     if token not in store['users']['tokens']:
         raise AccessError('Invalid Token given')
-    else:
-        return
+    
 
-# Checks if the list of users given actually exists in streams
+ 
 def check_valid_user(u_ids, store):
+    '''
+    Checks if the list of users given actually exists in streams
+
+    Arguments:
+            u_ids <list>: list of user ID's
+            store <dictionary>: the data_store used to save all info
+
+    Exceptions:
+            InputError: invalid user given        
+
+    '''
     for user in u_ids:
         if user not in store['users']['user_id']:
             raise InputError('One or more of given users are not valid')
-        else:
-            pass     
+             
 
-# Loops through all dm_id's to find the index of the value given
 def index_from_dm_id(dm_id, store):
-    i = 0
+    '''
+    Loops through all dm_id's to find the index of the value given
+
+    Arguments:
+            dm_id <int>: dm ID being checked
+            store <dictionary>: the data_store used to save all info
+
+    Return Values:
+            counter <int>: counts the index where the dm_id is located      
+
+    '''
+    counter = 0
     for num in store['dms']['dm_id']:
         if dm_id == num:
             break
-        i += 1
-    return i
+        counter += 1
+    return counter
 
-# Loops through all u_id's to find the index of the value given
+
 def index_from_u_id(u_id, store):
-    i = 0
+    '''
+    Loops through all u_id's to find the index of the value given
+    
+    Arguments:
+            u_id <int>: indetifying integer of the user
+            store <dictionary>: the data_store used to save all info
+
+    Return Values:
+            counter <int>: counts the index where the u_id is located      
+    '''
+    counter = 0
     for num in store['users']['user_id']:
         if u_id == num:
             break
-        i += 1
-    return i
+        counter += 1
+    return counter
 
-# Gets the message dictionary that is kept in the data_store based on index
+
 def get_message(message_id, store):
-    
+    '''
+    Gets the message dictionary that is kept in the data_store based on index
+
+    Arguments:
+            message_id <int>: message being found
+            store <dictionary>: the data_store used to save all info
+
+    Returns:
+            msg <dictionary>: info on the message_id, time, u_id, and message that is stored in the database        
+    '''
+
     for msg in store['messages']:
         if msg['message_id'] == message_id:
             return msg
