@@ -2,20 +2,11 @@ import pytest
 import requests
 
 from src.config import *
-from src.other import print_store_debug
 BASE_URL = url
 INPUT_ERROR = 400
 ACCESS_ERROR = 403
-SUCCESS = 200
 
-'''
-the member has to be part of the channel
-
-
-
-'''
-
-
+@pytest.fixture
 def setup():
     requests.delete(f'{BASE_URL}/clear/v1')
 
@@ -34,250 +25,400 @@ def setup():
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     marry_mae_data = response.json()
 
-    return joe_smith_data, joes_funland_data, marry_mae_data
+    return joe_smith_data['token'], joes_funland_data['channel_id'], marry_mae_data['token']
 
-def setup_2():
+@pytest.fixture
+def setup_2(setup):
 
-    joe_smith_token = setup()[0]['token']
-    joes_funland_channel_id = setup()[1]['channel_id']
-    marry_mae_token = setup()[2]['token']
+    joe_smith_token, joes_funland_channel_id, marry_mae_token = setup
 
+    # Joe Smith sends a message to Private channel "Joe's Reading Club", saying "Hi everyone!"
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
 
     return joe_smith_token, response.json()['message_id'], marry_mae_token, joes_funland_channel_id
 
-# Test Sending Valid Messages
-def test_send_valid_messages():
+@pytest.fixture
+def setup_3():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
+    # Create user Joe Smith
+    user_info = {"email": "joe123@gmail.com", "password": "delicious23", "name_first": "Joe", "name_last": "Smith"}
+    response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
+    joe_smith_data = response.json()
 
-    values = setup()
+    # Create user Marry Mae
+    user_info = {"email": "marrymae@gmail.com", "password": "cats1010", "name_first": "Marry", "name_last": "Mae"}
+    response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
+    marry_mae_data = response.json()
 
-    joe_smith_token = values[0]['token']
-    joes_funland_channel_id = values[1]['channel_id']
-    #marry_mae_token = setup()[2]['token']
+    # Joe Smith creates a DM
+    dm_info = {"token": joe_smith_data['token'], "u_ids": [0, 1]}
+    response = requests.post(f'{BASE_URL}/dm/create/v1', json = dm_info)
+    joe_marry_dm = response.json()
 
-    message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
-    response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+    return joe_smith_data['token'], marry_mae_data['token'], joe_marry_dm['dm_id']
 
+@pytest.fixture
+def setup_4(setup_3):
+
+    joe_smith_token, marry_mae_token, joe_marry_dm_id = setup_3
+    
+    # Joe Smith sends a message to DM
+    message_send_input = {"token": joe_smith_token, "dm_id": joe_marry_dm_id, "message": "Hi everyone!"}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    message_id = response.json()['message_id']
+
+    # Create user Daron Mike
+    user_info = {"email": "joe12223@gmail.com", "password": "delicious23", "name_first": "Darron", "name_last": "Mike"}
+    response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
+    darron_mike_data = response.json()
+
+    return joe_smith_token, marry_mae_token, joe_marry_dm_id, message_id, darron_mike_data['token']
+
+'''
+Testing message/senddm/v1 HTTP requests
+'''
+def test_send_valid_messages_dm(setup_3):
+
+    joe_smith_token, marry_mae_token, joe_marry_dm_id = setup_3
+
+    # Joe Smith sends a message to DM, saying "Hi everyone!"
+    message_send_input = {"token": joe_smith_token, "dm_id": joe_marry_dm_id, "message": "Hi everyone!"}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
     assert response.json()['message_id'] == 0
 
+    # Marry Mae sends a message to DM, saying "Please pick your favourite book, ready for Monday 2pm."
+    message_send_input = {"token": marry_mae_token, "dm_id": joe_marry_dm_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    assert response.json()['message_id'] == 1
+
+def test_send_an_empty_message_dm(setup_3):
+
+    joe_smith_token, marry_mae_token, joe_marry_dm_id = setup_3
+
+    # Joe Smith sends an empty message to DM
+    message_send_input = {"token": joe_smith_token, "dm_id": joe_marry_dm_id, "message": ""}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    assert response.json()['code'] == INPUT_ERROR 
+
+    # Marry Mae sends a message to DM, saying "Hi everyone!"
+    message_send_input = {"token": marry_mae_token, "dm_id": joe_marry_dm_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    assert response.json()['message_id'] == 0
+
+def test_send_a_long_message_dm(setup_3):
+
+    joe_smith_token, marry_mae_token, joe_marry_dm_id = setup_3
+
+    # Joe Smith sends a very long message to DM (>1000 characters)
+    message_send_input = {"token": joe_smith_token, "dm_id": joe_marry_dm_id, "message": "1"*1001}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    assert response.json()['code'] == INPUT_ERROR 
+
+    # Marry Mae sends a message to DM, saying "Hi everyone!"
+    message_send_input = {"token": marry_mae_token, "dm_id": joe_marry_dm_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    assert response.json()['message_id'] == 0
+
+def test_send_invalid_dm_id(setup_3):
+
+    joe_smith_token, marry_mae_token, joe_marry_dm_id = setup_3
+
+    # Joe Smith sends a message to a DM which does not exist
+    message_send_input = {"token": joe_smith_token, "dm_id": 300, "message": "Hi everyone!"}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    assert response.json()['code'] == INPUT_ERROR 
+
+    # Marry Mae sends a message to DM, saying "Please pick your favourite book, ready for Monday 2pm."
+    message_send_input = {"token": marry_mae_token, "dm_id": joe_marry_dm_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    assert response.json()['message_id'] == 0
+
+def test_unauthorised_user_send_message_dm(setup_4):
+
+    _, _, joe_marry_dm_id, _, darron_token = setup_4
+
+    # Darron, who is not part of the DM, sends a message saying "Please pick your favourite book, ready for Monday 2pm."
+    message_send_input = {"token": darron_token, "dm_id": joe_marry_dm_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
+    assert response.json()['code'] == ACCESS_ERROR
+
+'''
+Testing message/send/v1 HTTP requests
+'''
+
+def test_send_valid_messages(setup):
+
+    joe_smith_token, joes_funland_channel_id, _ = setup
+
+    # Joe Smith sends a message to Private channel "Joe's Reading Club", saying "Hi everyone!"
+    message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
+    response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+    assert response.json()['message_id'] == 0
+
+    # Joe Smith sends a message to Private channel "Joe's Reading Club", saying "Please pick your favourite book, ready for Monday 2pm."
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['message_id'] == 1
 
-def test_send_an_empty_message():
+def test_send_an_empty_message(setup):
 
-    values = setup()
+    joe_smith_token, joes_funland_channel_id, _ = setup
 
-    joe_smith_token = values[0]['token']
-    joes_funland_channel_id = values[1]['channel_id']
-    #marry_mae_token = setup()[2]['token']
-
+    # Joe Smith sends an empty message to Private channel "Joe's Reading Club"
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": ""}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['code'] == INPUT_ERROR 
 
+    # Joe Smith sends a message to Private channel "Joe's Reading Club", saying "Hi everyone!"
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['message_id'] == 0
 
-def test_send_a_long_message():
+def test_send_a_long_message(setup):
 
-    joe_smith_token = setup()[0]['token']
-    joes_funland_channel_id = setup()[1]['channel_id']
-    #marry_mae_token = setup()[2]['token']
+    joe_smith_token, joes_funland_channel_id, _ = setup
 
+    # Joe Smith sends an long message (>1000 characters) to Private channel "Joe's Reading Club"
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "2"*1001}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['code'] == INPUT_ERROR 
 
+    # Joe Smith sends a message to Private channel "Joe's Reading Club", saying "Hi everyone!"
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['message_id'] == 0
 
-def test_invalid_channel_message_send():
+def test_invalid_channel_message_send(setup):
 
-    joe_smith_token = setup()[0]['token']
-    joes_funland_channel_id = setup()[1]['channel_id']
-    #marry_mae_token = setup()[2]['token']
+    joe_smith_token, joes_funland_channel_id, _ = setup
 
+    # Joe Smith sends a message to a channel that does not exist
     message_send_input = {"token": joe_smith_token, "channel_id": 300, "message": "Hi everyone!"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['code'] == INPUT_ERROR 
 
+    # Joe Smith sends a message to Private channel "Joe's Reading Club", saying "Hi everyone!"
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['message_id'] == 0
 
-def test_unauthorised_message_send():
+def test_unauthorised_message_send(setup):
 
-    joe_smith_token = setup()[0]['token']
-    joes_funland_channel_id = setup()[1]['channel_id']
-    marry_mae_token = setup()[2]['token']
+    joe_smith_token, joes_funland_channel_id, marry_mae_token = setup
 
+    # Marry Mae attempts to send a message to channel she is not a part of
     message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_channel_id, "message": "I'm a hacker"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['code'] == ACCESS_ERROR 
 
+    # Joe Smith sends a message to Private channel "Joe's Reading Club", saying "Hi everyone!"
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['message_id'] == 0
 
-def test_unauthorised_message_send_and_long_message():
+def test_unauthorised_message_send_and_long_message(setup):
 
-    #joe_smith_token = setup()[0]['token']
-    joes_funland_channel_id = setup()[1]['channel_id']
-    marry_mae_token = setup()[2]['token']
+    _, joes_funland_channel_id, marry_mae_token = setup
 
+    # Marry Mae attempts to send a long message (>1000 characters) to channel she is not a part of
     message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"*5000}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['code'] == ACCESS_ERROR 
 
-def test_unauthorised_message_send_and_empty_message():
+def test_unauthorised_message_send_and_empty_message(setup):
 
-    #joe_smith_token = setup()[0]['token']
-    joes_funland_channel_id = setup()[1]['channel_id']
-    marry_mae_token = setup()[2]['token']
+    _, joes_funland_channel_id, marry_mae_token = setup
 
+    # Marry Mae attempts to send an empty message to channel she is not a part of
     message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_channel_id, "message": ""}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['code'] == ACCESS_ERROR 
 
-def test_unauthorised_message_send_and_invalid_channel():
+def test_unauthorised_message_send_and_invalid_channel(setup):
 
-    #joe_smith_token = setup()[0]['token']
-    #joes_funland_channel_id = setup()[1]['channel_id']
-    marry_mae_token = setup()[2]['token']
+    _, _, marry_mae_token = setup
 
+    # Marry Mae attempts to send a message to channel that does not exist
     message_send_input = {"token": marry_mae_token, "channel_id": 300, "message": "Hello everyone!"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
     assert response.json()['code'] == INPUT_ERROR 
 
-###################
-# TESTING EDIT MESSAGE
+'''
+Testing message/edit/v1 HTTP requests
+'''
 
-def test_edit_invalid_message():
+def test_edit_invalid_message_dm(setup_4):
     
-    joe_smith_token = setup_2()[0]
-
-    message_edit_input = {"token": joe_smith_token, "message_id": 3, "message": "Hi!"}
+    joe_smith_token, _, _, _, _ = setup_4
+    
+    # Joe Smith attempts to edit a message that does not exist
+    message_edit_input = {"token": joe_smith_token, "message_id": 5, "message": "Hi!"}
     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
     assert response.json()['code'] == INPUT_ERROR
 
-def test_edit_valid_message():
+def test_edit_valid_message_dm(setup_4):
     
-    joe_smith_token = setup_2()[0]
-    message_id = setup_2()[1]
-
+    joe_smith_token, _, _, message_id, _ = setup_4
+    
+    # Joe Smith successfully edits a message that does not exist
     message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi!"}
-    requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
 
-def test_edit_long_message():
+def test_edit_long_message_dm(setup_4):
     
-    joe_smith_token = setup_2()[0]
-    message_id = setup_2()[1]
-
+    joe_smith_token, _, _, message_id, _ = setup_4
+    
+    # Joe Smith attempts to edit a valid message with a very long message (>1000 characters)
     message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi!"*1000}
     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
     assert response.json()['code'] == INPUT_ERROR
 
-def test_edit_empty_message():
+def test_edit_empty_message_dm(setup_4):
     
-    joe_smith_token = setup_2()[0]
-    message_id = setup_2()[1]
-
+    joe_smith_token, _, _, message_id, _ = setup_4
+    
+    # Joe Smith attempts to edit an empty message, causing the message to be deleted
     message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": ""}
     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
 
-    # Empty message causes the message to be deleted, which raises 
+    # Joe Smith attempts to re-edit the message which is not possible
     message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi"}
     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
-    print(response.json()['message'])
     assert response.json()['code'] == INPUT_ERROR
 
-def test_unauthorised_user_edit_message():
+def test_unauthorised_user_edit_message_dm(setup_4):
 
-    #joe_smith_token = setup_2()[0]
-    message_id = setup_2()[1]
-    marry_mae_token = setup_2()[2]
+    _, _, _, message_id, darron_mike_token = setup_4
 
-    message_edit_input = {"token": marry_mae_token, "message_id": message_id, "message": "I'm a hacker!"} 
-    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
-    print(response.json()['message'])
+    # Darron attempts to edit a message she did not send and is not the owner of the DM
+    message_edit_input = {"token": darron_mike_token, "message_id": message_id, "message": "I'm a hacker!"} 
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)   
     assert response.json()['code'] == ACCESS_ERROR
 
-# ## the owners can edit any message even if they don't send it
+def test_owner_editing_any_message_dm(setup_4):
 
-def test_owner_editing_any_message():
+    joe_smith_token, marry_mae_token, joe_marry_dm_id, _, _ = setup_4
 
-    joe_smith_token = setup_2()[0]
-    #message_id = setup_2()[1]
-    marry_mae_token = setup_2()[2]
-    joes_funland_data = setup_2()[3]
-
-    # Invite Marry to Joe's Private channel
-    invite_input = {"token": joe_smith_token, "channel_id": joes_funland_data, "u_id": 1}
-    response = requests.post(f'{BASE_URL}/channel/invite/v2', json = invite_input)
-
-    # Marry send's a message to the channel
-    message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_data, "message": "Hello everyone, I'm Mrry!"}
-    response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
-
+    # Marry sends a message to DM
+    message_send_input = {"token": marry_mae_token, "dm_id": joe_marry_dm_id, "message": "Hello everyone, I'm Mrry!"}
+    response = requests.post(f'{BASE_URL}/message/senddm/v1', json = message_send_input)
     marrys_message_id = response.json()['message_id']
 
-    # Joe, the owner, edits Marry's message
+    # Joe, the owner, successfully edits Marry's message
     message_edit_input = {"token": joe_smith_token, "message_id": marrys_message_id, "message": "Hello everyone, I'm Marry!"} 
     response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)    
 
-#     # MAYBE TRY TO CHECK!??
 
-# #################
-# # REMOVING MESSAGE
 
-def test_remove_invalid_twice():
+def test_edit_invalid_message(setup_2):
+    
+    joe_smith_token, _, _, _ = setup_2
+    
+    # Joe Smith attempts to edit a message that does not exist
+    message_edit_input = {"token": joe_smith_token, "message_id": 3, "message": "Hi!"}
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    assert response.json()['code'] == INPUT_ERROR
 
-    joe_smith_token = setup_2()[0]
-    message_id = setup_2()[1]
+def test_edit_valid_message(setup_2):
+    
+    joe_smith_token, message_id, _, _ = setup_2
 
+    # Joe Smith edits a message he has sent
+    message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi!"}
+    requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+
+def test_edit_long_message(setup_2):
+    
+    joe_smith_token, message_id, _, _ = setup_2
+
+    # Joe Smith edits a valid message into a very long (>1000 characters) message
+    message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi!"*1000}
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    assert response.json()['code'] == INPUT_ERROR
+
+def test_edit_empty_message(setup_2):
+    
+    joe_smith_token, message_id, _, _ = setup_2
+
+    # Joe Smith edits a valid message into an empty message
+    message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": ""}
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+
+    # Empty message causes the message to be deleted
+    # Joe Smith attempts to re-edit the message, but since it has been deleted, the message does not exist
+    message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi"}
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    assert response.json()['code'] == INPUT_ERROR
+
+def test_unauthorised_user_edit_message(setup_2):
+
+    _, message_id, marry_mae_token, _ = setup_2
+
+    # Marry Mae attempts to edit a message she did not send and is not the owner of the DM
+    message_edit_input = {"token": marry_mae_token, "message_id": message_id, "message": "I'm a hacker!"} 
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    assert response.json()['code'] == ACCESS_ERROR
+
+def test_owner_editing_any_message(setup_2):
+
+    joe_smith_token, _, marry_mae_token, joes_funland_channel_id = setup_2
+
+    # Invite Marry to Joe's Private channel
+    invite_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "u_id": 1}
+    response = requests.post(f'{BASE_URL}/channel/invite/v2', json = invite_input)
+
+    # Marry sends a message to Joe's Private channel
+    message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_channel_id, "message": "Hello everyone, I'm Mrry!"}
+    response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
+    marrys_message_id = response.json()['message_id']
+
+    # Joe, the owner, successfully edits Marry's message
+    message_edit_input = {"token": joe_smith_token, "message_id": marrys_message_id, "message": "Hello everyone, I'm Marry!"} 
+    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)    
+
+
+'''
+Testing message/remove/v1 HTTP requests
+'''
+
+def test_remove_invalid_twice(setup_2):
+
+    joe_smith_token, message_id, _, _ = setup_2
+
+    # Joe Smith successfully deletes a message
     message_delete_input = {"token": joe_smith_token, "message_id": message_id}
     response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)
 
-    # Empty message causes the message to be deleted, which raises 
+    # Joe Smith reattempts to delete the same message
     message_delete_input = {"token": joe_smith_token, "message_id": message_id}
     response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)
     assert response.json()['code'] == INPUT_ERROR
 
-def test_unauthorised_user_delete_message():
+def test_unauthorised_user_delete_message(setup_2):
 
-    #joe_smith_token = setup_2()[0]
-    message_id = setup_2()[1]
-    marry_mae_token = setup_2()[2]
+    _, message_id, marry_mae_token, _ = setup_2
 
+    # Marry Mae attempts to delete a message she did not send, and is not the owner of the channel which the message belongs to
     message_delete_input = {"token": marry_mae_token, "message_id": message_id, "message": "I'm a hacker!"} 
     response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)
     assert response.json()['code'] == ACCESS_ERROR
 
-## the owners can edit any message even if they don't send it
+def test_owner_removing_any_message(setup_2):
 
-def test_owner_removing_any_message():
-
-    joe_smith_token = setup_2()[0]
-    #message_id = setup_2()[1]
-    marry_mae_token = setup_2()[2]
-    joes_funland_data = setup_2()[3]
+    joe_smith_token, _, marry_mae_token, joes_funland_channel_id = setup_2
 
     # Invite Marry to Joe's Private channel
-    invite_input = {"token": joe_smith_token, "channel_id": joes_funland_data, "u_id": 1}
+    invite_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "u_id": 1}
     response = requests.post(f'{BASE_URL}/channel/invite/v2', json = invite_input)
 
     # Marry send's a message to the channel
-    message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_data, "message": "Hello everyone, I'm Mrry!"}
+    message_send_input = {"token": marry_mae_token, "channel_id": joes_funland_channel_id, "message": "Hello everyone, I'm Mrry!"}
     response = requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
-
     marrys_message_id = response.json()['message_id']
 
-    # Joe, the owner, deletes Marry's message
+    # Joe, the owner, successfully deletes Marry's message
     message_delete_input = {"token": joe_smith_token, "message_id": marrys_message_id} 
     response = requests.delete(f'{BASE_URL}/message/remove/v1', json = message_delete_input)    
 

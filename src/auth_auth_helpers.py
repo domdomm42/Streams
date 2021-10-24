@@ -2,7 +2,6 @@ import hashlib
 import jwt
 from src.data_store import data_store
 from src.error import AccessError
-#from src.other import print_store_debug
 
 SESSION_TRACKER = 0
 SECRET = 'BEAGLE'

@@ -2,7 +2,6 @@ import pytest
 import requests
 
 from src.config import *
-from src.other import print_store_debug
 from datetime import datetime, timezone
 
 BASE_URL = url
