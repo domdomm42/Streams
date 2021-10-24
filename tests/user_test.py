@@ -1,14 +1,10 @@
 import pytest
 import requests
-
-from src.other import clear_v1
-from src.error import InputError, AccessError
-from src.auth import auth_login_v1, auth_register_v1
 from src.config import *
 from src.users import *
 
 BASE_URL = url
-
+INPUT_ERROR = 400
 
 @pytest.fixture
 def setup():
@@ -33,8 +29,6 @@ def setup():
     response_log_marry = response_log_marry.json()
     return response_log_joe, response_log_marry
 
-
-
 # Test for user all and user profile
 
 # Test invalid u id
@@ -50,10 +44,7 @@ def test_user_u_id_invalid(setup):
     response_data = response.json()
     
     # Raise InputError, u id does not refer to a valid user
-    assert response_data['code'] == 400
-
-
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test valid u id
 def test_valid_u_id(setup):
@@ -74,11 +65,6 @@ def test_valid_u_id(setup):
         'user_handles': 'joesmith',
         'user_id': 0,
     }
-
-
-
-
-
 
 # Test valid user all
 def test_user_all_output(setup):
@@ -108,8 +94,6 @@ def test_user_all_output(setup):
         ]
     }
 
-
-
 # Test valid user profile
 def test_user_profile_output(setup):
     
@@ -129,10 +113,6 @@ def test_user_profile_output(setup):
         'user_handles': 'marryjoe',
         'user_id': 1}
 
-
-
-
-
 # Test for name
 
 # Test invalid short first name
@@ -147,8 +127,7 @@ def test_user_name_first_too_short(setup):
     response_data = response.json()
 
     # Raise InputError, length of first name is not between 1 and 50
-    assert response_data['code'] == 400
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test invalid short last name
 def test_user_name_last_too_short(setup):
@@ -162,9 +141,7 @@ def test_user_name_last_too_short(setup):
     response_data = response.json()
     
     # Raise InputError, length of last name is not between 1 and 50    
-    assert response_data['code'] == 400
-
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test invalid long first name
 def test_user_name_first_too_long(setup):
@@ -179,9 +156,7 @@ def test_user_name_first_too_long(setup):
     response_data = response.json()
     
     # Raise InputError, length of first name is not between 1 and 50
-    assert response_data['code'] == 400
-
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test invalid long last name
 def test_user_name_last_too_long(setup):
@@ -196,11 +171,7 @@ def test_user_name_last_too_long(setup):
     response_data = response.json()
 
     # Raise InputError, length of last name is not between 1 and 50
-    assert response_data['code'] == 400
-
-
-
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test name duplications
 def test_user_name_duplication(setup):
@@ -208,8 +179,6 @@ def test_user_name_duplication(setup):
     # Load data from setup
     response_log_joe, response_log_marry = setup
     
-    
-
     # Two same names "a" "Smith",  there are no restrictions
     setname_info1 = {"token": response_log_joe["token"], "first_names": "a", "last_names": "Smith"}
     setname_info2 = {"token": response_log_marry["token"], "first_names": "a", "last_names": "Smith"}
@@ -219,8 +188,6 @@ def test_user_name_duplication(setup):
 
     response_data = response.json()
     assert response_data == {}
-
-
 
 # Test for valid first and last names
 def test_valid_name(setup):
@@ -244,11 +211,6 @@ def test_valid_name(setup):
         'user_id': 0,
     }
 
-
-
-
-
-
 # Test for email
 
 #Test email duplication
@@ -267,10 +229,7 @@ def test_user_email_duplication(setup):
     response_data = response.json()
     
     # Raise InputError, email is already being used by others
-    assert response_data['code'] == 400
-
-
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test two similar email, one lowercase the other uppercase
 def test_user_email_duplication_invalid_capital(setup):
@@ -288,8 +247,6 @@ def test_user_email_duplication_invalid_capital(setup):
     response_data = response.json()
     assert response_data == {}
 
-
-
 # Test invalid email
 def test_user_email_invalid(setup):
     
@@ -302,10 +259,7 @@ def test_user_email_invalid(setup):
     response_data = response.json()
     
     # Raise InputError, email is not valid
-    assert response_data['code'] == 400
-
-
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test valid user email
 def test_valid_email(setup):
@@ -327,11 +281,6 @@ def test_valid_email(setup):
         'user_id': 0,
     }
 
-
-
-
-
-
 # Test for handle
 
 # Test invalid short handle
@@ -347,8 +296,7 @@ def test_user_handle_too_short(setup):
     response_data = response.json()
     
     # Raise InputError, length of handle_str is not between 3 and 20
-    assert response_data['code'] == 400
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test invalid long handle
 def test_user_handle_too_long(setup):
@@ -363,8 +311,7 @@ def test_user_handle_too_long(setup):
     response_data = response.json()
     
     # Raise InputError, length of handle_str is not between 3 and 20    
-    assert response_data['code'] == 400
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test not alphanumeric handle
 def test_user_handle_contains_not_alnum(setup):
@@ -378,16 +325,13 @@ def test_user_handle_contains_not_alnum(setup):
     response_data = response.json()
 
     # Raise InputError, handle_str contains characters that are not alphanumeric
-    assert response_data['code'] == 400
-
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test handle duplication
 def test_user_handle_duplicate(setup):
     
     # Load data from setup
     response_log_joe, response_log_marry = setup
-
 
     # Input two same handles
     sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "KobeBryant"}
@@ -397,9 +341,7 @@ def test_user_handle_duplicate(setup):
     response_data = response.json()
     
     # Raise InputError, the handle is already being used by others
-    assert response_data['code'] == 400
-
-
+    assert response_data['code'] == INPUT_ERROR
 
 # Test similar handle, one lowercase the other uppcase
 def test_user_handle_duplicate_capital(setup):
@@ -414,8 +356,6 @@ def test_user_handle_duplicate_capital(setup):
     response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_marry)
     response_data = response.json()
     assert response_data == {}
-
-
 
 # Test valid handle
 def test_valid_handle(setup):
