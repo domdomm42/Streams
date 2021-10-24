@@ -2,7 +2,6 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth import auth_register_v1
 from src.auth_auth_helpers import check_and_get_user_id
-from src.other import print_store_debug
 import requests
 
 
