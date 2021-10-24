@@ -122,18 +122,30 @@ def user_profile_setemail_v1(token, email):
     return {}
 
 def check_len(handle_str):
+    '''
+    check the handle is length correct
+    it return InputError if it is invalid
+    '''
     if len(handle_str)  in range(3, 20):
         pass
     else:
         raise InputError(description='Invalid User Name')
     
 def check_alphanumeric(handle_str):
+    '''
+    check teh handle is only contain number and char
+    it takes handle and return Input Error if it is invalid
+    '''
     if handle_str.isalnum() == True:
         pass
     else:
         raise InputError(description='Invalid User Name')
 
 def check_duplicate(handle_str):
+    '''
+    check handle is been used or not
+    if it is , return InputError
+    '''
     store = data_store.get()
     for name in store['users']['user_handles']:
         if name == handle_str:
@@ -165,6 +177,10 @@ def check_invalid_emails(email):
         raise InputError(description = 'This email is already registered!')
 
 def check_invalid_u_id(u_id):
+    '''
+    check u_id if it is invalid 
+    return InpurError
+    '''
     store = data_store.get()
     if u_id not in store['users']['user_id']:
         raise InputError(description='This user does not exist!')
