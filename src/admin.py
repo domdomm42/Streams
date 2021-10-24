@@ -4,7 +4,7 @@ from src.auth_auth_helpers import check_and_get_user_id
 from src.auth import *
 
 def admin_user_remove_v1(token, user_id):
-   '''
+    '''
     This function removes a user given an authorised user id
 
     Arguments:
