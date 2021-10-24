@@ -217,13 +217,13 @@ def test_user_all_output(setup):
     assert response_data == [
         {'email': 'joe123@gmail.com',
         'handle_str': 'joesmith',
-         'is_remove': False,
+         
          'name_first': 'Joe',
          'name_last': 'Smith',
          'u_id': 0},
         {'email': 'marryjoe222@gmail.com',
          'handle_str': 'marryjoe',
-         'is_remove': False,
+         
          'name_first': 'Marry',
          'name_last': 'Joe',
          'u_id': 1}
