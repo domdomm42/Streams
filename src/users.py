@@ -1,15 +1,11 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
-
 import re
-
 
 def user_profile_sethandle_v1(token, handle_str):
     '''
     Update the authorised user's handle (i.e. display name)
-
-    Methods:    PUT
 
     Arguments:
         token(string)   - use to identify users
@@ -28,7 +24,9 @@ def user_profile_sethandle_v1(token, handle_str):
     check_len(handle_str)
     check_alphanumeric(handle_str)
     check_duplicate(handle_str)
+
     store = data_store.get()
+
     idx = 0
     for _ in store['users']['user_handles']:
         if idx == user_id:
@@ -36,25 +34,13 @@ def user_profile_sethandle_v1(token, handle_str):
             
             break
         idx = idx + 1
-
-
-
-
     
     data_store.set(store)
-    return {
-
-    }
+    return {}
 
 
-
-
-# Users functions
-
-
-# List of all users
 def user_all_v1(token):
-    # user_id = check_and_get_user_id(token)
+    check_and_get_user_id(token)
 
     store = data_store.get()
 
@@ -71,31 +57,17 @@ def user_all_v1(token):
                             'name_last': user_name_last, 
                             'handle_str': user_handle_str})
 
-
-    
-
-   
-
     data_store.set(store)
 
-    return  users
+    return {'users': users}
 
 
 # List of all valid users
 def user_profile_v1(token, u_id):
-    
-   
 
     store = data_store.get()
 
-    
-    
-    
-
     check_invalid_u_id(u_id)
-   
-    
-    
 
     return {'user_id': store['users']['user_id'][u_id], 
             'emails': store['users']['emails'][u_id], 
@@ -107,24 +79,12 @@ def user_profile_v1(token, u_id):
 # Update name
 def user_profile_setname_v1(token, name_first, name_last):
     
-
-
-
-
-    
     user_id = check_and_get_user_id(token)
 
     check_name_first_len(name_first)
     check_name_last_len(name_last)
 
     store = data_store.get()
-
-    # new_name = {'first_names': name_first, 'last_names': name_last}
-
-    # store['users']['user_id'].append(new_name)
-
-
-
 
     idx = 0
     for _ in store['users']:
@@ -136,10 +96,6 @@ def user_profile_setname_v1(token, name_first, name_last):
             break
         idx = idx + 1
 
-
-
-
-
     data_store.set(store)
 
     return {}
@@ -147,12 +103,9 @@ def user_profile_setname_v1(token, name_first, name_last):
 
 # Update email
 def user_profile_setemail_v1(token, email):
+
     user_id = check_and_get_user_id(token)
-
     check_invalid_emails(email)
-
-    # check_duplicate_email(email)
-
 
     store = data_store.get()
 
@@ -164,26 +117,9 @@ def user_profile_setemail_v1(token, email):
             break
         idx = idx + 1
 
-
-
-
-    # new_email = {'emails': email}
-
-    # store['users']['user_id'].append(new_email)
-
     data_store.set(store)
 
     return {}
-
-
-
-
-
-
-
-
-
-
 
 def check_len(handle_str):
     if len(handle_str)  in range(3, 20):
@@ -204,11 +140,6 @@ def check_duplicate(handle_str):
             raise InputError(description='This name has been used!')
     
     pass
-    
-
-
-
-
 
 def check_name_first_len(first_names):
     if len(first_names) in range(1, 50):
@@ -216,13 +147,11 @@ def check_name_first_len(first_names):
     else:
         raise InputError(description='Invalid User Name')
 
-
 def check_name_last_len(first_names):
     if len(first_names) in range(1, 50):
         pass
     else:
         raise InputError(description='Invalid User Name')
-
 
 def check_invalid_emails(email):
 
@@ -237,17 +166,8 @@ def check_invalid_emails(email):
 
 def check_invalid_u_id(u_id):
     store = data_store.get()
-    if u_id >= len(store['users']['user_handles']):
+    if u_id not in store['users']['user_id']:
         raise InputError(description='This user does not exist!')
-
-
-# def check_duplicate_email(email):
-#     store = data_store.get()
-#     for name in store['users']['emails']:
-#         if name == email:
-#             raise InputError(description='This name has been used!')
-    
-#     pass
 
 
 
