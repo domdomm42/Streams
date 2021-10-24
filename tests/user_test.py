@@ -60,6 +60,20 @@ def test_user_handle_duplicate(setup):
     assert response_data['code'] == 400
 
 
+def test_valid_handle(setup):
+    response_log_joe, _ = setup
+    sethandle_info = {"token": response_log_joe['token'], "handle_str": "KobeBryant"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'joe123@gmail.com',
+        'first_names': 'Joe',
+        'last_names': 'Smith',
+        'user_handles': 'KobeBryant',
+        'user_id': 0,
+        }
 
 # import pytest
 
@@ -101,13 +115,25 @@ def test_user_u_id_invalid(setup):
     
     response_log_joe, _ = setup
 
-    setuid_info = {"token": response_log_joe["token"], 'user_id': '100'}
-
-    response = requests.get(f'{BASE_URL}user/profile/v1', params = setuid_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 100}
     
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
     response_data = response.json()
     assert response_data['code'] == 400
 
+
+def test_valid_u_id(setup):
+    response_log_joe, _ = setup
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'joe123@gmail.com',
+        'first_names': 'Joe',
+        'last_names': 'Smith',
+        'user_handles': 'joesmith',
+        'user_id': 0,
+        }
         
 
 
@@ -157,14 +183,64 @@ def test_user_name_both_long(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+def test_user_name_first_short_last_long(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe["token"], "first_names": '',
+                    "last_names": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz"}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_user_name_first_long_last_short(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe["token"],
+                    "first_names": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz", "last_names": ""}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+
+def test_valid_first_name(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe['token'], "first_names": "a"}
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'joe123@gmail.com',
+        'first_names': 'Joe',
+        'last_names': 'Smith',
+        'user_handles': 'joesmith',
+        'user_id': 0,
+        }
+
+def test_valid_last_name(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe['token'], "last_names": "a"}
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'joe123@gmail.com',
+        'first_names': 'Joe',
+        'last_names': 'Smith',
+        'user_handles': 'joesmith',
+        'user_id': 0,
+        }
+
+
 
 
 
 # Test for email
 def test_user_email_duplication(setup):
     response_log_joe, response_log_marry = setup
-    setemail_info1 = {"token": response_log_joe["token"], "emails": "abcde"}
-    setemail_info2 = {"token": response_log_marry["token"], "emails": "abcde"}
+    setemail_info1 = {"token": response_log_joe["token"], "emails": "kobebryant24881@gmail.com"}
+    setemail_info2 = {"token": response_log_marry["token"], "emails": "kobebryant24881@gmail.com"}
 
     requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info1)
     response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info2)
@@ -180,7 +256,20 @@ def test_user_email_invalid(setup):
     assert response_data['code'] == 400
 
 
-
+def test_valid_email(setup):
+    response_log_joe, _ = setup
+    setemail_info = {"token": response_log_joe['token'], "emails": "joe123@gmail.com"}
+    requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'joe123@gmail.com',
+        'first_names': 'Joe',
+        'last_names': 'Smith',
+        'user_handles': 'joesmith',
+        'user_id': 0,
+        }
 
 
 
@@ -193,14 +282,21 @@ def test_user_all_correct(setup):
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
 
     
-    setemail_info = {"token": response_log_joe["token"], "emails": "abcde"}
-    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+    setemail_info = {"token": response_log_joe["token"], "emails": "kobebryant24881@gmail.com"}
+    requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
 
     sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "KobeBryant"}
     requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
-
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data == {
+        'emails': 'kobebryant24881@gmail.com',
+        'first_names': 'a',
+        'last_names': 'a',
+        'user_handles': 'KobeBryant',
+        'user_id': 0,
+    }
 
 
 def test_user_all_wrong(setup):
@@ -218,6 +314,58 @@ def test_user_all_wrong(setup):
 
     response_data = response.json()
     assert response_data['code'] == 400
+
+def test_user_all_output(setup):
+    response_log_joe, _ = setup
+    user_all_info = {"token": response_log_joe["token"]}
+    response = requests.get(f'{BASE_URL}users/all/v1', json = user_all_info)
+    response_data = response.json()
+    assert response_data == [
+        {'email': 'joe123@gmail.com',
+        'handle_str': 'joesmith',
+         'is_remove': False,
+         'name_first': 'Joe',
+         'name_last': 'Smith',
+         'u_id': 0},
+        # {'email': 'marryjoe222@gmail.com',
+        #  'handle_str': 'marryjoe',
+        #  'is_remove': False,
+        #  'name_first': 'Marry',
+        #  'name_last': 'Joe',
+        #  'u_id': 1}
+    ]
+    
+def test_user_profile_output(setup):
+    response_log_joe, _ = setup
+    
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 1}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {   
+        'emails': 'marryjoe222@gmail.com',
+        'first_names': 'Marry',
+        'last_names': 'Joe',
+        'user_handles': 'marryjoe',
+        'user_id': 1}
+
+
+
+def test_user_handle_short_and_not_alphanumeric(setup):
+    response_log_joe, _ = setup
+    sethandle_info = {"token": response_log_joe['token'], "handle_str": "a!"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_user_handle_long_and_not_alphanumeric(setup):
+    response_log_joe, _ = setup
+    sethandle_info = {"token": response_log_joe['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz!"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
 
 
 # Test for handle
@@ -249,10 +397,3 @@ def test_user_all_wrong(setup):
 #     response = requests.put(f'{BASE_URL}/user/profile/sethandle/v1', json = sethandle_info2)
 #     response_data = response.json()
 #     assert response_data['code'] == 400
-
-
-
-
-
-
-
