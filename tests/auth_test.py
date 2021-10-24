@@ -1,14 +1,12 @@
 import pytest
 import requests
 import jwt
-from src.auth import auth_login_v1, auth_register_v1
-from src.error import InputError
-from src.other import clear_v1
-from src.config import *
 from src.auth_auth_helpers import SECRET
-
+from src.config import *
 
 BASE_URL = url
+ACCESS_ERROR = 403
+INPUT_ERROR = 400
 
 # Test invalid emails
 def test_register_invalid_email():
@@ -17,7 +15,7 @@ def test_register_invalid_email():
     # register user using invalid user_info
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_register_invalid_email_2():
     user_info = {"email": "anika.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
@@ -25,7 +23,7 @@ def test_register_invalid_email_2():
     # register user using invalid user_info
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_register_invalid_email_3():
     user_info = {"email": " ", "password": "password", "name_first": "Joe", "name_last": "Smith"}
@@ -33,7 +31,7 @@ def test_register_invalid_email_3():
     # register user using invalid user_info
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_register_invalid_email_4():
     user_info = {"email": "@.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
@@ -41,7 +39,7 @@ def test_register_invalid_email_4():
     # register user using invalid user_info
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_register_invalid_email_5():
     user_info = {"email": "2342ras@43", "password": "password", "name_first": "Joe", "name_last": "Smith"}
@@ -49,7 +47,7 @@ def test_register_invalid_email_5():
     # register user using invalid user_info
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_register_invalid_email_6():
     user_info = {"email": "dklshfdoshfokishjfoihwokjbhfd", "password": "password", "name_first": "Joe", "name_last": "Smith"}
@@ -57,7 +55,7 @@ def test_register_invalid_email_6():
     # register user using invalid user_info
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_register_invalid_email_7():
     user_info = {"email": "marry.joe!@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
@@ -65,7 +63,7 @@ def test_register_invalid_email_7():
     # register user using invalid user_info
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 # Test valid emails
 def test_register_valid_email():
@@ -122,7 +120,7 @@ def test_register_duplicate_email():
     user_info = {"email": "joe123@gmail.com", "password": "password2", "name_first": "Joe2", "name_last": "Smith2"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 # Test invalid password (<6 characters)
 def test_invalid_password():
@@ -133,7 +131,7 @@ def test_invalid_password():
     user_info = {"email": "joe123@gmail.com", "password": "joe", "name_first": "Joe", "name_last": "Smith"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_invalid_password_2():
 
@@ -143,7 +141,7 @@ def test_invalid_password_2():
     user_info = {"email": "joe123@gmail.com", "password": "123", "name_first": "Joe", "name_last": "Smith"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_invalid_password_3():
 
@@ -153,7 +151,7 @@ def test_invalid_password_3():
     user_info = {"email": "joe123@gmail.com", "password": " ", "name_first": "Joe", "name_last": "Smith"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_invalid_password_4():
 
@@ -163,7 +161,7 @@ def test_invalid_password_4():
     user_info = {"email": "joe123@gmail.com", "password": "", "name_first": "Joe", "name_last": "Smith"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 # Test invalid first name (not 1 <= characters <= 50)
 def test_invalid_first_name():
@@ -174,7 +172,7 @@ def test_invalid_first_name():
     user_info = {"email": "joe123@gmail.com", "password": "password", "name_first": "", "name_last": "Smith"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_invalid_first_name_2():
 
@@ -184,7 +182,7 @@ def test_invalid_first_name_2():
     user_info = {"email": "joe123@gmail.com", "password": "password", "name_first": "J"*51, "name_last": "Smith"}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 # Test invalid last name (not 1 <= characters <= 50)
 def test_invalid_last_name():
@@ -195,7 +193,7 @@ def test_invalid_last_name():
     user_info = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": ""}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_invalid_last_name_2():
 
@@ -205,7 +203,7 @@ def test_invalid_last_name_2():
     user_info = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "S"*51}
     response = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
  #########################################################################
  #########################################################################
@@ -218,7 +216,7 @@ def test_unregistered_email():
     user_info = {"email": "joe123@gmail.com", "password": "password"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 
 def test_unregistered_email_2():
@@ -228,7 +226,7 @@ def test_unregistered_email_2():
     user_info = {"email": "anika.com", "password": "password"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 
 def test_unregistered_email_3():
@@ -238,7 +236,7 @@ def test_unregistered_email_3():
     user_info = {"email": "", "password": "password"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 
 def test_unregisterd_email_4():
@@ -248,7 +246,7 @@ def test_unregisterd_email_4():
     user_info = {"email": ".com", "password": "password"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_unregistered_email_5():
     requests.delete(f'{BASE_URL}/clear/v1')
@@ -257,7 +255,7 @@ def test_unregistered_email_5():
     user_info = {"email": "@.com", "password": "password"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 
 def test_unregisted_email_6():
@@ -267,7 +265,7 @@ def test_unregisted_email_6():
     user_info = {"email": "2342ras@43", "password": "password"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_unregisted_email_7():
     requests.delete(f'{BASE_URL}/clear/v1')
@@ -276,7 +274,7 @@ def test_unregisted_email_7():
     user_info = {"email": "dklshfdoshfokishjfoihwokjbhfd", "password": "password"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_unregistered_email_8():
     requests.delete(f'{BASE_URL}/clear/v1')
@@ -285,7 +283,7 @@ def test_unregistered_email_8():
     user_info = {"email": "marry.joe!@gmail.com", "password": "password"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 def test_unregistered_email_9():
     requests.delete(f'{BASE_URL}/clear/v1')
@@ -294,7 +292,7 @@ def test_unregistered_email_9():
     user_info = {"email": "wolffangdan", "password": "dancarry"}
     response = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 
 # # Test registered email
@@ -339,15 +337,6 @@ def test_registered_email_3():
     response_log = response_log.json()
     assert response_log['token'] == jwt.encode({'user_id': 0, 'session_id': 2}, SECRET, algorithm='HS256')
 
-
-# # Tests for multiple registers
-# def test_registered_email_4():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     register_userID = auth_register_v1('panhain7@gmail.com', '016758899', 'Panha', 'In').get('auth_user_id')
-#     register_userID = auth_register_v1('oudomiscool@gmail.com', 'potatoyum', 'Oudom', 'Lim').get('auth_user_id')
-#     login_userID = auth_login_v1('oudomiscool@gmail.com', 'potatoyum').get('auth_user_id')
-#     assert register_userID == login_userID
-
 # Testing for unmatched password
 def test_wrong_password():
     requests.delete(f'{BASE_URL}/clear/v1')
@@ -360,7 +349,7 @@ def test_wrong_password():
     # Logging on with wrong password
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log_data = response_log.json()
-    assert response_log_data['code'] == 400
+    assert response_log_data['code'] == INPUT_ERROR
 
 def test_wrong_password_2():
     requests.delete(f'{BASE_URL}/clear/v1')
@@ -373,7 +362,7 @@ def test_wrong_password_2():
     # Logging on with wrong password
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log_data = response_log.json()
-    assert response_log_data['code'] == 400
+    assert response_log_data['code'] == INPUT_ERROR
 
 
 def test_wrong_password_3():
@@ -384,7 +373,7 @@ def test_wrong_password_3():
     # Logging on to a unregistered account
     response_log = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login)
     response_log_data = response_log.json()
-    assert response_log_data['code'] == 400
+    assert response_log_data['code'] == INPUT_ERROR
 
 
 # Logout Tests
@@ -402,5 +391,5 @@ def test_double_logout():
     return_value = requests.post(f'{BASE_URL}/auth/logout/v1', json = user_info_logout)
 
     return_value = return_value.json()
-    assert return_value['code'] == 403
+    assert return_value['code'] == ACCESS_ERROR
 

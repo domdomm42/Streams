@@ -1,8 +1,6 @@
 from src.data_store import data_store
-from src.error import InputError, AccessError
+from src.error import InputError
 from src.auth_auth_helpers import check_and_get_user_id
-from src.auth import auth_register_v1
-import requests
 
 ''' 
 Both Channels list functions create a new list of dictionaries
@@ -28,12 +26,9 @@ def channels_list_v1(token):
     i = 0
     for members in store['channels']['all_members']:
 
-        # Tracks the Channel ID by its index in the 'channel' data_store
         name = store['channels']['channel_name'][i]
         new_dict = {'channel_id': i, 'name': name}
 
-        # Filters the added channels by the existance of User in 
-        # the members
         if auth_user_id in members:
             new_list.append(new_dict)
 
@@ -41,7 +36,6 @@ def channels_list_v1(token):
 
     return {'channels': new_list}
 
-# Works like the previous function with the ommission of User Filter
 def channels_listall_v1(token):
     '''
     Arguments:
@@ -90,15 +84,10 @@ def channels_create_v1(token, name, is_public):
     '''
 
     user_id = check_and_get_user_id(token)
-
     check_channel_name(name)
-
     all_members_in_channel = []
-
     all_members_in_channel.append(user_id)
- 
     store = data_store.get()
-    
 
     store['channels']['owner_user_id'].append([user_id])
     store['channels']['channel_name'].append(name)
@@ -106,30 +95,26 @@ def channels_create_v1(token, name, is_public):
     store['channels']['all_members'].append(all_members_in_channel)
     store['channels']['messages'].append([])
 
-
     i = 0
     for _ in store["channels"]["owner_user_id"]:
         i += 1
     
-
     channel_id = i - 1
-
     store['channels']['channel_id'].append(channel_id)
-
     data_store.set(store)
-
     return {'channel_id': channel_id} 
 
-
-
-    # Function to check if name is within 1 and 20 characters.
 def check_channel_name(name):
-    if len(name) >= 1 and len(name) <= 20:
-        pass
-    else:
+    '''
+    Checks if a channel name is valid, between 1 and 20 characters inclusive.
+
+    Arguments:
+        name    (string)    - Channel name
+
+    Return Value:
+        returns new_list: list of dicionaries containing channel 
+        id's and names of all existing channels that the given 
+        User ID is a member of.
+    '''
+    if len(name) < 1 or len(name) > 20:
         raise InputError('Length of channel name must be between 1 and 20 characters!')
-
-# if __name__ == '__main__':
-
-    # token_and_user_id = auth_register_v1("joe123@gmail.com", "password", "Marry", "Joe")
-    # print(channels_create_v1(token_and_user_id['token'], "Joessdf", True))

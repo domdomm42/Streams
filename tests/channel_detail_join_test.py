@@ -1,14 +1,11 @@
 import pytest
-from src.channel import channel_details_v1, channel_join_v1
-from src.error import InputError, AccessError
-from src.auth import auth_login_v1, auth_register_v1
-from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
-from src.other import clear_v1
 import requests
-from src.users import user_profile_sethandle_v1
-from src.auth_auth_helpers import check_and_get_user_id
 from src.config import *
+
 BASE_URL = url
+ACCESS_ERROR = 403
+INPUT_ERROR = 400
+
 
 #=====Input Error======================
 #=====Test invalid channel_id==========
@@ -49,7 +46,7 @@ def test_invalid_channel_id_detail(setup):
     channel_detail_info = {"token": response_log_joe['token'], "channel_id": 100}
     response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_detail_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 
 #Test join a channel with an invalid id(100 is not exist in data_store)        
@@ -58,7 +55,7 @@ def test_invalid_channel_id_join(setup):
     channel_join_info = {"token": response_log_joe['token'], "channel_id": 100}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
-    assert response_data['code'] == 400
+    assert response_data['code'] == INPUT_ERROR
 
 
 def test_negative_channel_id_in_details(setup):
@@ -66,7 +63,7 @@ def test_negative_channel_id_in_details(setup):
     channel_detail_info = {"token": response_log_joe["token"], "channel_id": -1}
     response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_detail_info)
     response_data = response.json()
-    assert response_data['code'] == 403
+    assert response_data['code'] == ACCESS_ERROR
 
 
 def test_negative_channel_id_in_join(setup):
@@ -74,7 +71,7 @@ def test_negative_channel_id_in_join(setup):
     channel_join_info = {"token": response_log_joe['token'], "channel_id": -1}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
-    assert response_data['code'] == 403
+    assert response_data['code'] == ACCESS_ERROR
 
 
 #=====Test member join again===========
@@ -84,7 +81,7 @@ def test_member_join_again_1(setup):
     channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id']}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
-    assert response_data['code'] == 400      
+    assert response_data['code'] == INPUT_ERROR      
     
    
 
@@ -93,7 +90,7 @@ def test_member_join_again_2(setup):
     channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_marry['channel_id']}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
-    assert response_data['code'] == 400      
+    assert response_data['code'] == INPUT_ERROR      
     
 
 
@@ -106,7 +103,7 @@ def test_no_member_access_detail_1(setup):
     channel_details_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
     response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     response_data = response.json()
-    assert response_data['code'] == 403
+    assert response_data['code'] == ACCESS_ERROR
 
 
 
@@ -116,7 +113,7 @@ def test_no_member_access_detail_2(setup):
     channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
     response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     response_data = response.json()
-    assert response_data['code'] == 403
+    assert response_data['code'] == ACCESS_ERROR
     
 #=====Channel is private===============
 #User is not a global owner or member
@@ -129,7 +126,7 @@ def test_join_private_channel(setup): # making joe join marry's channel
     channel_join_info = {"token": milly_token, "channel_id": channel_id_marry['channel_id']}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
-    assert response_data['code'] == 403
+    assert response_data['code'] == ACCESS_ERROR
 
 def test_global_owner_join_private(setup):
     _, channel_id_marry, response_log_joe, _ = setup
