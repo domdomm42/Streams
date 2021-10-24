@@ -194,10 +194,9 @@ def check_password(password):
         No return value, only raises error if password is invalid.
     '''
 
-    if len(password) >= 6:
-        pass
-    else: 
+    if len(password) < 6:
         raise InputError('Invalid password!')
+
 
 # --- Check first name ---
 # This function takes in the user's first name (string) and checks 
@@ -217,9 +216,7 @@ def check_first_name(name_first):
         No return value, only raises error if first name is invalid.
     '''
 
-    if len(name_first) >= 1 and len(name_first) <= 50:
-        pass
-    else: 
+    if len(name_first) < 1 or len(name_first) > 50:
         raise InputError('Invalid first name!')
 
 # --- Check last name ---
@@ -240,9 +237,7 @@ def check_last_name(name_last):
         No return value, only raises error if last name is invalid.
     '''
 
-    if len(name_last) >= 1 and len(name_last) <= 50:
-        pass
-    else:
+    if len(name_last) < 1 or len(name_last) > 50:
         raise InputError('Invalid last name!')
 
 # --- Create user_handle ---
@@ -353,12 +348,3 @@ def check_valid_password(email, password):
             counter = counter + 1
 
     raise InputError('Invalid Password!')
-
-# if __name__ == '__main__':
-#     token = auth_register_v1('joejim123@gmail.com', 'password', 'Jim', 's')['token']
-#     auth_register_v1('joejim123234@gmail.com', 'password', 'SEW', 's')
-    
-#     print_store_debug()
-
-#     auth_logout_v1(token)
-#     print_store_debug()

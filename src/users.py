@@ -34,6 +34,17 @@ def user_profile_sethandle_v1(token, handle_str):
 
 
 def user_all_v1(token):
+    '''
+    Returns a list of all users and their associated details.
+
+    Arguments:
+        token(string)   - use to identify users
+
+    Exceptions:
+        No given exception
+    Return value:
+        return {users} - Returns a list of all users and their details
+    '''
     check_and_get_user_id(token)
 
     store = data_store.get()
@@ -59,6 +70,19 @@ def user_all_v1(token):
 # List of all valid users
 def user_profile_v1(token, u_id):
     check_and_get_user_id(token)
+    '''
+    Returns information on the user_id, email, first name, last name and handle
+
+    Arguments:
+        token(string)   - use to identify users
+        u_id            - user id
+
+    Exceptions:
+        InputError - Raised when u_id does not refer to a valid user
+    Return value:
+        return {users} - Returns a list of all users and their details
+    '''
+
     store = data_store.get()
     check_invalid_u_id(u_id)
 
@@ -71,6 +95,21 @@ def user_profile_v1(token, u_id):
 
 # Update name
 def user_profile_setname_v1(token, name_first, name_last):
+    '''
+    Update an authorised users first and last name
+
+    Arguments:
+        token(string)   - use to identify users
+        name_first      - string
+        name_last       - string
+
+    Exceptions:
+        InputError - length of name_first is not between 1 and 50 characters inclusive
+                   - length of name_last is not between 1 and 50 characters inclusive
+
+    Return value:
+        return {}
+    '''
     
     user_id = check_and_get_user_id(token)
     check_name_first_len(name_first)
@@ -88,6 +127,21 @@ def user_profile_setname_v1(token, name_first, name_last):
 
 # Update email
 def user_profile_setemail_v1(token, email):
+    '''
+    Update the authorised user's email address
+
+    Arguments:
+        token(string)   - use to identify users
+        email           - string
+
+    Exceptions:
+        InputError - email entered is not a valid email
+                   - email address is already being used by another user
+
+    Return value:
+        return {}
+    '''
+    
 
     user_id = check_and_get_user_id(token)
     check_invalid_emails(email)
@@ -127,14 +181,49 @@ def check_duplicate(handle_str):
             raise InputError(description='This name has been used!')
 
 def check_name_first_len(first_name):
+    '''
+    Checks length of first name
+
+    Arguments:
+        first_name           - string
+
+    Exceptions:
+        InputError - Invalid User name
+
+    Return value:
+        No Return Value
+    '''
     if len(first_name) < 1 or len(first_name) > 50:
         raise InputError(description='Invalid First Name')
 
 def check_name_last_len(last_name):
+    '''
+    Checks length of first name
+
+    Arguments:
+        first_name           - string
+
+    Exceptions:
+        InputError - Invalid User name
+
+    Return value:
+        No Return Value
+    '''
     if len(last_name) < 1 or len(last_name) > 50:
         raise InputError(description='Invalid Last Name')
 
 def check_invalid_emails(email):
+    '''
+    Check for validity of emails
+
+    Arguments:
+        email(string)
+
+    Exceptions:
+        InputError - email already registered
+    Return value:
+        No return value
+    '''
 
     store = data_store.get()
     regex = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'
@@ -146,8 +235,15 @@ def check_invalid_emails(email):
 
 def check_invalid_u_id(u_id):
     '''
-    check u_id if it is invalid 
-    return InpurError
+    Check for validity of user_id
+
+    Arguments:
+        u_id(strings)
+
+    Exceptions:
+        InputError - user_id does not exist
+    Return value:
+        No return value
     '''
     store = data_store.get()
     if u_id not in store['users']['user_id']:
