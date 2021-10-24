@@ -337,15 +337,6 @@ def test_registered_email_3():
     response_log = response_log.json()
     assert response_log['token'] == jwt.encode({'user_id': 0, 'session_id': 2}, SECRET, algorithm='HS256')
 
-
-# # Tests for multiple registers
-# def test_registered_email_4():
-#     requests.delete(f'{BASE_URL}/clear/v1')
-#     register_userID = auth_register_v1('panhain7@gmail.com', '016758899', 'Panha', 'In').get('auth_user_id')
-#     register_userID = auth_register_v1('oudomiscool@gmail.com', 'potatoyum', 'Oudom', 'Lim').get('auth_user_id')
-#     login_userID = auth_login_v1('oudomiscool@gmail.com', 'potatoyum').get('auth_user_id')
-#     assert register_userID == login_userID
-
 # Testing for unmatched password
 def test_wrong_password():
     requests.delete(f'{BASE_URL}/clear/v1')
