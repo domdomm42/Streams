@@ -71,6 +71,26 @@ def test_user_handle_duplicate_capital(setup):
     response_data = response.json()
     assert response_data == {}
 
+def test_user_handle_duplicate_capital_invalid(setup):
+    response_log_joe, response_log_marry = setup
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "aaa"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "A"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_user_handle_duplicate_capital_fixed_invalid(setup):
+    response_log_joe, response_log_marry = setup
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "a"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "AAA"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data == {}
+
 
 
 def test_user_handle_duplicate_not_capital(setup):
@@ -508,6 +528,17 @@ def test_user_name_duplication_no_first(setup):
     assert response_data == {'code': 400, 'message': '<p>Invalid User Name</p>', 'name': 'System Error'}
 
 
+def test_user_name_duplication_no_first_but_last(setup):
+    response_log_joe, response_log_marry = setup
+    setname_info1 = {"token": response_log_joe["token"], "first_names": "","last_names": "Smith"}
+    setname_info2 = {"token": response_log_marry["token"], "first_names": "a","last_names": ""}
+
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info1)
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info2)
+
+    response_data = response.json()
+    assert response_data == {'code': 400, 'message': '<p>Invalid User Name</p>', 'name': 'System Error'}
+
 def test_user_name_duplication_no_last(setup):
     response_log_joe, response_log_marry = setup
     setname_info1 = {"token": response_log_joe["token"], "first_names": "a","last_names": ""}
@@ -605,6 +636,21 @@ def test_user_email_duplication(setup):
 
     response_data = response.json()
     assert response_data['code'] == 400
+
+
+def test_user_email_duplication_host_capital(setup):
+    response_log_joe, response_log_marry = setup
+    setemail_info1 = {"token": response_log_joe["token"], "emails": "kobebryant24881@gmail.com"}
+    setemail_info2 = {"token": response_log_marry["token"], "emails": "kobebryant24881@GMAIL.com"}
+
+    requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info1)
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info2)
+
+    response_data = response.json()
+    assert response_data == {}
+
+
+
 
 
 def test_user_name_duplication_invalid(setup):
