@@ -46,18 +46,20 @@ def channel_details_v1(token, channel_id):
     """
     Given a channel with ID channel_id that the authorised 
     user is a member of, provide basic details about the channel.
-      
+    
+    Methods: GET
+
     Arguments:
-        auth_user_id (integer)    - use to identify users
+        token(string)   - use to identify users
         channel_id (integer)    - use to identify channels
       
     Exceptions:
-
-        InputError('Invalid input')  - Occurs when channel_id does 
-        not refer to a valid channel.
-
-        AccessError('Permission denied!') - Occurs when channel_id 
-        is valid and the authorised user is not a member of the channel
+        400 Error:
+            InputError('Invalid input')  - Occurs when channel_id does 
+            not refer to a valid channel.
+        403 Error:
+            AccessError('Permission denied!') - Occurs when channel_id 
+            is valid and the authorised user is not a member of the channel
       
     Return Value:
         Returns dictionary:
@@ -182,23 +184,25 @@ def channel_join_v1(token, channel_id):
     Given a channel_id of a channel that the authorised user can join,
     adds them to that channel.
 
+    Method: POST
+
     Arguments:
-        auth_user_id (integer)    - use to identify users
+        token(string)           - use to identify users
         channel_id (integer)    - use to identify channels
          ...
 
     Exceptions:
-
-         InputError('Invalid input')  - Occurs when channel_id does
-         not refer to a valid channel.
-
-         InputError('You are a member already!')  - Occurs when
-         the authorised user is already a member of the channel.
-
-         AccessError('This is private channel, permission denied!') - Occurs when
-         channel_id refers to a channel that is private and the authorised user
-         is not already a channel member and is not a global owner.
-
+        400 Error:
+            InputError('Invalid input')  - Occurs when channel_id does
+            not refer to a valid channel.
+        
+            InputError('You are a member already!')  - Occurs when
+            the authorised user is already a member of the channel.
+        403 Error:
+            AccessError('This is private channel, permission denied!') - Occurs when
+            channel_id refers to a channel that is private and the authorised user
+            is not already a channel member and is not a global owner.
+            
     Return Value:
          This function return empty dictionary.
     """
@@ -218,6 +222,27 @@ def channel_join_v1(token, channel_id):
     }
 
 def channel_leave_v1(token, channel_id):
+    '''
+    Given a channel with ID channel_id that the authorised user is a member of, 
+    remove them as a member of the channel. Their messages should remain in the channel. 
+    If the only channel owner leaves, the channel will remain.
+
+    Methods: POST
+    Arguments:
+        token(string)           - use to identify users
+        channel_id (integer)    - use to identify channels
+
+    Exceptions:
+        400 Error:
+            InputError('Invalid input')  - Occurs when channel_id does
+            not refer to a valid channel.
+        403 Error:
+            AccessError('Permission denied!') - Occurs when channel_id
+            is valid and the authorised user is not a member of the channel
+    Return value:
+        return {}
+
+    '''
     store = data_store.get()
     user_id = check_and_get_user_id(token)
     check_channel_id(channel_id)
@@ -231,6 +256,30 @@ def channel_leave_v1(token, channel_id):
     }
 
 def channel_addowner_v1(token, channel_id, u_id ):
+    '''
+    Make user with user id u_id an owner of the channel.
+
+    Methods: POST
+    Arguments:
+        token(string)           - use to identify users
+        channel_id (integer)    - use to identify channels
+        u_id(integer)           - use to identify users
+    
+    Exceptions:
+        400 Error:
+            InputError - channel_id does not refer to a valid channel
+                         u_id does not refer to a valid user
+                         u_id refers to a user who is not a member of the channel
+                         u_id refers to a user who is already an owner of the channel
+        403 Error:
+            AccessError - channel_id is valid and the authorised user does not have owner permissions in the channel
+
+    Return value:
+        return {}      
+
+    '''
+
+
     user_id = check_and_get_user_id(token)
     #check channel_id does not refer to a valid channe
     check_channel_id(channel_id)
@@ -254,6 +303,29 @@ def channel_addowner_v1(token, channel_id, u_id ):
 
 
 def channel_removeowner_v1(token, channel_id, u_id):
+
+    '''
+    Remove user with user id u_id as an owner of the channel.
+
+    Methods: POST
+    Arguments:
+        token(string)           - use to identify users
+        channel_id (integer)    - use to identify channels
+        u_id(integer)           - use to identify users
+    
+    Exceptions:
+        400 Error:
+            InputError - hannel_id does not refer to a valid channel
+                         u_id does not refer to a valid user
+                         u_id refers to a user who is not an owner of the channel
+                         u_id refers to a user who is currently the only owner of the channel 
+        403 Error:
+            AccessError - channel_id is valid and the authorised user does not have owner permissions in the channel
+
+    Return value:
+        return {}    
+    '''
+
     store = data_store.get()
     user_id = check_and_get_user_id(token)
     #channel_id does not refer to a valid channel

@@ -4,7 +4,7 @@ import requests
 from src.other import clear_v1
 from src.error import InputError, AccessError
 from src.auth import auth_login_v1, auth_register_v1
-# from src.users import user_profile_sethandle_v1, user_profile_setemail_v1,user_profile_setname_v1, user_profile_v1, user_all_v1
+
 from src.config import *
 from src.users import *
 
@@ -27,28 +27,28 @@ def setup():
     response_log_joe = response_log_joe.json()
     response_log_marry = response_log_marry.json()
     return response_log_joe, response_log_marry
-
+# test the handle is less than 3
 def test_user_handle_too_short(setup):
     response_log_joe, _ = setup
     sethandle_info = {"token": response_log_joe['token'], "handle_str": "a"}
     response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info)
     response_data = response.json()
     assert response_data['code'] == 400
-
+# test the handle is longer than 20
 def test_user_handle_too_long(setup):
     response_log_joe, _ = setup
     sethandle_info = {"token": response_log_joe['token'], "handle_str": "longlonglonglonglonglong"}
     response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info)
     response_data = response.json()
     assert response_data['code'] == 400
-
+#test the handle is not only char and number
 def test_user_handle_contains_not_alnum(setup):
     response_log_joe, _ = setup
     sethandle_info = {"token": response_log_joe['token'], "handle_str": "my_name!"}
     response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info)
     response_data = response.json()
     assert response_data['code'] == 400
-
+#test handle is already using
 def test_user_handle_duplicate(setup):
     response_log_joe, response_log_marry = setup
 
@@ -59,7 +59,7 @@ def test_user_handle_duplicate(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
-
+#check the valid input and output
 def test_valid_handle(setup):
     response_log_joe, _ = setup
     sethandle_info = {"token": response_log_joe['token'], "handle_str": "KobeBryant"}
@@ -75,38 +75,6 @@ def test_valid_handle(setup):
         'user_id': 0,
         }
 
-# import pytest
-
-# from src.error import InputError, AccessError
-
-# from src.users import *
-
-# import requests
-
-# from src.auth_auth_helpers import check_and_get_user_id
-
-# from src.config import *
-
-# BASE_URL = url
-
-# @pytest.fixture
-# def setup():
-
-#    requests.delete(f'{BASE_URL}/clear/v1')
-#    #register for joe
-#    user_joe_info_reg = {"email": "joe123@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Smith"}
-#    user_joe_info_login = {"email": "joe123@gmail.com", "password": "password"}
-#    requests.post(f'{BASE_URL}/auth/register/v2', json = user_joe_info_reg)
-#    #register for marry
-#    user_marry_info_reg = {"email": "marryjoe222@gmail.com", "password": "passwordM", "name_first": "Marry", "name_last": "Joe"}
-#    user_marry_info_login = {"email": "marryjoe222@gmail.com", "password": "passwordM"}
-#    requests.post(f'{BASE_URL}/auth/register/v2', json = user_marry_info_reg)
-#    #log them in
-#    response_log_joe = requests.post(f'{BASE_URL}/auth/login/v2', json = user_joe_info_login)
-#    response_log_marry = requests.post(f'{BASE_URL}/auth/login/v2', json = user_marry_info_login)
-#    response_log_joe = response_log_joe.json()
-#    response_log_marry = response_log_marry.json()
-#    return response_log_joe, response_log_marry
 
 
 
@@ -239,6 +207,8 @@ def test_user_all_wrong(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+
+#test user all with correct output
 def test_user_all_output(setup):
     response_log_joe, _ = setup
     user_all_info = {"token": response_log_joe["token"]}
@@ -258,7 +228,7 @@ def test_user_all_output(setup):
          'name_last': 'Joe',
          'u_id': 1}
     ]
-    
+#test profile with correct output   
 def test_user_profile_output(setup):
     response_log_joe, _ = setup
     
@@ -272,41 +242,5 @@ def test_user_profile_output(setup):
         'last_names': 'Joe',
         'user_handles': 'marryjoe',
         'user_id': 1}
-
-
-# Test for handle
-# def test_user_handle_too_short(setup):
-#     response_log_joe, response_log_marry = setup
-#     sethandle_info = {"token": response_log_joe["token"], "handle_str": "a"}
-#     response = requests.put(f'{BASE_URL}/user/profile/sethandle/v1', json = sethandle_info)
-#     response_data = response.json()
-#     assert response_data['code'] == 400
-
-# def test_user_handle_too_long(setup):
-#     response_log_joe, response_log_marry = setup
-#     sethandle_info = {"token": response_log_joe["token"], "handle_str": "comp1531abcdefghijklmnopqrstuvwxyz"}
-#     response = requests.put(f'{BASE_URL}/user/profile/sethandle/v1', json = sethandle_info)
-#     response_data = response.json()
-#     assert response_data['code'] == 400
-
-# def test_user_handle_not_alphanumeric(setup):
-#     response_log_joe, response_log_marry = setup
-#     sethandle_info = {"token": response_log_joe["token"], "handle_str": "a*b+c"}
-#     response = requests.put(f'{BASE_URL}/user/profile/sethandle/v1', json = sethandle_info)
-#     response_data = response.json()
-#     assert response_data['code'] == 400
-
-# def test_user_handle_duplication(setup):
-#     response_log_joe, response_log_marry = setup
-#     sethandle_info1 = {"token": response_log_joe["token"], "handle_str": "abcde"}
-#     sethandle_info2 = {"token": response_log_joe["token"], "handle_str": "abcde"}
-#     response = requests.put(f'{BASE_URL}/user/profile/sethandle/v1', json = sethandle_info2)
-#     response_data = response.json()
-#     assert response_data['code'] == 400
-
-
-
-
-
 
 

@@ -6,6 +6,24 @@ import re
 
 
 def user_profile_sethandle_v1(token, handle_str):
+    '''
+    Update the authorised user's handle (i.e. display name)
+
+    Methods:    PUT
+
+    Arguments:
+        token(string)   - use to identify users
+        handle_str(string)  - the name user want to replace
+
+    Exceptions:
+        400 Error:
+            InputError('Invalid input') - length of handle_str is not between 3 and 20 characters inclusive
+                                        - handle_str contains characters that are not alphanumeric
+                                        - the handle is already used by another user
+    
+    Return value:
+        return {}
+    '''
     user_id = check_and_get_user_id(token)
     check_len(handle_str)
     check_alphanumeric(handle_str)
@@ -158,19 +176,7 @@ def user_profile_setemail_v1(token, email):
     return {}
 
 
-# # Update handle
-# def user_profile_sethandle_v1(toke, handle_str):
-#     user_id = check_and_get_user_id(token)
 
-#     store = data_store.get()
-
-#     new_handle = {'handle_str': user_handles}
-
-#     store['users']['u_id'].update(new_handle)
-
-#     data_store.set(store)
-
-#     return {}
 
 
 
