@@ -109,10 +109,6 @@ def test_user_u_id_big(setup):
 
 
 
-
-
-
-
 def test_valid_u_id(setup):
     response_log_joe, _ = setup
     user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
@@ -165,10 +161,6 @@ def test_user_name_last_too_long(setup):
 
 
 
-
-
-
-
 def test_user_name_duplication(setup):
     response_log_joe, response_log_marry = setup
     setname_info1 = {"token": response_log_joe["token"], "first_names": "a", "last_names": "Smith"}
@@ -181,22 +173,6 @@ def test_user_name_duplication(setup):
     assert response_data == {}
 
 
-
-
-def test_valid_first_name(setup):
-    response_log_joe, _ = setup
-    setname_info = {"token": response_log_joe['token'], "first_names": "a", "last_names": "Smith"}
-    requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
-    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
-    response = requests.get(f'{BASE_URL}user/profile/v1', params=user_profile_info)
-    response_data = response.json()
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'a',
-        'last_names': 'Smith',
-        'user_handles': 'joesmith',
-        'user_id': 0,
-    }
 
 
 def test_valid_name(setup):
@@ -217,20 +193,6 @@ def test_valid_name(setup):
 
 
 
-def test_valid_last_name(setup):
-    response_log_joe, _ = setup
-    setname_info = {"token": response_log_joe['token'], "first_names": "Joe", "last_names": "a"}
-    requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
-    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
-    response = requests.get(f'{BASE_URL}user/profile/v1', params=user_profile_info)
-    response_data = response.json()
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'Joe',
-        'last_names': 'a',
-        'user_handles': 'joesmith',
-        'user_id': 0,
-    }
 
 
 # Test for email
