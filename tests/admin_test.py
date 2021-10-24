@@ -1,15 +1,10 @@
 import pytest
 import requests
-import jwt
-
-from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
-from src.auth import auth_register_v1
-from src.other import clear_v1
-from src.error import InputError, AccessError
 from src.config import *
-from src.auth_auth_helpers import SECRET
 
 BASE_URL = url
+ACCESS_ERROR = 403
+INPUT_ERROR = 400
 
 @pytest.fixture
 def setup():
@@ -26,10 +21,8 @@ def setup():
     #Create user Marry
     user_info = {"email": "marry@gmail.com", "password": "passwordz", "name_first": "Marry", "name_last": "Tom"}
     marry_data = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info).json()
-
  
     return marryjoe_data, marryjane_data, marry_data
-
 
 def test_remove_admin(setup):
     # Register marryjoe and marry jane
@@ -41,13 +34,10 @@ def test_remove_admin(setup):
     delete_data = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     delete_data = delete_data.json()
 
-    assert delete_data['code'] == 403
-
-
+    assert delete_data['code'] == ACCESS_ERROR
 
 def test_change_permission(setup):
     marryjoe_data, marryjane_data, _ = setup
-
 
     permission_change_data_1 = {'token': marryjoe_data['token'], 'u_id': marryjane_data['auth_user_id'], 'permission_id': 1}
     permission_change_data_2 = {'token': marryjane_data['token'], 'u_id': marryjoe_data['auth_user_id'], 'permission_id': 2}
@@ -63,7 +53,7 @@ def test_change_permission(setup):
     delete_data = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     delete_data = delete_data.json()
 
-    assert delete_data['code'] == 403
+    assert delete_data['code'] == ACCESS_ERROR
 
 def test_admin_change_permission_pass(setup):
     marryjoe_data, marryjane_data, _ = setup
@@ -91,8 +81,7 @@ def test_access_error1(setup):
     response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     response = response.json()
     print(response)
-    assert response['code'] == 403
-
+    assert response['code'] == ACCESS_ERROR
 
 def test_invalid_user(setup):
     marryjoe_data, marryjane_data, _ = setup
@@ -103,8 +92,7 @@ def test_invalid_user(setup):
     response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     response = response.json()
     print(response)
-    assert response['code'] == 400
-
+    assert response['code'] == INPUT_ERROR
 
 def test_wrong_permission_ID(setup):
     marryjoe_data, marryjane_data, _ = setup
@@ -114,7 +102,7 @@ def test_wrong_permission_ID(setup):
     # Change Marry Jane's permission to an invalid one
     data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
     data = data.json()
-    assert data['code'] == 400
+    assert data['code'] == INPUT_ERROR
 
 def test_non_existent_user_id(setup):
     marryjoe_data, _, _ = setup
@@ -124,7 +112,7 @@ def test_non_existent_user_id(setup):
     # Change permision of a non-existent user
     data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
     data = data.json()
-    assert data['code'] == 400
+    assert data['code'] == INPUT_ERROR
 
 def test_uid_only_global_owner(setup):
     marryjoe_data, marryjane_data, _ = setup
@@ -134,7 +122,7 @@ def test_uid_only_global_owner(setup):
     # Attempt to change Permission of Marry Joe
     data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_1)
     data = data.json()
-    assert data['code'] == 400
+    assert data['code'] == INPUT_ERROR
 
 def test_auth_not_global_owner(setup):
     marryjoe_data, marryjane_data, marry_data = setup
@@ -146,7 +134,7 @@ def test_auth_not_global_owner(setup):
     permission_change_data_2 = {'token': marry_data['token'], 'u_id': marryjane_data['auth_user_id'], 'permission_id': 2}
     data = requests.post(f'{BASE_URL}/admin/userpermission/change/v1', json = permission_change_data_2).json()
 
-    assert data['code'] == 403
+    assert data['code'] == ACCESS_ERROR
 
 def test_messages(setup):
     marryjoe_data, marryjane_data, _ = setup
@@ -183,10 +171,9 @@ def test_only_one_global_owner(setup):
     kick_data = {'token': marryjoe_data['token'], 'u_id': marryjoe_data['auth_user_id']}
 
     # Marry Joe tries to kick herself
-
     response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     response = response.json()
-    assert response['code'] == 400
+    assert response['code'] == INPUT_ERROR
 
 
 
