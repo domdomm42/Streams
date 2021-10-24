@@ -444,6 +444,18 @@ def check_channel_status(channel_id, auth_user_id):
 # InputError
 # Check invalid channel_id
 def check_invalid_channel_id(channel_id):
+    '''
+    This function checks whether the given channel_id is valid
+
+    Arguments:
+        channel_id(int) 
+
+    Exceptions:
+        InputError - Raised when the given channel ID does not exist
+    Return Value:
+        No return value
+    ''' 
+
     store = data_store.get()
     if channel_id not in store['channels']['channel_id']:
         raise InputError(description='Channel ID does not exist')
@@ -451,6 +463,19 @@ def check_invalid_channel_id(channel_id):
 
 # Check invalid u_id
 def check_invalid_u_id(u_id):
+    '''
+    This function checks whether the given u_id is valid
+
+    Arguments:
+        u_id(int) - user_id
+
+    Exceptions:
+        InputError - Raised when user is not in database(user don't exist)
+    Return Value:
+        No return value
+    ''' 
+
+
     store = data_store.get()
     if int(u_id) >= len(store['users']['user_handles']):
         raise InputError(description='This user does not exist!')
@@ -458,6 +483,20 @@ def check_invalid_u_id(u_id):
 
 # Check member u_id
 def check_member_u_id(channel_id, u_id):
+    '''
+    This function checks whether the start is of the message is valid, it cannot be greater than the total
+    number of messages in the channel
+
+    Arguments:
+        channel_id(int) 
+        u_id(int) - user_id
+
+    Exceptions:
+        InputError - Raised when user is already apart of the channel
+    Return Value:
+        No return value
+    ''' 
+
     store = data_store.get()
 
     if u_id in store['channels']['all_members'][channel_id]:
@@ -468,6 +507,20 @@ def check_member_u_id(channel_id, u_id):
 
 # Check start
 def check_invalid_start(channel_id, start):
+    '''
+    This function checks whether the start is of the message is valid, it cannot be greater than the total
+    number of messages in the channel
+
+    Arguments:
+        channel_id(int) 
+        start(int) - start of message
+
+    Exceptions:
+        InputError - Raised when start is greater than total number of messages in the chanel
+    Return Value:
+        No return value
+    ''' 
+
     store = data_store.get()
     no_msgs_in_channel = len(store['channels']['messages'][channel_id])
     if start >= no_msgs_in_channel:
@@ -477,12 +530,37 @@ def check_invalid_start(channel_id, start):
 # AccessError
 # Check authorised
 def check_autorised_id(auth_user_id, channel_id):
+    '''
+    Checks if user is in the channel
+
+    Arguments:
+        auth_user_id - id of the user
+        channel_id   - id of the channel you want data from
+
+    Exceptions:
+        Access Error: Raised when user is not in the channel
+    Return Value:
+        No Return Value
+    ''' 
+
     store = data_store.get()
 
     if auth_user_id not in store['channels']['all_members'][channel_id]:
         raise AccessError(description='Permission denied!')
     
 def get_message(message_id):
+    '''
+    This function takes message_id and returns the message associated with message_id
+
+    Arguments:
+        message_id(int) - id of message you want to access
+
+    Exceptions:
+        No given exceptions
+    Return Value:
+       msg - message associated with message_id
+    ''' 
+
     store = data_store.get()
     for msg in store['messages']:
         if msg['message_id'] == message_id:
