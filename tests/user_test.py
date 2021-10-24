@@ -204,14 +204,14 @@ def test_user_name_first_long_last_short(setup):
 
 def test_valid_first_name(setup):
     response_log_joe, _ = setup
-    setname_info = {"token": response_log_joe['token'], "first_names": "a"}
+    setname_info = {"token": response_log_joe['token'], "first_names": "a","last_names": "Smith"}
     requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
     user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
     response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
     response_data = response.json()
     assert response_data == {
         'emails': 'joe123@gmail.com',
-        'first_names': 'Joe',
+        'first_names': 'a',
         'last_names': 'Smith',
         'user_handles': 'joesmith',
         'user_id': 0,
@@ -219,7 +219,7 @@ def test_valid_first_name(setup):
 
 def test_valid_last_name(setup):
     response_log_joe, _ = setup
-    setname_info = {"token": response_log_joe['token'], "last_names": "a"}
+    setname_info = {"token": response_log_joe['token'], "first_names": "Joe","last_names": "a"}
     requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
     user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
     response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
@@ -227,7 +227,7 @@ def test_valid_last_name(setup):
     assert response_data == {
         'emails': 'joe123@gmail.com',
         'first_names': 'Joe',
-        'last_names': 'Smith',
+        'last_names': 'a',
         'user_handles': 'joesmith',
         'user_id': 0,
         }
