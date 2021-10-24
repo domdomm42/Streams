@@ -701,21 +701,6 @@ def test_user_profile_removed(setup):
         'name': 'System Error', }
 
 
-def test_user_handle_short_and_not_alphanumeric(setup):
-    response_log_joe, _ = setup
-    sethandle_info = {"token": response_log_joe['token'], "handle_str": "a!"}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_handle_long_and_not_alphanumeric(setup):
-    response_log_joe, _ = setup
-    sethandle_info = {"token": response_log_joe['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz!"}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
 
 def test_user_handle_empty(setup):
     response_log_joe, _ = setup
@@ -725,69 +710,4 @@ def test_user_handle_empty(setup):
     assert response_data['code'] == 400
 
 
-
-def test_user_handle_duplicate_long(setup):
-    response_log_joe, response_log_marry = setup
-
-    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz"}
-    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_joe)
-    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz"}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_marry)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_handle_duplicate_short(setup):
-    response_log_joe, response_log_marry = setup
-
-    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "a"}
-    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_joe)
-    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "a"}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_marry)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_handle_duplicate_not_alphanumeric(setup):
-    response_log_joe, response_log_marry = setup
-
-    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "abc!"}
-    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_joe)
-    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "abc!"}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_marry)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_handle_duplicate_not_alphanumeric_short(setup):
-    response_log_joe, response_log_marry = setup
-
-    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "a!"}
-    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_joe)
-    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "a!"}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_marry)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_handle_duplicate_not_alphanumeric_long(setup):
-    response_log_joe, response_log_marry = setup
-
-    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz!"}
-    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_joe)
-    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz!"}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_marry)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_handle_duplicate_not_alphanumeric_empty(setup):
-    response_log_joe, response_log_marry = setup
-
-    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": ""}
-    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_joe)
-    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": ""}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info_marry)
-    response_data = response.json()
-    assert response_data['code'] == 400
 
