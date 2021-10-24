@@ -217,7 +217,7 @@ def check_name_first_len(first_names):
         InputError - Invalid User name
 
     Return value:
-        No Retur Value
+        No Return Value
     '''
     if len(first_names) in range(1, 50):
         pass
@@ -236,7 +236,7 @@ def check_name_last_len(last_names):
     Return value:
         No return value
     '''
-    if len(first_names) in range(1, 50):
+    if len(last_names) in range(1, 50):
         pass
     else:
         raise InputError(description='Invalid User Name')
