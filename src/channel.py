@@ -131,7 +131,7 @@ def channel_messages_v1(token, channel_id, start):
 
     end = start + 50
     
-    for idx in range(start, start + 51):
+    for idx in range(start, end):
         try: 
             idx = store['channels']['messages'][channel_id][-1 - idx]
         except IndexError:
