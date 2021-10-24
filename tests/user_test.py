@@ -111,7 +111,7 @@ def test_valid_handle(setup):
 
 
 # Test for u_id
-def test_user_u_id_invalid(setup):
+def test_user_u_id_big(setup):
     
     response_log_joe, _ = setup
 
@@ -120,6 +120,40 @@ def test_user_u_id_invalid(setup):
     response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
     response_data = response.json()
     assert response_data['code'] == 400
+
+
+def test_user_u_id_alpha(setup):
+    
+    response_log_joe, _ = setup
+
+    user_profile_info = {"token": response_log_joe['token'], "u_id":"a"}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data['code'] == 500
+
+def test_user_u_id_not_alphanumeric(setup):
+    
+    response_log_joe, _ = setup
+
+    user_profile_info = {"token": response_log_joe['token'], "u_id":"!"}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data['code'] == 500
+
+
+def test_user_u_id_negative(setup):
+    
+    response_log_joe, _ = setup
+
+    user_profile_info = {"token": response_log_joe['token'], "u_id": -100}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data['code'] == 500
+
+
 
 
 def test_valid_u_id(setup):
@@ -200,6 +234,22 @@ def test_user_name_first_long_last_short(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+def test_user_name_first_number(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe["token"],
+                    "first_names": 888, "last_names": "a"}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
+    response_data = response.json()
+    assert response_data['code'] == 500
+
+def test_user_name_last_number(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe["token"],
+                    "first_names": "a", "last_names": 888}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
+    response_data = response.json()
+    assert response_data['code'] == 500
+
 
 
 def test_valid_first_name(setup):
@@ -255,6 +305,27 @@ def test_user_email_invalid(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+
+def test_user_email_short(setup):
+    response_log_joe, _ = setup
+    setemail_info = {"token": response_log_joe["token"], "emails": "@gmail.com"}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_user_email_empty(setup):
+    response_log_joe, _ = setup
+    setemail_info = {"token": response_log_joe["token"], "emails": ""}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_user_email_number(setup):
+    response_log_joe, _ = setup
+    setemail_info = {"token": response_log_joe["token"], "emails": 888}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+    response_data = response.json()
+    assert response_data['code'] == 500
 
 def test_valid_email(setup):
     response_log_joe, _ = setup
@@ -366,6 +437,20 @@ def test_user_handle_long_and_not_alphanumeric(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+
+def test_user_handle_empty(setup):
+    response_log_joe, _ = setup
+    sethandle_info = {"token": response_log_joe['token'], "handle_str": ""}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_user_handle_number(setup):
+    response_log_joe, _ = setup
+    sethandle_info = {"token": response_log_joe['token'], "handle_str": 888}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info)
+    response_data = response.json()
+    assert response_data['code'] == 500
 
 
 # Test for handle
