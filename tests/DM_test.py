@@ -8,7 +8,7 @@ from src.config import *
 from src.auth_auth_helpers import SECRET
 from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1
 
-import datetime
+from datetime import datetime, timezone
 BASE_URL = url
 
 @pytest.fixture
@@ -248,66 +248,75 @@ def test_simple_dm_details(setup):
             'handle_str':  'joesmith'
         }
     ]
-# '''
-# SAMPLE TESTING FOR DM_LEAVE
-# '''
+'''
+SAMPLE TESTING FOR DM_LEAVE
+'''
 
-# def test_simple_dm_leave(setup):
-#     _, joe, _, _ = setup
-#     dm_leave = {"token": joe, "dm_id": 0}
-#     response_create = requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
-#     response_create_data = response_create.json()
-#     assert response_create_data == {}
-#     dm_details = {"token": joe, "dm_id": 0}
-#     response_create = requests.get(f'{BASE_URL}/dm/details/v1', json = dm_details)
-#     response_create_data = response_create.json()
-#     assert response_create_data['name'] == 'joesmith, marrysmith' 
-#     assert response_create_data['members'] == [
-#         {
-#             'u_id': 1,
-#             'email': 'marry123@gmail.com',
-#             'name_first': 'Marry', 
-#             'name_last': 'Smith',
-#             'handle_str': 'marrysmith'
-#         }
-#     ]
+def test_simple_dm_leave(setup):
+    _, joe, marry, _ = setup
+    dm_leave = {"token": joe, "dm_id": 0}
+    response_create = requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
+    response_create_data = response_create.json()
+    
+    dm_details = {"token": marry, "dm_id": 0}
+    response_create = requests.get(f'{BASE_URL}/dm/details/v1', params = dm_details)
+    response_create_data = response_create.json()
+    print(response_create_data)
+    assert response_create_data['name'] == 'joesmith, marrysmith' 
+    assert response_create_data['members'] == [
+        {
+            'u_id': 1,
+            'email': 'marry123@gmail.com',
+            'name_first': 'Marry', 
+            'name_last': 'Smith',
+            'handle_str': 'marrysmith'
+        }
+    ]
 
-# '''
-# SAMPLE TESTING FOR DM_MESSAGES
-# '''
+'''
+SAMPLE TESTING FOR DM_MESSAGES
+'''
 
-# def test_simple_dm_messages(setup):
-#     _, joe, marry, _ = setup
-#     send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
-#     send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}
+def test_simple_dm_messages(setup):
+    _, joe, marry, _ = setup
+    send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
+    send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}
 
-#     response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
-#     timestamp1 = datetime.datetime.now().timestamp()
-#     message_id1 = response_create.json()
-
-#     response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
-#     timestamp2 = datetime.datetime.now().timestamp()
-#     message_id2 = response_create.json()
-
-#     dm_messages = {"token": joe, "dm_id": 0, 'start': 0}
-#     response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
-#     response_create_data = response_create.json()
-#     assert response_create_data['start'] == 0
-#     assert response_create_data['end'] == -1
-#     assert response_create_data['messages'] == [
-#         {
-#             'message_id': message_id1,
-#             'u_id': 0,
-#             'message': 'big tings bruv',
-#             'time_created': timestamp1
-#         },
-#         {
-#             'message_id': message_id2,
-#             'u_id': 1,
-#             'message': 'small tings bruv',
-#             'time_created': timestamp2
-#         }
-#     ]
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
+    timestamp1 = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    message_id1 = response_create.json()['message_id']
+    
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
+    
+    timestamp2 = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    message_id2 = response_create.json()['message_id']
+    print(message_id1)
+    print(message_id2)
+    dm_messages = {"token": joe, "dm_id": 0, 'start': 0}
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
+    response_create_data = response_create.json()
+    print(response_create_data)
+    response_create_data['messages'][0]['time_created'] = int(response_create_data['messages'][0]['time_created'])
+    response_create_data['messages'][1]['time_created'] = int(response_create_data['messages'][1]['time_created'])
+    print(response_create_data)
+    assert response_create_data['start'] == 0
+    assert response_create_data['end'] == -1
+    assert response_create_data['messages'] == [
+        {
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
+            'time_created': int(timestamp1)
+        },
+        {
+            'message_id': message_id2,
+            'u_id': 1,
+            'message': 'small tings bruv',
+            'time_created': int(timestamp2)
+        }
+        
+        
+    ]
 
 
 
