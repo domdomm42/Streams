@@ -117,7 +117,7 @@ def test_wrong_permission_ID(setup):
     assert data['code'] == 400
 
 def test_non_existent_user_id(setup):
-    marryjoe_data, marryjane_data, _ = setup
+    marryjoe_data, _, _ = setup
 
     permission_change_data_1 = {'token': marryjoe_data['token'], 'u_id': 10, 'permission_id': 1}
 
