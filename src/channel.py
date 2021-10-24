@@ -279,6 +279,9 @@ def channel_removeowner_v1(token, channel_id, u_id):
 
 
 def check_owner(channel_id, u_id):
+    '''
+    check user is owner or not
+    '''
     store = data_store.get()
     if u_id in store['channels']['owner_user_id'][channel_id]:
         raise InputError(description='User is an owner already')
@@ -286,6 +289,9 @@ def check_owner(channel_id, u_id):
         pass
 
 def check_owner_permission(channel_id, user_id):
+    '''
+    check user is owner or not
+    '''
     store = data_store.get()
     if user_id in store['channels']['owner_user_id'][channel_id]:
         pass
@@ -293,6 +299,9 @@ def check_owner_permission(channel_id, user_id):
         raise AccessError(description='Permission denied')
 
 def check_not_owner(u_id, channel_id):
+    '''
+    check user is owner or not
+    '''
     store = data_store.get()
     if u_id in store['channels']['owner_user_id'][channel_id]:
         pass
@@ -302,6 +311,9 @@ def check_not_owner(u_id, channel_id):
 
 # check the channel id is valid
 def check_channel_id(channel_id):
+    '''
+    check the channel is valid or not
+    '''
     store = data_store.get()
     i = 0
 
@@ -318,6 +330,9 @@ def check_channel_id(channel_id):
 
 
 def check_authority(auth_user_id, channel_id):
+    '''
+    check user is member or not
+    '''
     store = data_store.get()
 
     for user in store['channels']['all_members'][channel_id]:
@@ -327,6 +342,9 @@ def check_authority(auth_user_id, channel_id):
     raise AccessError(description='Permission denied!')
 
 def check_members(auth_user_id, channel_id):
+    '''
+    check user is member or not
+    '''
     store = data_store.get()
 
     for user in store['channels']['all_members'][channel_id]:
@@ -338,6 +356,9 @@ def check_members(auth_user_id, channel_id):
 
 # check user is a member or not
 def check_exist_member(auth_user_id, channel_id):
+    '''
+    check user is member or not
+    '''
     store = data_store.get()
 
     for user in store['channels']['all_members'][channel_id]:
@@ -350,6 +371,11 @@ def check_exist_member(auth_user_id, channel_id):
 
 # check the channel status(private or not)
 def check_channel_status(channel_id, auth_user_id):
+
+    '''
+    check channel join status
+    '''
+
     store = data_store.get()
     if store['channels']['is_public'][channel_id] == True:
         pass
