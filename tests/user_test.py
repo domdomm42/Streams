@@ -86,24 +86,28 @@ def test_user_all_output(setup):
     # Load data from setup
     response_log_joe, _ = setup
     user_all_info = {"token": response_log_joe["token"]}
-    response = requests.get(f'{BASE_URL}users/all/v1', json=user_all_info)
+    response = requests.get(f'{BASE_URL}users/all/v1', params=user_all_info)
     response_data = response.json()
-        
+    print(response_data)
         
     # Match the corresponding data
-    assert response_data == [
-        {'email': 'joe123@gmail.com',
-         'handle_str': 'joesmith',
-         'name_first': 'Joe',
-         'name_last': 'Smith',
-         'u_id': 0},
-         {'email': 'marryjoe222@gmail.com',
-         'handle_str': 'marryjoe',
-         'name_first': 'Marry',
-         'name_last': 'Joe',
-         'u_id': 1},
+    assert response_data == {
+        'users':
+        [
+            {'email': 'joe123@gmail.com',
+            'handle_str': 'joesmith',
+            'name_first': 'Joe',
+            'name_last': 'Smith',
+            'u_id': 0},
+            {'email': 'marryjoe222@gmail.com',
+            'handle_str': 'marryjoe',
+            'name_first': 'Marry',
+            'name_last': 'Joe',
+            'u_id': 1},
 
-    ]
+        ]
+    }
+
 
 
 # Test valid user profile
