@@ -145,38 +145,6 @@ def admin_userpermission_change_v1(token, user_id, permission_id):
 
     return ({})
 
-# if __name__ == '__main__':
-# #     # requests.delete(f'{BASE_URL}/clear/v1')
-# #     # user_info_reg_1 = {"email": "marryjoe@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
-# #     # user_info_reg_2 = {"email": "marryjane@gmail.com", "password": "passwordJ", "name_first": "Marry", "name_last": "Jane"}
-
-# #     # response_data_1 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
-# #     # response_data_2 = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
-
-# #     # user_2_data = response_data_2.json()
-# #     # user_2_data = {'token': response_data_1['token'], 'user_id': response_data_2['user_id'], 'permission_id': 1} 
-
-# #     # requests.post(f'{BASE_URL}admin/userpermission/change/v1', json = user_2_data)
-
-
-# #     # kick_data = {'token': response_data_2['token'], 'user_id': response_data_1['user_id']}
-# #     # requests.post(f'{BASE_URL}admin_user_remove_v1', json = kick_data)
-# #     ########################################################################################
-
-#     data_1 = auth_register_v1("marryjoe@gmail.com", "password", "Marry", "Joe")
-#     data_2 = auth_register_v1("marryjane@gmail.com", "passwordJ", "Marry", "Jane")
-#     data_2 = auth_register_v1("marryjane2@gmail.com", "passwordJ2", "Marrye", "Janez")
-
-#     admin_userpermission_change_v1(data_1['token'], data_2['auth_user_id'], 1)
-
-#     print_store_debug()
-
-#     admin_user_remove_v1(data_2['token'], data_1['auth_user_id'])
-#     # print_store_debug()
-
-#     # admin_user_remove_v1(data_2['token'],data_2['auth_user_id'])
-#     # print_store_debug()
-
 
 
 
