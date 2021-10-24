@@ -115,6 +115,19 @@ def auth_register_v1(email, password, name_first, name_last):
     }
 
 def auth_logout_v1(token):
+    '''
+    This function takes in a token and if user is logged in, logout the user.
+
+    Arguments:
+        token(string) - Token of the user that gets logged out
+
+    Exceptions:
+        No given exceptions.
+
+    Return Value:
+        {} 
+    '''
+
     decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
     user_id = decoded_token['user_id']
     session_id = decoded_token['session_id']
@@ -140,6 +153,19 @@ def auth_logout_v1(token):
 # in the correct format and unique
 # This function returns a unique user_handle
 def check_email(email):
+    '''
+    This function checks whether an email(string) is valid and is in the correct
+    format.
+
+    Arguments:
+        email (string)    - the user's email
+
+    Exceptions:
+        InputError  - Occurs when email is already registered
+
+    Return Value:
+        No return value, only raises error if email is registered.
+    '''
 
     store = data_store.get()
 
@@ -155,6 +181,19 @@ def check_email(email):
 # password is >= 6 characters
 # This function does not return anything
 def check_password(password):
+    '''
+    This function checks whether a password(string) is valid and is >= 6 in length
+
+    Arguments:
+        password (string)    - the user's password
+
+    Exceptions:
+        InputError  - Occurs when password is longer than 6 inclusive
+
+    Return Value:
+        No return value, only raises error if password is invalid.
+    '''
+
     if len(password) >= 6:
         pass
     else: 
@@ -165,6 +204,19 @@ def check_password(password):
 # if the first name is between 1 and 50 characters inclusive
 # This function does not return anything
 def check_first_name(name_first):
+    '''
+    This function checks whether the first name is valid and is within 1-50 characters.
+
+    Arguments:
+        name_first (string)    - the user's first name
+
+    Exceptions:
+        InputError  - Occurs when length of first name is not between 1 and 50 characters inclusive
+
+    Return Value:
+        No return value, only raises error if first name is invalid.
+    '''
+
     if len(name_first) >= 1 and len(name_first) <= 50:
         pass
     else: 
@@ -175,6 +227,19 @@ def check_first_name(name_first):
 # if the last name is between 1 and 50 characters inclusive
 # This function does not return anything
 def check_last_name(name_last):
+    '''
+    This function checks whether the last name is valid and is within 1-50 characters.
+
+    Arguments:
+        name_last (string)    - the user's last name
+
+    Exceptions:
+        InputError  - Occurs when length of last name is not between 1 and 50 characters inclusive
+
+    Return Value:
+        No return value, only raises error if last name is invalid.
+    '''
+
     if len(name_last) >= 1 and len(name_last) <= 50:
         pass
     else:
@@ -185,6 +250,19 @@ def check_last_name(name_last):
 # and creates a unique user_handle (string)
 # This function does not return anything
 def create_user_handle(name_first, name_last):
+    '''
+    This function creates a unique user_handle given first and last name
+
+    Arguments:
+        name_first (string)    - the user's first name
+        name_last (string)     - the user's last name
+
+    Exceptions:
+        No exceptions
+    Return Value:
+        No return value, just appends to the dictionary in data_store.
+    '''
+
 
     user_handle = (name_first.lower() + name_last.lower())[0:20]
 
@@ -209,6 +287,18 @@ def create_user_handle(name_first, name_last):
 # email used to log in is registed. If email
 # is not stored, return error.
 def check_valid_email(email):
+    '''
+    This function checks whether the email given is registered
+
+    Arguments:
+        email(string)   - the user's email
+
+    Exceptions:
+        InputError  - Email not registered
+    Return Value:
+        No return value, only raises error if email is not registered.
+    '''
+
 
     store = data_store.get()
     email_list = []
@@ -229,6 +319,19 @@ def check_valid_email(email):
 # password matches the registered email, if it doesn't, return
 # Error.
 def check_valid_password(email, password):
+    '''
+    This function checks whether the password matches the email given.
+
+    Arguments:
+        email(string)   - the user's email
+        password(string) - password to test if match with email
+
+    Exceptions:
+        InputError  - Password is invalid(doesn't match).
+    Return Value:
+        No return value, only raises error password doesn't match email.
+    '''
+    
     email_list = []
     password_list = []
     

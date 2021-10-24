@@ -4,6 +4,21 @@ from src.auth_auth_helpers import check_and_get_user_id
 from src.auth import *
 
 def admin_user_remove_v1(token, user_id):
+    '''
+    This function removes a user given an authorised user id
+
+    Arguments:
+        token(string) - Authorised user token
+        user_id(int)  - Id of user you want to remove
+
+    Exceptions:
+        InputError  - u_id does not refer to a valid user
+        InputError  - u_id refers to a user who is the only global owner
+        AccessError - The authorised user is not a global owner
+
+    Return Value:
+       {}
+    ''' 
     store = data_store.get()
     remover_id = check_and_get_user_id(token)
 
@@ -50,6 +65,25 @@ def admin_user_remove_v1(token, user_id):
 
     
 def admin_userpermission_change_v1(token, user_id, permission_id):
+
+    '''
+    This function changes the permission of a user given an authorised user id
+    and a valid permission_id
+
+    Arguments:
+        token(string) - Authorised user token
+        user_id(int)  - Id of user you want to promote or demote
+        permission_id(int) - 1 for global owner, 2 for standard user
+
+    Exceptions:
+        InputError  - u_id does not refer to a valid user
+        InputError  - u_id refers to a user who is the only global owner and they are being demoted to user
+        Input Error - Permission_id is invalid
+        AccessError - The authorised user is not a global owner
+
+    Return Value:
+       {}
+    '''
     
     store = data_store.get()
     # Wrong Permission ID
