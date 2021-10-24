@@ -185,22 +185,6 @@ def test_user_name_duplication(setup):
 
 
 
-def test_valid_first_name(setup):
-    response_log_joe, _ = setup
-    setname_info = {"token": response_log_joe['token'], "first_names": "a", "last_names": "Smith"}
-    requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
-    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
-    response = requests.get(f'{BASE_URL}user/profile/v1', params=user_profile_info)
-    response_data = response.json()
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'a',
-        'last_names': 'Smith',
-        'user_handles': 'joesmith',
-        'user_id': 0,
-    }
-
-
 def test_valid_name(setup):
     response_log_joe, _ = setup
     setname_info = {"token": response_log_joe['token'], "first_names": "a", "last_names": "b"}
@@ -220,22 +204,6 @@ def test_valid_name(setup):
 
 
 
-def test_valid_last_name(setup):
-    response_log_joe, _ = setup
-    setname_info = {"token": response_log_joe['token'], "first_names": "Joe", "last_names": "a"}
-    requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
-    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
-    response = requests.get(f'{BASE_URL}user/profile/v1', params=user_profile_info)
-    response_data = response.json()
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'Joe',
-        'last_names': 'a',
-        'user_handles': 'joesmith',
-        'user_id': 0,
-    }
-
-
 # Test for email
 def test_user_email_duplication(setup):
     response_log_joe, response_log_marry = setup
@@ -250,29 +218,6 @@ def test_user_email_duplication(setup):
 
 
 
-def test_user_email_duplication_invalid_empty(setup):
-    response_log_joe, response_log_marry = setup
-    setemail_info1 = {"token": response_log_joe["token"], "emails": ""}
-    setemail_info2 = {"token": response_log_marry["token"], "emails": ""}
-
-    requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info1)
-    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info2)
-
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_email_duplication_invalid_capital(setup):
-    response_log_joe, response_log_marry = setup
-    setemail_info1 = {"token": response_log_joe["token"], "emails": "aaa@gmail.com"}
-    setemail_info2 = {"token": response_log_marry["token"], "emails": "AAA@gmail.com"}
-
-    requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info1)
-    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info2)
-
-    response_data = response.json()
-    assert response_data == {}
-
 
 
 
@@ -284,28 +229,6 @@ def test_user_email_invalid(setup):
     assert response_data['code'] == 400
 
 
-def test_user_email_invalid_capital(setup):
-    response_log_joe, _ = setup
-    setemail_info = {"token": response_log_joe["token"], "emails": "ABCDE"}
-    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_email_short(setup):
-    response_log_joe, _ = setup
-    setemail_info = {"token": response_log_joe["token"], "emails": "@gmail.com"}
-    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
-    response_data = response.json()
-    assert response_data['code'] == 400
-
-
-def test_user_email_empty(setup):
-    response_log_joe, _ = setup
-    setemail_info = {"token": response_log_joe["token"], "emails": ""}
-    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
-    response_data = response.json()
-    assert response_data['code'] == 400
 
 
 
@@ -359,15 +282,6 @@ def test_user_profile_output(setup):
         'user_id': 1}
 
 
-
-
-
-def test_user_handle_empty(setup):
-    response_log_joe, _ = setup
-    sethandle_info = {"token": response_log_joe['token'], "handle_str": ""}
-    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json=sethandle_info)
-    response_data = response.json()
-    assert response_data['code'] == 400
 
 
 
