@@ -94,7 +94,7 @@ def test_u_id_not_member_add(setup):
     assert response_data['code'] == 400
 
 
-
+# if the member is a owner it will return 400 
 def test_owner_member_add(setup):
     channel_id_joe, _, response_log_joe, _ = setup
     channel_add_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id'], "u_id": response_log_joe['auth_user_id']}
@@ -102,6 +102,7 @@ def test_owner_member_add(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+# if the auth_user have no permission, it will return 403
 def test_owner_permission_add(setup):
     channel_id_joe, _, _, response_log_marry = setup
     user_milly_reg = {"email": "milly3@gmail.com", "password": "passwordS", "name_first": "Milly", "name_last": "Mae"}
@@ -115,6 +116,7 @@ def test_owner_permission_add(setup):
     response_data = response.json()
     assert response_data['code'] == 403
 
+#if the user is not a owner, it will return 400
 def test_no_owner_remove(setup):
     channel_id_joe, _, response_log_joe, response_log_marry = setup
     channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
@@ -124,6 +126,8 @@ def test_no_owner_remove(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+
+#if the owner is last owner in channel, it will not remove and return 400
 def test_last_owner_remove(setup):
     channel_id_joe, _, response_log_joe, _ = setup
     channel_remove_info = {"token": response_log_joe['token'], "channel_id": channel_id_joe['channel_id'], "u_id": response_log_joe['auth_user_id']}
@@ -131,6 +135,7 @@ def test_last_owner_remove(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+# if the auth_user have no permission, it will return 403
 def test_owner_permission_remove(setup):
     channel_id_joe, _, response_log_joe, response_log_marry = setup
     channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}
@@ -143,7 +148,7 @@ def test_owner_permission_remove(setup):
 #==========================================
 #    valid input test
 #==========================================
-
+#check valid input and see result
 def test_valid_input_leave(setup):
     channel_id_joe, _, response_log_joe, response_log_marry = setup
     channel_join_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id']}

@@ -6,6 +6,24 @@ import re
 
 
 def user_profile_sethandle_v1(token, handle_str):
+    '''
+    Update the authorised user's handle (i.e. display name)
+
+    Methods:    PUT
+
+    Arguments:
+        token(string)   - use to identify users
+        handle_str(string)  - the name user want to replace
+
+    Exceptions:
+        400 Error:
+            InputError('Invalid input') - length of handle_str is not between 3 and 20 characters inclusive
+                                        - handle_str contains characters that are not alphanumeric
+                                        - the handle is already used by another user
+    
+    Return value:
+        return {}
+    '''
     user_id = check_and_get_user_id(token)
     check_len(handle_str)
     check_alphanumeric(handle_str)
@@ -40,36 +58,50 @@ def user_all_v1(token):
 
     store = data_store.get()
 
-    user = []
+    users = []
+    for user_id in store['users']['user_id']:
+        if store['users']['removed_user'][user_id] == False:
+            
+            user_email = store['users']['emails'][user_id]
+            user_name_first = store['users']['first_names'][user_id]
+            user_name_last = store['users']['last_names'][user_id]
+            user_handle_str = store['users']['user_handles'][user_id]
+            users.append({'u_id': user_id, 'email': user_email, 
+                            'name_first': user_name_first, 
+                            'name_last': user_name_last, 
+                            'handle_str': user_handle_str})
 
-    for x in store['users']:
-        user.append({ 'user_id': store['users']['user_id'][x], 'emails': store['users']['emails'][x], 'first_names': store['users']['first_names'][x], 'last_names': store['users']['last_names'][x],
-                     'user_handles': store['users']['user_handles'][x]})
+
+    
+
+   
 
     data_store.set(store)
 
-    return {'users': user}
+    return  users
 
 
 # List of all valid users
 def user_profile_v1(token, u_id):
     
-    # user_id = check_and_get_user_id(token)
+   
 
     store = data_store.get()
 
-    user = []
+    
+    
+    
 
-    for x in store['users']:
+    check_invalid_u_id(u_id)
+   
+    
+    
 
-        if int(u_id) < len(store['users']['user_handles']):
-            user.append({ 'user_id': store['users']['user_id'][x], 'emails': store['users']['emails'][x], 'first_names': store['users']['first_names'][x], 'last_names': store['users']['last_names'][x],
-                     'user_handles': store['users']['user_handles'][x]})
-        else: 
-            raise InputError(description='Invalid User ID')
-    data_store.set(store)
-
-    return {'users': user}
+    return {'user_id': store['users']['user_id'][u_id], 
+            'emails': store['users']['emails'][u_id], 
+            'first_names': store['users']['first_names'][u_id], 
+            'last_names': store['users']['last_names'][u_id],
+            'user_handles': store['users']['user_handles'][u_id]}
 
 
 # Update name
@@ -144,19 +176,7 @@ def user_profile_setemail_v1(token, email):
     return {}
 
 
-# # Update handle
-# def user_profile_sethandle_v1(toke, handle_str):
-#     user_id = check_and_get_user_id(token)
 
-#     store = data_store.get()
-
-#     new_handle = {'handle_str': user_handles}
-
-#     store['users']['u_id'].update(new_handle)
-
-#     data_store.set(store)
-
-#     return {}
 
 
 
@@ -215,7 +235,10 @@ def check_invalid_emails(email):
     else:
         raise InputError(description = 'This email is already registered!')
 
-
+def check_invalid_u_id(u_id):
+    store = data_store.get()
+    if u_id >= len(store['users']['user_handles']):
+        raise InputError(description='This user does not exist!')
 
 
 # def check_duplicate_email(email):

@@ -180,16 +180,17 @@ def echo():
 @APP.route("/users/all/v1", methods=['GET'])
 def user_all():
     token = request.args.get('token')
-    user = user_all_v1(token)
-    return dumps(user)
+    users = user_all_v1(token)
+    return dumps(users)
 
 
 # List of all valid users
 @APP.route("/user/profile/v1", methods=['GET'])
 def user_profile():
-    token = request.get_json('token')
-    user_id = int(request.args.get('user_id'))
-    user = user_profile_v1(token, user_id)
+    token = request.args.get('token')
+    
+    u_id = int(request.args.get('u_id'))
+    user = user_profile_v1(token, u_id)
     return dumps(user)
 
 
