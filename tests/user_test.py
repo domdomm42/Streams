@@ -165,6 +165,32 @@ def test_user_u_id_empty(setup):
     assert response_data['code'] == 500
 
 
+def test_u_id_duplication(setup):
+
+    response_log_joe, response_log_marry = setup
+    # setname_info1 = {"token": response_log_joe["token"], "first_names": "a","last_names": "Smith"}
+    # setname_info2 = {"token": response_log_marry["token"], "first_names": "a","last_names": "Smith"}
+
+    # requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info1)
+    # response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info2)
+
+    user_profile_info1 = {"token": response_log_joe['token'], "u_id": 0}
+
+    user_profile_info2 = {"token": response_log_marry['token'], "u_id": 0}
+
+
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info1)
+
+
+    
+    
+    #response = (f'{BASE_URL}user/profile/v1', params = user_profile_info2)
+
+    response_data = response.json()
+    response_data = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info2)
+    assert  [200] == [200]
+
+
 
 def test_valid_u_id(setup):
     response_log_joe, _ = setup
@@ -534,6 +560,68 @@ def test_user_handle_number(setup):
     assert response_data['code'] == 500
 
 
+
+def test_user_handle_duplicate_long(setup):
+    response_log_joe, response_log_marry = setup
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_user_handle_duplicate_short(setup):
+    response_log_joe, response_log_marry = setup
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "a"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "a"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_user_handle_duplicate_not_alphanumeric(setup):
+    response_log_joe, response_log_marry = setup
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "abc!"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "abc!"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_user_handle_duplicate_not_alphanumeric_short(setup):
+    response_log_joe, response_log_marry = setup
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "a!"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "a!"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_user_handle_duplicate_not_alphanumeric_long(setup):
+    response_log_joe, response_log_marry = setup
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz!"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "abcdefghijklmnopqrstuvwxyz!"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_user_handle_duplicate_not_alphanumeric_empty(setup):
+    response_log_joe, response_log_marry = setup
+
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": ""}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": ""}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data['code'] == 400
 # Test for handle
 # def test_user_handle_too_short(setup):
 #     response_log_joe, response_log_marry = setup
