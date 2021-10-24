@@ -264,7 +264,7 @@ def test_edit_valid_message_dm(setup_4):
     
     # Joe Smith successfully edits a message that does not exist
     message_edit_input = {"token": joe_smith_token, "message_id": message_id, "message": "Hi!"}
-    response = requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
+    requests.put(f'{BASE_URL}/message/edit/v1', json = message_edit_input)
 
 def test_edit_long_message_dm(setup_4):
     
