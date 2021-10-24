@@ -63,6 +63,18 @@ def test_user_handle_duplicate(setup):
 def test_user_handle_duplicate_capital(setup):
     response_log_joe, response_log_marry = setup
 
+    sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "aaa"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
+    sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "AAA"}
+    response = requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_marry)
+    response_data = response.json()
+    assert response_data == {}
+
+
+
+def test_user_handle_duplicate_not_capital(setup):
+    response_log_joe, response_log_marry = setup
+
     sethandle_info_joe = {"token": response_log_joe['token'], "handle_str": "AAA"}
     requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info_joe)
     sethandle_info_marry = {"token": response_log_marry['token'], "handle_str": "aaa"}
@@ -379,6 +391,17 @@ def test_user_name_duplication_capital(setup):
     response_data = response.json()
     assert response_data == {}
 
+def test_user_name_duplication_not_capital(setup):
+    response_log_joe, response_log_marry = setup
+    setname_info1 = {"token": response_log_joe["token"], "first_names": "a","last_names": "a"}
+    setname_info2 = {"token": response_log_marry["token"], "first_names": "A","last_names": "A"}
+
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info1)
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info2)
+
+    response_data = response.json()
+    assert response_data == {}
+
 
 def test_user_name_duplication_first(setup):
     response_log_joe, response_log_marry = setup
@@ -402,6 +425,27 @@ def test_user_name_duplication_last(setup):
     response_data = response.json()
     assert response_data == {}
 
+def test_user_name_duplication_fisrtaA_lastAa(setup):
+    response_log_joe, response_log_marry = setup
+    setname_info1 = {"token": response_log_joe["token"], "first_names": "a","last_names": "A"}
+    setname_info2 = {"token": response_log_marry["token"], "first_names": "A","last_names": "a"}
+
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info1)
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info2)
+
+    response_data = response.json()
+    assert response_data == {}
+
+def test_user_name_duplication_fisrtAa_lastaA(setup):
+    response_log_joe, response_log_marry = setup
+    setname_info1 = {"token": response_log_joe["token"], "first_names": "A","last_names": "a"}
+    setname_info2 = {"token": response_log_marry["token"], "first_names": "a","last_names": "A"}
+
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info1)
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info2)
+
+    response_data = response.json()
+    assert response_data == {}
 
 
 def test_user_name_duplication_no_first(setup):
@@ -562,6 +606,18 @@ def test_user_email_duplication_invalid_capital(setup):
     response_data = response.json()
     assert response_data == {}
 
+def test_user_email_duplication_invalid_not_capital(setup):
+    response_log_joe, response_log_marry = setup
+    setemail_info1 = {"token": response_log_joe["token"], "emails": "AAA@gmail.com"}
+    setemail_info2 = {"token": response_log_marry["token"], "emails": "aaa@gmail.com"}
+
+    requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info1)
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info2)
+
+    response_data = response.json()
+    assert response_data == {}
+
+
 def test_user_email_invalid(setup):
     response_log_joe, _ = setup
     setemail_info = {"token": response_log_joe["token"], "emails": "abcde"}
@@ -569,6 +625,13 @@ def test_user_email_invalid(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+
+def test_user_email_invalid_capital(setup):
+    response_log_joe, _ = setup
+    setemail_info = {"token": response_log_joe["token"], "emails": "ABCDE"}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
 
 def test_user_email_short(setup):
     response_log_joe, _ = setup
