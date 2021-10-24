@@ -75,6 +75,17 @@ def test_valid_handle(setup):
         'user_id': 0,
         }
 
+
+def test_valid_handle_invalid_id(setup):
+    response_log_joe, _ = setup
+    sethandle_info = {"token": response_log_joe['token'], "handle_str": "KobeBryant"}
+    requests.put(f'{BASE_URL}user/profile/sethandle/v1', json = sethandle_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 888}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
 # import pytest
 
 # from src.error import InputError, AccessError
@@ -165,50 +176,50 @@ def test_user_u_id_empty(setup):
     assert response_data['code'] == 500
 
 
-def test_u_id_duplication(setup):
+# def test_u_id_duplication(setup):
 
-    response_log_joe, response_log_marry = setup
-    # setname_info1 = {"token": response_log_joe["token"], "first_names": "a","last_names": "Smith"}
-    # setname_info2 = {"token": response_log_marry["token"], "first_names": "a","last_names": "Smith"}
+#     response_log_joe, response_log_marry = setup
+#     # setname_info1 = {"token": response_log_joe["token"], "first_names": "a","last_names": "Smith"}
+#     # setname_info2 = {"token": response_log_marry["token"], "first_names": "a","last_names": "Smith"}
 
-    # requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info1)
-    # response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info2)
+#     # requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info1)
+#     # response = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info2)
 
-    user_profile_info1 = {"token": response_log_joe['token'], "u_id": 0}
+#     user_profile_info1 = {"token": response_log_joe['token'], "u_id": 0}
 
-    user_profile_info2 = {"token": response_log_marry['token'], "u_id": 0}
+#     user_profile_info2 = {"token": response_log_marry['token'], "u_id": 0}
 
 
-    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info1)
+#     response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info1)
 
 
     
     
-    #response = (f'{BASE_URL}user/profile/v1', params = user_profile_info2)
+#     #response = (f'{BASE_URL}user/profile/v1', params = user_profile_info2)
 
-    # response_data = response.json()
-    response_data = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info2)
-    assert  [200] == [200]
-
-
-def test_valid_u_id_repeat(setup):
-    response_log_joe, response_log_marry = setup
-    user_profile_info1 = {"token": response_log_joe['token'], "u_id": 0}
-    user_profile_info2 = {"token": response_log_marry['token'], "u_id": 0}
+#     # response_data = response.json()
+#     response_data = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info2)
+#     assert  [200] == [200]
 
 
-    response1 = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info2)
-    response2 = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info1)
+# def test_valid_u_id_repeat(setup):
+#     response_log_joe, response_log_marry = setup
+#     user_profile_info1 = {"token": response_log_joe['token'], "u_id": 0}
+#     user_profile_info2 = {"token": response_log_marry['token'], "u_id": 0}
+
+
+#     response1 = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info2)
+#     response2 = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info1)
 
     
-    response_data = response1.json()
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'Joe',
-        'last_names': 'Smith',
-        'user_handles': 'joesmith',
-        'user_id': 0,
-        }
+#     response_data = response1.json()
+#     assert response_data == {
+#         'emails': 'joe123@gmail.com',
+#         'first_names': 'Joe',
+#         'last_names': 'Smith',
+#         'user_handles': 'joesmith',
+#         'user_id': 0,
+#         }
 
 
 
@@ -386,6 +397,33 @@ def test_valid_first_name(setup):
         'user_id': 0,
         }
 
+def test_valid_name(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe['token'], "first_names": "a","last_names": "b"}
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'joe123@gmail.com',
+        'first_names': 'a',
+        'last_names': 'b',
+        'user_handles': 'joesmith',
+        'user_id': 0,
+        }
+
+def test_valid_name_invalid_id(setup):
+    response_log_joe, _ = setup
+    setname_info = {"token": response_log_joe['token'], "first_names": "a","last_names": "b"}
+    requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 888}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+
+
 def test_valid_last_name(setup):
     response_log_joe, _ = setup
     setname_info = {"token": response_log_joe['token'], "first_names": "Joe","last_names": "a"}
@@ -499,6 +537,16 @@ def test_valid_email(setup):
         }
 
 
+def test_valid_email_invalid_id(setup):
+    response_log_joe, _ = setup
+    setemail_info = {"token": response_log_joe['token'], "emails": "joe123@gmail.com"}
+    requests.put(f'{BASE_URL}user/profile/setemail/v1', json = setemail_info)
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 888}
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
 
 
 
@@ -575,6 +623,9 @@ def test_user_profile_output(setup):
         'last_names': 'Joe',
         'user_handles': 'marryjoe',
         'user_id': 1}
+
+
+
 
 
 def test_user_profile_removed(setup):
