@@ -66,15 +66,15 @@ def user_all_v1(token):
             user_name_first = store['users']['first_names'][user_id]
             user_name_last = store['users']['last_names'][user_id]
             user_handle_str = store['users']['user_handles'][user_id]
-            users.append({'u_id': user_id, 'email': user_email, 'is_remove': store['users']['removed_user'][user_id],
-                            'name_first': user_name_first, 'name_last': user_name_last, 'handle_str': user_handle_str})
+            users.append({'u_id': user_id, 'email': user_email, 
+                            'name_first': user_name_first, 
+                            'name_last': user_name_last, 
+                            'handle_str': user_handle_str})
 
 
     
 
-    #for x in store['users']:
-    #    users.append({ 'user_id': store['users']['user_id'][x], 'emails': store['users']['emails'][x], 'first_names': store['users']['first_names'][x], 'last_names': store['users']['last_names'][x],
-    #                 'user_handles': store['users']['user_handles'][x]})
+   
 
     data_store.set(store)
 
@@ -84,7 +84,7 @@ def user_all_v1(token):
 # List of all valid users
 def user_profile_v1(token, u_id):
     
-    # user_id = check_and_get_user_id(token)
+   
 
     store = data_store.get()
 
