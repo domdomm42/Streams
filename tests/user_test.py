@@ -60,6 +60,7 @@ def test_user_handle_duplicate(setup):
     assert response_data['code'] == 400
 
 
+
 def test_user_handle_duplicate_capital(setup):
     response_log_joe, response_log_marry = setup
 
@@ -197,6 +198,53 @@ def test_user_u_id_negative(setup):
     response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
     response_data = response.json()
     assert response_data['code'] == 500
+
+def test_user_u_id_one(setup):
+    
+    response_log_joe, _ = setup
+
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 1}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'marryjoe222@gmail.com',
+        'first_names': 'Marry',
+        'last_names': 'Joe',
+        'user_handles': 'marryjoe',
+        'user_id': 1,}
+
+def test_user_u_id_two_same(setup):
+    
+    response_log_joe, _ = setup
+
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 2}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_user_u_id_one_not_match(setup):
+    
+    response_log_marry, _ = setup
+
+    user_profile_info = {"token": response_log_marry['token'], "u_id": 1}
+    
+    setname_info = {"token": response_log_marry["token"], "first_names": "Marry", "last_names":"a"}
+    response1 = requests.put(f'{BASE_URL}user/profile/setname/v1', json = setname_info)
+    response_data = response1.json()
+
+
+
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {
+        'emails': 'marryjoe222@gmail.com',
+        'first_names': 'Marry',
+        'last_names': 'Joe',
+        'user_handles': 'marryjoe',
+        'user_id': 1,}
 
 
 def test_user_u_id_empty(setup):
