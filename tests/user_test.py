@@ -438,5 +438,7 @@ def test_valid_handle(setup):
         'user_handles': 'KobeBryant',
         'user_id': 0,
     }
+    
+    requests.delete(f'{BASE_URL}/clear/v1')
 
 
