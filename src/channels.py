@@ -12,8 +12,8 @@ existing channels and those that contain a given user ID.
 
 def channels_list_v1(token):
     '''
-    Arguements:
-        auth_user_id (int) - idetifying variable for each user 
+    Arguments:
+        token(strings) - Identifies User
 
     Return Value:
         returns new_list: list of dicionaries containing channel 
@@ -44,8 +44,8 @@ def channels_list_v1(token):
 # Works like the previous function with the ommission of User Filter
 def channels_listall_v1(token):
     '''
-    Arguements:
-        auth_user_id (int) - idetifying variable for each user 
+    Arguments:
+        token(strings) - Identifies the user 
 
     Return Value:
         returns new_list: list of dicionaries containing channel 
@@ -75,7 +75,7 @@ def channels_create_v1(token, name, is_public):
     data in data store.
 
     Arguments:
-        auth_user_id - Integers      -  Used to identify users.
+        token - String               -  Used to identify users.
         name - Strings               -  Channel name.
         is_public - Boolean          -  Checks if channel is public.
 
