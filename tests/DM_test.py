@@ -252,6 +252,18 @@ def test_simple_dm_remove(setup):
     response_create = requests.get(f'{BASE_URL}/dm/list/v1', params = dm_list)
     response_create_data = response_create.json()
     assert response_create_data['dms'] == []
+
+def test_multple_dm_remove(setup):
+    _, joe, marry, _ = setup
+
+    # Uses list function to identify if dm created in setup was removed
+    dm_remove = {'token': joe, 'dm_id': 0}
+    response_create = requests.delete(f'{BASE_URL}/dm/remove/v1', json = dm_remove)
+
+    dm_list = {"token": marry}
+    response_create = requests.get(f'{BASE_URL}/dm/list/v1', params = dm_list)
+    response_create_data = response_create.json()
+    assert response_create_data['dms'] == []
 '''
 SAMPLE TESTING FOR DM_DETAILS
 '''
@@ -288,14 +300,12 @@ def test_simple_dm_leave(setup):
 
     # Tests a single call of the leave function for the owner of the dm joe
     dm_leave = {"token": joe, "dm_id": 0}
-    response_create = requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
-    response_create_data = response_create.json()
+    requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
     
     # As marry is the only remaining member, details should only show her but keep the same dm name 
     dm_details = {"token": marry, "dm_id": 0}
     response_create = requests.get(f'{BASE_URL}/dm/details/v1', params = dm_details)
     response_create_data = response_create.json()
-    print(response_create_data)
     assert response_create_data['name'] == 'joesmith, marrysmith' 
     assert response_create_data['members'] == [
         {
@@ -306,6 +316,24 @@ def test_simple_dm_leave(setup):
             'handle_str': 'marrysmith'
         }
     ]
+
+def test_multiple_dm_leave(setup):
+    _, joe, marry, _ = setup
+
+    # Tests two calls of the leave function for the owner of the dm joe and marry
+    dm_leave = {"token": joe, "dm_id": 0}
+    response_create = requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
+    response_create_data = response_create.json()
+    
+    dm_leave = {"token": marry, "dm_id": 0}
+    response_create = requests.post(f'{BASE_URL}/dm/leave/v1', json = dm_leave)
+    response_create_data = response_create.json()
+    # As marry is the only remaining member she cannot access the dm 
+    dm_details = {"token": marry, "dm_id": 0}
+    response_create = requests.get(f'{BASE_URL}/dm/details/v1', params = dm_details)
+    response_create_data = response_create.json()
+    
+    assert response_create_data['code'] == ACCESSERROR
 
 '''
 SAMPLE TESTING FOR DM_MESSAGES
@@ -352,6 +380,27 @@ def test_simple_dm_messages(setup):
             'time_created': int(timestamp2)
         } 
     ]
+
+def test_multiple_dm_messages(setup):
+    _, joe, marry, _ = setup
+    i = 0
+    while i < 55:
+        # sends messages from joe to dm_1
+        send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big'}
+        print(requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1).json())
+
+        i += 1
+     # Calls the messages function a single time with correct variables
+    dm_messages = {"token": joe, "dm_id": 0, 'start': 0}
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
+    response_create_data = response_create.json()
+    print(len(response_create_data['messages']))
+    print(response_create_data['messages'])
+    assert response_create_data['start'] == 0
+    assert response_create_data['end'] == 50   
+
+
+
 
 
 

@@ -259,12 +259,13 @@ def dm_messages_v1(token, dm_id, start):
     check_user_in_dm(auth_user_id, dm_id, store)
     
    
-    # if start is greater than number of messages return InputError
-    if start > len(store['dms']['messages']):
-        raise InputError('invalid start, fewer messages than expected.')
+    
 
     messages = []
     dm_index = index_from_dm_id(dm_id, store)
+    # if start is greater than number of messages return InputError
+    if start > len(store['dms']['messages'][dm_index]):
+        raise InputError('invalid start, fewer messages than expected.')
     message_index = store['dms']['messages'][dm_index][start:]
 
     # finds the location of the message_id using the index and stores its details in the list of dicts
@@ -331,10 +332,9 @@ def check_user_in_dm(u_id, dm_id, store):
         raise AccessError('Given User is not a memeber of DM')
     
 
-# Checks if the authorised user (token) is the original owner of the DM
 def check_original_dm(u_id, dm_id, store):
     '''
-    Checks if the authorised user (token) is a member of the DM
+    Checks if the authorised user (token) is the original owner of the DM
 
     Arguments:
             u_id <int>: indetifying integer of the user
@@ -350,25 +350,7 @@ def check_original_dm(u_id, dm_id, store):
     if u_id != store['dms']['owner_user_id'][index]:
         raise AccessError('Only the original DM creator can remove a DM')
     
-
-
-def check_valid_token(token, store):
-    '''
-    Checks if the token given appears in the data store, if not it must be invalid
-
-    Arguments:
-            token <string>: stringated identifer being checked
-            store <dictionary>: the data_store used to save all info
-
-    Exceptions:
-            AccessError: for invalid token        
-
-    '''
-    if token not in store['users']['tokens']:
-        raise AccessError('Invalid Token given')
     
-
- 
 def check_valid_user(u_ids, store):
     '''
     Checks if the list of users given actually exists in streams
@@ -423,20 +405,3 @@ def index_from_u_id(u_id, store):
             break
         counter += 1
     return counter
-
-
-def get_message(message_id, store):
-    '''
-    Gets the message dictionary that is kept in the data_store based on index
-
-    Arguments:
-            message_id <int>: message being found
-            store <dictionary>: the data_store used to save all info
-
-    Returns:
-            msg <dictionary>: info on the message_id, time, u_id, and message that is stored in the database        
-    '''
-
-    for msg in store['messages']:
-        if msg['message_id'] == message_id:
-            return msg
