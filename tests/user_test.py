@@ -154,6 +154,16 @@ def test_user_u_id_negative(setup):
     assert response_data['code'] == 500
 
 
+def test_user_u_id_empty(setup):
+    
+    response_log_joe, _ = setup
+
+    user_profile_info = {"token": response_log_joe['token'], "u_id":""}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data['code'] == 500
+
 
 
 def test_valid_u_id(setup):
@@ -169,6 +179,20 @@ def test_valid_u_id(setup):
         'user_id': 0,
         }
         
+
+# def test_valid_u_id_removed(setup):
+#     response_log_joe, _ = setup
+#     user_profile_info = {"token": response_log_joe['token'], "u_id": 0, "removed_user":False}
+#     response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+#     response_data = response.json()
+#     assert response_data == {
+#         'emails': 'joe123@gmail.com',
+#         'first_names': 'Joe',
+#         'last_names': 'Smith',
+#         'user_handles': 'joesmith',
+#         'user_id': 0,
+#         }
+
 
 
 # Test for name
@@ -420,6 +444,48 @@ def test_user_profile_output(setup):
         'user_handles': 'marryjoe',
         'user_id': 1}
 
+
+def test_user_profile_removed(setup):
+    response_log_joe, _ = setup
+    
+    user_profile_info = {"token": response_log_joe['token'], "u_id": 2,'removed_user':True}
+    
+    response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+    response_data = response.json()
+    assert response_data == {   
+           'code': 400,
+         'message': '<p>This user does not exist!</p>',
+          'name': 'System Error',}
+
+# def test_user_profile_not_removed(setup):
+#     response_log_joe, _ = setup
+    
+#     user_profile_info = {"token": response_log_joe['token'], "u_id": 2,'removed_user':False}
+    
+#     response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+#     response_data = response.json()
+#     assert response_data == {   
+#         'emails': 'marryjoe222@gmail.com',
+#         'first_names': 'Marry',
+#         'last_names': 'Joe',
+#         'user_handles': 'marryjoe',
+#         'user_id': 2
+#         }
+
+# def test_user_profile_user_removed(setup):
+#     response_log_joe, _ = setup
+    
+#     user_profile_info = {"token": response_log_joe['token'], "u_id": 3,'removed_user':True}
+    
+#     response = requests.get(f'{BASE_URL}user/profile/v1', params = user_profile_info)
+#     response_data = response.json()
+#     assert response_data == {   
+#         # 'emails': 'marryjoe222@gmail.com',
+#         # 'first_names': 'Marry',
+#         # 'last_names': 'Joe',
+#         # 'user_handles': 'marryjoe',
+#         # 'user_id': 0
+#         }
 
 
 def test_user_handle_short_and_not_alphanumeric(setup):
