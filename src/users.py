@@ -28,7 +28,7 @@ def user_profile_sethandle_v1(token, handle_str):
     store = data_store.get()
 
     idx = 0
-    for user_id in store['users']['user_handles']:
+    for _ in store['users']['user_handles']:
         if idx == user_id:
             store['users']['user_handles'][idx] = handle_str
             
@@ -87,7 +87,7 @@ def user_profile_setname_v1(token, name_first, name_last):
     store = data_store.get()
 
     idx = 0
-    for user_id in store['users']:
+    for _ in store['users']:
         if idx == user_id:
             store['users']['first_names'][idx] = name_first
             store['users']['last_names'][idx] = name_last
@@ -110,7 +110,7 @@ def user_profile_setemail_v1(token, email):
     store = data_store.get()
 
     idx = 0
-    for user_id in store['users']['emails']:
+    for _ in store['users']['emails']:
         if idx == user_id:
             store['users']['emails'][idx] = email
             
