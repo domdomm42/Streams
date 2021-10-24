@@ -195,7 +195,7 @@ def message_senddm_v1(token, dm_id, message):
     store['messages'].append(message_info)
 
     idx = store['dms']['dm_id'].index(dm_id)
-    store['dms']['messages'][idx].append(dm_id)
+    store['dms']['messages'][idx].append(message_id)
     
     data_store.set(store)
 
