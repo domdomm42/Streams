@@ -171,70 +171,71 @@ def test_empty_name1():
     response_create_data = response_create.json()
     assert response_create_data['code'] == 400
 
-# def test_long_name1():
-#     requests.delete(f'{BASE_URL}/clear/v1')
+########################################################################################
+def test_long_name1():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-#     channel_creation_name = {"token": "1", "name": "bigbigbigbigbigbigbigbig", "is_public": True}
+    channel_creation_name = {"token": "1", "name": "bigbigbigbigbigbigbigbig", "is_public": True}
 
-#     response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
-#     response_create_data = response_create.json()
-#     assert response_create_data['code'] == 400
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 400
 
 
-# def test_empty_name2():
-#     requests.delete(f'{BASE_URL}/clear/v1')
+def test_empty_name2():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-#     channel_creation_name = {"token": "1", "name": "", "is_public": False}
+    channel_creation_name = {"token": "1", "name": "", "is_public": False}
 
-#     response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
-#     response_create_data = response_create.json()
-#     assert response_create_data['code'] == 400
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 400
 
-# def test_long_name2():
-#     requests.delete(f'{BASE_URL}/clear/v1')
+def test_long_name2():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-#     channel_creation_name = {"token": "1", "name": "bigbigbigbigbigbigbigbig", "is_public": False}
+    channel_creation_name = {"token": "1", "name": "bigbigbigbigbigbigbigbig", "is_public": False}
 
-#     response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
-#     response_create_data = response_create.json()
-#     assert response_create_data['code'] == 400
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 400
 
-# # # Testing simple channel creation
-# # def test_new_channel():
-# #     requests.delete(f'{BASE_URL}/clear/v1')
+# Testing simple channel creation
+def test_new_channel():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-# #     auth_user_id_reg = {"email": "dommm@gmail.com", "password": "limoudom123", "name_first": "oudom", "name_last": "lim"}
-# #     response_auth_user_id = requests.post(f'{BASE_URL}/auth/register/v2', json = auth_user_id_reg)
+    auth_user_id_reg = {"email": "dommm@gmail.com", "password": "limoudom123", "name_first": "oudom", "name_last": "lim"}
+    response_auth_user_id = requests.post(f'{BASE_URL}/auth/register/v2', json = auth_user_id_reg)
 
-# #     auth_user_id_info = response_auth_user_id.json()
+    auth_user_id_info = response_auth_user_id.json()
 
-# #     channel_creation_name = {"token": auth_user_id_info["token"], "name": "domserver", "is_public": False}
-# #     response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    channel_creation_name = {"token": auth_user_id_info["token"], "name": "domserver", "is_public": False}
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
 
-# #     response_create_data = response_create.json()
-# #     assert response_create_data["channel_id"] == 0
+    response_create_data = response_create.json()
+    assert response_create_data["channel_id"] == 0
 
     
 
-# # Testing Invalid user_ID for channel_create_v1
-# def test_invalid_id_channel_create_negative():
-#     requests.delete(f'{BASE_URL}/clear/v1')
+# Testing Invalid user_ID for channel_create_v1
+def test_invalid_id_channel_create_negative():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-#     channel_creation_name = {"token": "-1", "name": "bigboy", "is_public": True}
+    channel_creation_name = {"token": "-1", "name": "bigboy", "is_public": True}
 
-#     response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
-#     response_create_data = response_create.json()
-#     assert response_create_data['code'] == 403
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 403
 
 
-# def test_invalid_id_channel_create_over():
-#     requests.delete(f'{BASE_URL}/clear/v1')
+def test_invalid_id_channel_create_over():
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-#     channel_creation_name = {"token": "3", "name": "bigboy", "is_public": True}
+    channel_creation_name = {"token": "3", "name": "bigboy", "is_public": True}
 
-#     response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
-#     response_create_data = response_create.json()
-#     assert response_create_data['code'] == 403
+    response_create = requests.post(f'{BASE_URL}/channels/create/v2', json = channel_creation_name)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == 403
 
 
 
