@@ -166,6 +166,8 @@ def test_user_name_last_too_short(setup):
 
 
 
+
+
 # Test invalid long first name
 def test_user_name_first_too_long(setup):
     
@@ -440,3 +442,145 @@ def test_valid_handle(setup):
     }
 
 
+
+
+
+# Test invalid name given
+def test_user_name_0_0(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Last name is valid, first name out of range (1-50 characters)
+    setname_info = {"token": response_log_joe["token"],
+                    "first_names": "", "last_names": ""}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
+    response_data = response.json()
+    
+    # Raise InputError, length of first name is not between 1 and 50
+    assert response_data['code'] == 400
+
+
+def test_user_name_0_51(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Last name is valid, first name out of range (1-50 characters)
+    setname_info = {"token": response_log_joe["token"],
+                    "first_names": "", "last_names": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
+    response_data = response.json()
+    
+    # Raise InputError, length of first name is not between 1 and 50
+    assert response_data['code'] == 400
+
+
+def test_user_name_51_0(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Last name is valid, first name out of range (1-50 characters)
+    setname_info = {"token": response_log_joe["token"],
+                    "first_names": "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP", "last_names": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
+    response_data = response.json()
+    
+    # Raise InputError, length of first name is not between 1 and 50
+    assert response_data['code'] == 400
+
+
+
+def test_user_name_51_51(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Last name is valid, first name out of range (1-50 characters)
+    setname_info = {"token": response_log_joe["token"],
+                    "first_names": "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP", "last_names": ""}
+    response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
+    response_data = response.json()
+    
+    # Raise InputError, length of first name is not between 1 and 50
+    assert response_data['code'] == 400
+
+
+
+# Test invalid email given
+def test_user_email_0(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Input "abcde" is invalid 
+    setemail_info = {"token": response_log_joe["token"], "emails": ""}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
+    response_data = response.json()
+    
+    # Raise InputError, email is not valid
+    assert response_data['code'] == 400
+
+
+
+
+def test_user_email_bob(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Input "abcde" is invalid 
+    setemail_info = {"token": response_log_joe["token"], "emails": "bob"}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
+    response_data = response.json()
+    
+    # Raise InputError, email is not valid
+    assert response_data['code'] == 400
+
+
+
+
+def test_user_email_ab_com(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Input "abcde" is invalid 
+    setemail_info = {"token": response_log_joe["token"], "emails": "ab.com"}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
+    response_data = response.json()
+    
+    # Raise InputError, email is not valid
+    assert response_data['code'] == 400
+
+
+
+
+def test_user_email_gmail_com(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Input "abcde" is invalid 
+    setemail_info = {"token": response_log_joe["token"], "emails": "@gmail.com"}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
+    response_data = response.json()
+    
+    # Raise InputError, email is not valid
+    assert response_data['code'] == 400
+
+
+
+def test_user_email_ab_ab_gmail_com(setup):
+    
+    # Load data from setup
+    response_log_joe, _ = setup
+    
+    # Input "abcde" is invalid 
+    setemail_info = {"token": response_log_joe["token"], "emails": "ab@ab@gmail.com"}
+    response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
+    response_data = response.json()
+    
+    # Raise InputError, email is not valid
+    assert response_data['code'] == 400
