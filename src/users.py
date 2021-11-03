@@ -85,12 +85,18 @@ def user_profile_v1(token, u_id):
 
     store = data_store.get()
     check_invalid_u_id(u_id)
+    user = []
+    u_id = store['users']['user_id'][u_id]
+    user_email = store['users']['emails'][u_id]
+    user_name_first = store['users']['first_names'][u_id]
+    user_name_last = store['users']['last_names'][u_id]
+    user_handle_str = store['users']['user_handles'][u_id]
+    user.append({'user_id': u_id, 'email': user_email, 
+                            'first_name': user_name_first, 
+                            'last_name': user_name_last, 
+                            'handle_str': user_handle_str})
 
-    return {'user_id': store['users']['user_id'][u_id], 
-            'emails': store['users']['emails'][u_id], 
-            'first_names': store['users']['first_names'][u_id], 
-            'last_names': store['users']['last_names'][u_id],
-            'user_handles': store['users']['user_handles'][u_id]}
+    return {'user': user}
 
 
 # Update name

@@ -58,13 +58,13 @@ def test_valid_u_id(setup):
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'Joe',
-        'last_names': 'Smith',
-        'user_handles': 'joesmith',
+    assert response_data['user'] == [{
+        'email': 'joe123@gmail.com',
+        'first_name': 'Joe',
+        'last_name': 'Smith',
+        'handle_str': 'joesmith',
         'user_id': 0,
-    }
+    }]
 
 # Test valid user all
 def test_user_all_output(setup):
@@ -106,12 +106,12 @@ def test_user_profile_output(setup):
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data == {
-        'emails': 'marryjoe222@gmail.com',
-        'first_names': 'Marry',
-        'last_names': 'Joe',
-        'user_handles': 'marryjoe',
-        'user_id': 1}
+    assert response_data['user'] == [{
+        'email': 'marryjoe222@gmail.com',
+        'first_name': 'Marry',
+        'last_name': 'Joe',
+        'handle_str': 'marryjoe',
+        'user_id': 1}]
 
 # Test for name
 
@@ -203,13 +203,13 @@ def test_valid_name(setup):
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'a',
-        'last_names': 'b',
-        'user_handles': 'joesmith',
+    assert response_data['user'] == [{
+        'email': 'joe123@gmail.com',
+        'first_name': 'a',
+        'last_name': 'b',
+        'handle_str': 'joesmith',
         'user_id': 0,
-    }
+    }]
 
 # Test for email
 
@@ -273,13 +273,13 @@ def test_valid_email(setup):
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'Joe',
-        'last_names': 'Smith',
-        'user_handles': 'joesmith',
+    assert response_data['user'] == [{
+        'email': 'joe123@gmail.com',
+        'first_name': 'Joe',
+        'last_name': 'Smith',
+        'handle_str': 'joesmith',
         'user_id': 0,
-    }
+    }]
 
 # Test for handle
 
@@ -371,14 +371,44 @@ def test_valid_handle(setup):
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data == {
-        'emails': 'joe123@gmail.com',
-        'first_names': 'Joe',
-        'last_names': 'Smith',
-        'user_handles': 'KobeBryant',
+    assert response_data['user'] == [{
+        'email': 'joe123@gmail.com',
+        'first_name': 'Joe',
+        'last_name': 'Smith',
+        'handle_str': 'KobeBryant',
         'user_id': 0,
-    }
+    }]
     
     requests.delete(f'{BASE_URL}/clear/v1')
+
+
+def test_successful_users_all():
+    requests.delete(f'{BASE_URL}/clear/v1')
+    user_woody_reg = {"email": "sheriff.woody@andysroom.com", "password": "qazwsx!!", "name_first": "sheriff", "name_last": "woody"}
+    user_buzz_reg = {"email": "buzz.lightyear@starcommand.com", "password": "qazwsx@@", "name_first":  "buzz", "name_last": "lightyear"}
+    user_woody_log_info = {"email": "sheriff.woody@andysroom.com", "password": "qazwsx!!"}
+
+    requests.post(f'{BASE_URL}/auth/register/v2', json=user_woody_reg)
+    requests.post(f'{BASE_URL}/auth/register/v2', json=user_buzz_reg)
+    user_woody = requests.post(f'{BASE_URL}/auth/login/v2', json=user_woody_log_info)
+    user_woody = user_woody.json()
+    user_all_info = {"token": user_woody["token"]}
+    response = requests.get(f'{BASE_URL}users/all/v1', params=user_all_info)
+    
+    response_data = response.json() 
+    assert response_data == {
+        'users': [{'email': 'sheriff.woody@andysroom.com',
+            'handle_str': 'sheriffwoody',
+            'name_first': 'sheriff',
+            'name_last': 'woody',
+            'u_id': 0},
+            {'email': 'buzz.lightyear@starcommand.com',
+            'handle_str': 'buzzlightyear',
+            'name_first': 'buzz',
+            'name_last':'lightyear',
+            'u_id': 1}]
+    }
+
+
 
 

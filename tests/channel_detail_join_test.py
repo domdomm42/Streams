@@ -63,7 +63,7 @@ def test_negative_channel_id_in_details(setup):
     channel_detail_info = {"token": response_log_joe["token"], "channel_id": -1}
     response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_detail_info)
     response_data = response.json()
-    assert response_data['code'] == ACCESS_ERROR
+    assert response_data['code'] == 400
 
 
 def test_negative_channel_id_in_join(setup):
@@ -71,7 +71,7 @@ def test_negative_channel_id_in_join(setup):
     channel_join_info = {"token": response_log_joe['token'], "channel_id": -1}
     response = requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     response_data = response.json()
-    assert response_data['code'] == ACCESS_ERROR
+    assert response_data['code'] == 400
 
 
 #=====Test member join again===========
