@@ -1,11 +1,6 @@
 import pytest
 import requests
 from src.config import *
-from admin import *
-from DM_functions import *
-from auth import *
-from channel import *
-from users import *
 
 BASE_URL = url
 ACCESS_ERROR = 403
