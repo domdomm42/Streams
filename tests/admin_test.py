@@ -1,6 +1,11 @@
 import pytest
 import requests
 from src.config import *
+from admin import *
+from DM_functions import *
+from auth import *
+from channel import *
+from users import *
 
 BASE_URL = url
 ACCESS_ERROR = 403
@@ -174,6 +179,14 @@ def test_only_one_global_owner(setup):
     response = requests.delete(f'{BASE_URL}/admin/user/remove/v1', json = kick_data)
     response = response.json()
     assert response['code'] == INPUT_ERROR
+
+########################################################
+
+
+
+
+
+
 
 
 

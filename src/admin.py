@@ -41,21 +41,25 @@ def admin_user_remove_v1(token, user_id):
     if store['users']['is_global_owner'][user_id] == True and num_of_global_owner == 1:
         raise InputError('user_id refers to a user who is the only global owner!')
 
-    # Set messages sent by removed user to be 'Removed User'
+    # Set messages sent by removed user to be 'Removed user'
     for message in store['messages']:
         if message['u_id'] == user_id:
             idx = store['messages'].index(message)
-            store['messages'][idx]['message'] = 'Removed User'
+            store['messages'][idx]['message'] = 'Removed user'
 
        
     store['users']['first_names'][user_id] = 'Removed'
-    store['users']['last_names'][user_id] = 'User'
+    store['users']['last_names'][user_id] = 'user'
     store['users']['emails'][user_id] = 'X'
     store['users']['passwords'][user_id] = 'X'
     store['users']['user_handles'][user_id] = 'X'
     store['users']['is_global_owner'][user_id] = False
     store['users']['removed_user'][user_id] = True
     store['users']['permissions'][user_id] = 3
+
+    store['channels']['all_members'][user_id] = 'X'
+    store['dms']['members'][user_id] = 'X'
+
 
 
     data_store.set(store)

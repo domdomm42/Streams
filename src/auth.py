@@ -134,6 +134,9 @@ def auth_logout_v1(token):
 
     store = data_store.get()
 
+    if decoded_token == 'X':
+        raise AccessError(description='User does not exist!')
+
     counter = 0
     for data in store['logged_in_users']:
         if data['user_id'] == user_id and data['session_id'] == session_id:
