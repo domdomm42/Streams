@@ -3,34 +3,6 @@ from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
 import re
 
-def user_profile_sethandle_v1(token, handle_str):
-    '''
-    Update the authorised user's handle (i.e. display name)
-
-    Arguments:
-        token(string)   - use to identify users
-        handle_str(string)  - the name user want to replace
-
-    Exceptions:
-        400 Error:
-            InputError('Invalid input') - length of handle_str is not between 3 and 20 characters inclusive
-                                        - handle_str contains characters that are not alphanumeric
-                                        - the handle is already used by another user
-    
-    Return value:
-        return {}
-    '''
-    user_id = check_and_get_user_id(token)
-    check_len(handle_str)
-    check_alphanumeric(handle_str)
-    check_duplicate(handle_str)
-
-    store = data_store.get()
-
-    store['users']['user_handles'][user_id] = handle_str
-    
-    data_store.set(store)
-    return {}
 
 
 def user_all_v1(token):
@@ -85,12 +57,20 @@ def user_profile_v1(token, u_id):
 
     store = data_store.get()
     check_invalid_u_id(u_id)
+    user = []
+    u_id = store['users']['user_id'][u_id]
+    user_email = store['users']['emails'][u_id]
+    user_name_first = store['users']['first_names'][u_id]
+    user_name_last = store['users']['last_names'][u_id]
+    user_handle_str = store['users']['user_handles'][u_id]
+    user.append({'user_id': u_id, 'email': user_email, 
+                            'first_name': user_name_first, 
+                            'last_name': user_name_last, 
+                            'handle_str': user_handle_str})
 
-    return {'user_id': store['users']['user_id'][u_id], 
-            'emails': store['users']['emails'][u_id], 
-            'first_names': store['users']['first_names'][u_id], 
-            'last_names': store['users']['last_names'][u_id],
-            'user_handles': store['users']['user_handles'][u_id]}
+    return {'user': user}
+
+
 
 
 # Update name
@@ -153,6 +133,77 @@ def user_profile_setemail_v1(token, email):
     data_store.set(store)
 
     return {}
+
+
+
+
+# Update handles
+def user_profile_sethandle_v1(token, handle_str):
+    '''
+    Update the authorised user's handle (i.e. display name)
+
+    Arguments:
+        token(string)   - use to identify users
+        handle_str(string)  - the name user want to replace
+
+    Exceptions:
+        400 Error:
+            InputError('Invalid input') - length of handle_str is not between 3 and 20 characters inclusive
+                                        - handle_str contains characters that are not alphanumeric
+                                        - the handle is already used by another user
+    
+    Return value:
+        return {}
+    '''
+    user_id = check_and_get_user_id(token)
+    check_len(handle_str)
+    check_alphanumeric(handle_str)
+    check_duplicate(handle_str)
+
+    store = data_store.get()
+
+    store['users']['user_handles'][user_id] = handle_str
+    
+    data_store.set(store)
+    return {}
+
+
+
+
+# IT3
+
+
+def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
+
+
+    return {}
+
+
+
+
+def user_stats_v1(token):
+
+
+    return {user_stats}
+
+
+
+
+
+def users_stats_v1(token):
+
+
+
+    return {workspace_stats}
+
+
+
+
+# Check functions
+
+
+
+
 
 def check_len(handle_str):
     '''
