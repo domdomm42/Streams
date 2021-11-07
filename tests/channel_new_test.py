@@ -238,7 +238,7 @@ def test_valid_input_remove(setup):
     }
 
 def test_global_owner_member_can_addowner(setup):
-    channel_id_joe, channel_id_marry, response_log_joe, response_log_marry = setup
+    _, channel_id_marry, response_log_joe, response_log_marry = setup
     channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}   
     requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
     channel_add_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id'], "u_id": response_log_joe['auth_user_id']}
@@ -271,7 +271,7 @@ def test_global_owner_member_can_addowner(setup):
                              'u_id': 0}],}
 
 def test_non_member_cannot_add_owner(setup):
-    channel_id_joe, channel_id_marry, response_log_joe, response_log_marry = setup
+    channel_id_joe, _, _, response_log_marry = setup
     user_woody_reg = {"email": "sheriff.woody@andysroom.com", "password": "qazwsx!!", "name_first": "sheriff", "name_last": "woody"}
     user_woody = requests.post(f'{BASE_URL}/auth/register/v2', json=user_woody_reg)
     user_woody = user_woody.json()
