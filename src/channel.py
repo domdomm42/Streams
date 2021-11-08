@@ -226,9 +226,11 @@ def channel_addowner_v1(token, channel_id, u_id):
     '''
 
     user_id = check_and_get_user_id(token)
+    check_invalid_u_id(user_id)
     check_channel_id(channel_id)
     check_invalid_u_id(u_id)
     check_members(u_id, channel_id)
+    
     check_owner(channel_id, u_id)
     check_owner_permission(channel_id, user_id)
 
@@ -261,6 +263,7 @@ def channel_removeowner_v1(token, channel_id, u_id):
 
     store = data_store.get()
     user_id = check_and_get_user_id(token)
+    check_invalid_u_id(user_id)
     check_channel_id(channel_id)
     check_invalid_u_id(u_id)
     check_not_owner(u_id, channel_id)
@@ -309,7 +312,15 @@ def check_owner_permission(channel_id, user_id):
     '''
     store = data_store.get()
     if user_id not in store['channels']['owner_user_id'][channel_id]:
-        raise AccessError(description='Permission denied')
+        if  store['users']['is_global_owner'][user_id] == False:
+            
+            raise AccessError(description='Permission denied')
+        else:
+            if user_id not in store['channels']['all_members'][channel_id]:
+                raise AccessError(description='Permission denied')    
+
+            
+                
 
 def check_not_owner(u_id, channel_id):
     '''
@@ -345,7 +356,7 @@ def check_channel_id(channel_id):
     store = data_store.get()
     i = 0
     if int(channel_id) < 0 :
-        raise AccessError(description='Invalid Id')
+        raise InputError(description='Invalid Id')
     for _ in store['channels']['channel_name']:
         if i == channel_id:
             return
@@ -559,3 +570,5 @@ def get_message(message_id):
     for msg in store['messages']:
         if msg['message_id'] == message_id:
             return msg
+
+

@@ -51,6 +51,13 @@ def test_invalid_channel_id_add(setup):
     response_data = response.json()
     assert response_data['code'] == INPUT_ERROR
 
+def test_negative_channel_id_add(setup):
+    _, _, response_log_joe, _ = setup
+    channel_add_info = {"token": response_log_joe['token'], "channel_id": "-1", "u_id": response_log_joe['auth_user_id']}
+    response = requests.post(f'{BASE_URL}/channel/addowner/v1', json = channel_add_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
 def test_invalid_channel_id_remove(setup):
     _, _, response_log_joe, _ = setup
     channel_remove_info = {"token": response_log_joe['token'], "channel_id": "100", "u_id": response_log_joe['auth_user_id']}
@@ -229,3 +236,48 @@ def test_valid_input_remove(setup):
                             'name_last': 'Smith',
                             'u_id': 0}],
     }
+
+def test_global_owner_member_can_addowner(setup):
+    _, channel_id_marry, response_log_joe, response_log_marry = setup
+    channel_join_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}   
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    channel_add_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id'], "u_id": response_log_joe['auth_user_id']}
+    requests.post(f'{BASE_URL}/channel/addowner/v1', json = channel_add_info)
+    channel_details_info = {"token": response_log_marry['token'], "channel_id": channel_id_marry['channel_id']}
+
+    response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
+    details = response.json()
+    assert details == {'all_members': [{'email': 'marryjoe222@gmail.com',
+                           'handle_str': 'marryjoe',
+                           'name_first': 'Marry',
+                           'name_last': 'Joe',
+                           'u_id': 1},
+                          {'email': 'joe123@gmail.com',
+                           'handle_str': 'joesmith',
+                           'name_first': 'Joe',
+                           'name_last': 'Smith',
+                           'u_id': 0}],
+          'is_public': False,
+          'name': 'Marry',
+          'owner_members': [{'email': 'marryjoe222@gmail.com',
+                             'handle_str': 'marryjoe',
+                             'name_first': 'Marry',
+                             'name_last': 'Joe',
+                             'u_id': 1},
+                            {'email': 'joe123@gmail.com',
+                             'handle_str': 'joesmith',
+                             'name_first': 'Joe',
+                             'name_last': 'Smith',
+                             'u_id': 0}],}
+
+def test_non_member_cannot_add_owner(setup):
+    channel_id_joe, _, _, response_log_marry = setup
+    user_woody_reg = {"email": "sheriff.woody@andysroom.com", "password": "qazwsx!!", "name_first": "sheriff", "name_last": "woody"}
+    user_woody = requests.post(f'{BASE_URL}/auth/register/v2', json=user_woody_reg)
+    user_woody = user_woody.json()
+    channel_join_info = {"token": user_woody['token'], "channel_id": channel_id_joe['channel_id']}   
+    requests.post(f'{BASE_URL}/channel/join/v2', json = channel_join_info)
+    channel_add_info = {"token": response_log_marry['token'], "channel_id": channel_id_joe['channel_id'], "u_id": user_woody['auth_user_id']}
+    response = requests.post(f'{BASE_URL}/channel/addowner/v1', json = channel_add_info)
+    response_data = response.json()
+    assert response_data['code'] == 403
