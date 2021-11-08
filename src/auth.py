@@ -436,14 +436,14 @@ def check_valid_password(email, password):
     raise InputError('Invalid Password!')
 
 
-if __name__ == "__main__":
-    auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
-    auth_login_v1("TeamBeagle1531@gmail.com", "password")
-    auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
+# if __name__ == "__main__":
+#     auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "password")
+#     auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
 
-    store = data_store.get()
-    code = store['users']['password_reset_code'][0]
+#     store = data_store.get()
+#     code = store['users']['password_reset_code'][0]
 
-    auth_passwordreset_reset_v1(code, "dompassword")
-    auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
-    print_store_debug()
+#     auth_passwordreset_reset_v1(code, "dompassword")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
+#     print_store_debug()
