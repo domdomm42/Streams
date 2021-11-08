@@ -393,3 +393,13 @@ def test_double_logout():
     return_value = return_value.json()
     assert return_value['code'] == ACCESS_ERROR
 
+# def test_password_reset():
+#     requests.delete(f'{BASE_URL}/clear/v1')
+#     user_info_reg_1 = {"email": "TeamBeagle1531@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
+    
+#     response_data = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+
+#     user_info_password_reset = {"email": "TeamBeagle1531@gmail.com"}
+#     assert 1 == 1
+
+

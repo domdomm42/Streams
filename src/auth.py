@@ -2,7 +2,11 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import hash, generate_jwt
 import jwt
+import smtplib
+from src.other import *
 
+import string    
+import random
 import re
 
 SECRET = 'BEAGLE'
@@ -104,6 +108,7 @@ def auth_register_v1(email, password, name_first, name_last):
     store['users']['passwords'].append(hash(password))
     store['users']['first_names'].append(name_first)
     store['users']['last_names'].append(name_last)
+    store['users']['password_reset_code'].append(0)  #dom added new line
 
     user_id = store['users']['user_id'][-1]
 
@@ -134,6 +139,9 @@ def auth_logout_v1(token):
 
     store = data_store.get()
 
+    if decoded_token == 'X':
+        raise AccessError(description='User does not exist!')
+
     counter = 0
     for data in store['logged_in_users']:
         if data['user_id'] == user_id and data['session_id'] == session_id:
@@ -146,6 +154,84 @@ def auth_logout_v1(token):
     data_store.set(store)
     return ({})
 
+def auth_passwordreset_request_v1(email):
+
+    store = data_store.get()
+    valid_email_check = 0
+    counter = 0
+
+    for stored_email in store['users']['emails']:
+        if email != stored_email:
+            counter += 1
+            
+        valid_email_check += 1
+        break
+
+    if counter == len(store['users']['emails']) and email != store['users']['emails'][counter - 1]:
+        return 1
+
+    if valid_email_check > 0: 
+        reset_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+
+    store['users']['password_reset_code'][counter] = reset_code
+    
+    ################################################################################
+    gmail_user = 'TeamBeagleSender@gmail.com'
+    gmail_password = '@beaglesend1531'
+
+    sent_from = gmail_user
+    to = ['me@gmail.com', 'TeamBeagle1531@gmail.com']
+    subject = 'Password Reset code'
+    body = reset_code
+
+    email_text = """\
+    From: %s
+    To: %s
+    Subject: %s
+
+    %s
+    """ % (sent_from, ", ".join(to), subject, body)
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(gmail_user, gmail_password)
+        server.sendmail(sent_from, to, email_text)
+        server.close()
+
+        print('The reset code has been sent to your email!')
+    except:
+        print('Something went wrong...')
+
+    token = generate_jwt(counter)
+    auth_logout_v1(token)
+    data_store.set(store)
+
+def auth_passwordreset_reset_v1(reset_code, new_password):
+
+    if reset_code == 0:
+        raise InputError(description="Reset code is not a valid reset code!")
+
+    store = data_store.get()
+    counter = 0
+    for codes in store['users']['password_reset_code']:
+        if reset_code != codes:
+            counter += 1
+        break
+
+    if counter == len(store['users']['password_reset_code']) and reset_code != store['users']['password_reset_code'][counter - 1]:
+        raise InputError(description="Reset code is not a valid reset code!")
+
+    # if counter == 0:
+    #     raise InputError(description="Reset code is not a valid reset code!")
+
+    if len(new_password) < 6:
+        raise InputError(description="Password entered is less than 6 characters long!")
+    
+    store['users']['passwords'][counter] = hash(new_password)
+    store['users']['password_reset_code'][counter] = 0
+
+    data_store.set(store)
 
 
 # --- Check email ---
@@ -348,3 +434,16 @@ def check_valid_password(email, password):
             counter = counter + 1
 
     raise InputError('Invalid Password!')
+
+
+# if __name__ == "__main__":
+#     auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "password")
+#     auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
+
+#     store = data_store.get()
+#     code = store['users']['password_reset_code'][0]
+
+#     auth_passwordreset_reset_v1(code, "dompassword")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
+#     print_store_debug()

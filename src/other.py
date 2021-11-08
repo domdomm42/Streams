@@ -31,6 +31,7 @@ def clear_v1():
     store['users']['is_global_owner'] = []
     store['users']['removed_user'] = []
     store['users']['permissions'] = []
+    store['users']['password_reset_code'] = []  #new
 
     store['channels']['channel_id'] = []
     store['channels']['channel_name'] = []
@@ -80,6 +81,8 @@ def print_store_debug():
     print(store['users']['is_global_owner'])
     print("Printing Permissions")
     print(store['users']['permissions'])
+    print("Printing Password reset codes")
+    print(store['users']['password_reset_code'])
 
     print(" ")
 
