@@ -175,6 +175,14 @@ def test_only_one_global_owner(setup):
     response = response.json()
     assert response['code'] == INPUT_ERROR
 
+########################################################
+
+
+
+
+
+
+
 
 
 
