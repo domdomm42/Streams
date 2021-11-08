@@ -38,8 +38,8 @@ initial_object = {
         'user_handles': [],
         'is_global_owner':[],
         'removed_user': [],
-        'permissions': []
-
+        'permissions': [],
+        'password_reset_code': [] # NEW
     },
 
     'channels': {
