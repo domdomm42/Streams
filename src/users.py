@@ -2,7 +2,7 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
 import re
-
+import datetime
 
 
 def user_all_v1(token):
@@ -175,6 +175,23 @@ def user_profile_sethandle_v1(token, handle_str):
 
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
+    user_id = check_and_get_user_id(token)
+
+    # check_uploadphoto_url_not_200(img_url)
+
+    # check_uploadphoto_out_of_dimensions(img_url)
+
+
+    check_uploadphoto_end_blt_start(x_start, x_end, y_start, y_end)
+    
+
+    # check_uploadphoto_url_not_jpg(img_url)
+
+
+    #cropped = .crop((x_start, y_start, x_end, y_end))
+
+    data_store.set(store)
+
 
     return {}
 
@@ -183,8 +200,31 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
 def user_stats_v1(token):
 
+    '''
+    Dictionary of shape {
+         channels_joined: [{num_channels_joined, time_stamp}],
+         dms_joined: [{num_dms_joined, time_stamp}], 
+         messages_sent: [{num_messages_sent, time_stamp}], 
+         involvement_rate 
+    }
+    '''
+    
+    user_stats = {}
+    
+    
+    time_stamp = datetime.datetime.now()
 
-    return {user_stats}
+
+    # dict1 = {channels_joined:}
+
+
+    
+
+
+
+
+
+    return user_stats
 
 
 
@@ -192,9 +232,22 @@ def user_stats_v1(token):
 
 def users_stats_v1(token):
 
+    '''
+    Dictionary of shape {
+         channels_exist: [{num_channels_exist, time_stamp}], 
+         dms_exist: [{num_dms_exist, time_stamp}], 
+         messages_exist: [{num_messages_exist, time_stamp}], 
+         utilization_rate 
+    }
+    '''
+
+    workspace_stats = {}
+
+    time_stamp = datetime.datetime.now()
 
 
-    return {workspace_stats}
+
+    return workspace_stats
 
 
 
@@ -301,6 +354,25 @@ def check_invalid_u_id(u_id):
         raise InputError(description='This user does not exist!')
 
 
+
+
+# IT3
+
+# def check_uploadphoto_url_not_200(img_url):
+
+
+# def check_uploadphoto_out_of_dimensions(img_url):
+
+
+def check_uploadphoto_end_blt_start(x_start, x_end, y_start, y_end):
+
+    if x_end < x_start or y_end < y_start:
+        raise InputError(description='End is less than Start!')
+
+
+
+
+# def check_uploadphoto_url_not_jpg(img_url):
 
 
 

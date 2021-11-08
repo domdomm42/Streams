@@ -409,3 +409,18 @@ def test_successful_users_all():
             'u_id': 1}]
     }
 
+# IT3
+
+
+# def test_user_email_invalid(setup):
+    
+#     # Load data from setup
+#     response_log_joe, _ = setup
+
+
+#     # Input "abcde" is invalid 
+#     setemail_info = {"token": response_log_joe["token"], "emails": "abcde"}
+#     response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
+#     response_data = response.json()
+    
+#     assert response_data['code'] == INPUT_ERROR
