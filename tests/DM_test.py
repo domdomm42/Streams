@@ -1,9 +1,5 @@
 import pytest
 import requests
-import jwt
-from src.auth import auth_login_v1, auth_register_v1
-from src.error import InputError, AccessError
-from src.other import clear_v1
 from src.config import *
 from src.auth_auth_helpers import SECRET
 
@@ -348,36 +344,44 @@ def test_simple_dm_messages(setup):
 
     # records the time and id of each message sent
     response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
-    timestamp1 = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    timestamp1 = int(datetime.now(timezone.utc).timestamp())
     message_id1 = response_create.json()['message_id']
     
     response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
-    timestamp2 = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    timestamp2 = int(datetime.now(timezone.utc).timestamp())
     message_id2 = response_create.json()['message_id']
    
     # Calls the messages function a single time with correct variables
     dm_messages = {"token": joe, "dm_id": 0, 'start': 0}
     response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
-    
-    # Wrap time to int for accruate asserts
-    response_create_data['messages'][0]['time_created'] = int(response_create_data['messages'][0]['time_created'])
-    response_create_data['messages'][1]['time_created'] = int(response_create_data['messages'][1]['time_created'])
-    
+
     assert response_create_data['start'] == 0
     assert response_create_data['end'] == -1
     assert response_create_data['messages'] == [
         {
-            'message_id': message_id1,
-            'u_id': 0,
-            'message': 'big tings bruv',
-            'time_created': int(timestamp1)
-        },
-        {
             'message_id': message_id2,
             'u_id': 1,
             'message': 'small tings bruv',
-            'time_created': int(timestamp2)
+            'time_created': timestamp1,
+            'reacts': {
+                'react_id': 1,
+                'u_ids': [],
+                'is_this_user_reacted': False
+            },
+            'is_pinned': False
+        },
+        {
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
+            'time_created': timestamp2,
+            'reacts': {
+                'react_id': 1,
+                'u_ids': [],
+                'is_this_user_reacted': False
+            },
+            'is_pinned': False
         } 
     ]
 

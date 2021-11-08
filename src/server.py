@@ -8,10 +8,10 @@ from src.error import InputError
 from src import config
 from src.users import *
 from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1, auth_passwordreset_request_v1, auth_passwordreset_reset_v1
-from src.other import clear_v1
+from src.other import clear_v1, print_store_debug
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
 from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, channel_leave_v1, channel_addowner_v1, channel_removeowner_v1, channel_messages_v1
-from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_senddm_v1
+from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_senddm_v1, message_sendlater_v1, message_sendlaterdm_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1
 
@@ -305,6 +305,24 @@ def dm_messages():
     #save()
     return dumps(messages)
 
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def send_later():
+    request_data = request.get_json()
+    response = message_sendlater_v1(request_data['token'], request_data['channel_id'], request_data['message'], request_data['time_sent'])
+    #save()
+    return dumps(response)
+
+@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+def send_laterdm():
+    request_data = request.get_json()
+    response = message_sendlaterdm_v1(request_data['token'], request_data['dm_id'], request_data['message'], request_data['time_sent'])
+    #save()
+    return dumps(response)
+
+@APP.route("/debug/printstore", methods=['GET'])
+def print_store():
+    print_store_debug()
+    return dumps({})
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 

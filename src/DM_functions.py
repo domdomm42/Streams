@@ -248,47 +248,38 @@ def dm_messages_v1(token, dm_id, start):
     # this function just redirects to the messages data_store to get the details of the messages
     store = data_store.get()
 
-    # stringated variables must be cast as ints
-    dm_id = int(dm_id)
-    start = int(start)
-
     # Validity checks as above
     auth_user_id = check_and_get_user_id(token)
     check_valid_dm(dm_id, store)
     check_user_in_dm(auth_user_id, dm_id, store)
     
-    messages = []
     dm_index = index_from_dm_id(dm_id, store)
     # if start is greater than number of messages return InputError
-    if start > len(store['dms']['messages'][dm_index]):
+    if start > len(store['dms']['messages'][dm_index]) or start < 0:
         raise InputError('invalid start, fewer messages than expected.')
-    message_index = store['dms']['messages'][dm_index][start:]
+    
+    messages = []
 
-    # finds the location of the message_id using the index and stores its details in the list of dicts
-    num_message = 0
-    for index in message_index:
-        if num_message >= 50:
+    end = start + 50
+    
+    for idx in range(start, end):
+        try: 
+            idx = store['dms']['messages'][dm_index][-1 - idx]
+        except IndexError:
+            end = -1
             break
-        i = 0
-        while i < len(store['messages']):
-            if index == store['messages'][i]['message_id']:
-                new_dict = {
-                    'message_id': store['messages'][i]['message_id'],
-                    'u_id': store['messages'][i]['u_id'],
-                    'message': store['messages'][i]['message'],
-                    'time_created': store['messages'][i]['time_created']
-                }
-                messages.append(new_dict)
-                num_message += 1
-                break
-            i += 1
-            
-    if num_message < 50:
-        end = -1
-    else:
-        end = start + 50
+        
+        # Set is_this_user_reacted to True if the auth_user_id has reacted to the message
+        msg = get_message(idx)
+        if auth_user_id in msg['reacts']['u_ids']:
+            msg['reacts']['is_this_user_reacted'] = True
+        messages.append(msg)
 
-    return {'messages': messages, 'start': start, 'end': end}
+    return {
+        'messages': messages,
+        'start': start,
+        'end': end,
+    }
 
 # Helper functions
 
@@ -401,3 +392,22 @@ def index_from_u_id(u_id, store):
             break
         counter += 1
     return counter
+
+def get_message(message_id):
+    '''
+    This function takes message_id and returns the message associated with message_id
+
+    Arguments:
+        message_id(int) - id of message you want to access
+
+    Exceptions:
+        No given exceptions
+
+    Return Value:
+       msg - message associated with message_id
+    ''' 
+
+    store = data_store.get()
+    for msg in store['messages']:
+        if msg['message_id'] == message_id:
+            return msg

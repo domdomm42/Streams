@@ -1,5 +1,6 @@
 from src.data_store import data_store
 from src.auth_auth_helpers import reset_session_tracker
+from src.message import reset_message_id_tracker
 
 def clear_v1():
     '''
@@ -15,6 +16,7 @@ def clear_v1():
     '''
 
     reset_session_tracker()
+    reset_message_id_tracker()
 
     store = data_store.get()
     
@@ -105,7 +107,8 @@ def print_store_debug():
     print("----------------")
     print("PRINTING MESSAGES")
     print("----------------")
-    print(store['messages'])
+    for message in store['messages']:
+        print(message)
 
     print(" ")
 
@@ -123,4 +126,3 @@ def print_store_debug():
     print("Printing messages:")
     print(store['dms']['messages'])
     pass
-

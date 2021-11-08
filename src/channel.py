@@ -137,8 +137,12 @@ def channel_messages_v1(token, channel_id, start):
         except IndexError:
             end = -1
             break
-
-        messages.append(get_message(idx))
+        
+        # Set is_this_user_reacted to True if the auth_user_id has reacted to the message
+        msg = get_message(idx)
+        if auth_user_id in msg['reacts']['u_ids']:
+            msg['reacts']['is_this_user_reacted'] = True
+        messages.append(msg)
 
     return {
         'messages': messages,
@@ -527,7 +531,7 @@ def check_invalid_start(channel_id, start):
 
     store = data_store.get()
     no_msgs_in_channel = len(store['channels']['messages'][channel_id])
-    if start > no_msgs_in_channel:
+    if start > no_msgs_in_channel or start < 0:
         raise InputError(description='Start is greater than the total number of messages in the channel')
 
 
