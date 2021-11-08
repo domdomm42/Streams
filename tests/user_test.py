@@ -410,5 +410,26 @@ def test_successful_users_all():
     }
 
 
+#def test_upload_invalid_start_end(setup):
+#    response_log_joe, _ = setup
+#    photo_info = {"token": response_log_joe['token'], "img_url": 
+#    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdq7PHvMwR6eqzZsCnjd-b7On4Z0BeWGNmpQ&usqp=CAU", "x_start": 399, "y_start": 399, "x_end": 1, "y_end": 1 }
+#    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+#    response_data = response.json()
+#    assert response_data['code'] == 400
+
+#def test_user_stats(setup):
+#    response_log_joe, _ = setup
+#    response = requests.get(f'{BASE_URL}user/stats/v1', params=response_log_joe['token'])
+#    response_data = response.json()
+#    assert response_data == {}
+
+#def test_users_stats(setup):
+#    response_log_joe, _ = setup
+#    response = requests.get(f'{BASE_URL}users/stats/v1', params=response_log_joe['token'])
+#    response_data = response.json()
+#    assert response_data == {}
+#
+
 
 
