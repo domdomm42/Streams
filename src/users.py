@@ -51,7 +51,7 @@ def user_all_v1(token):
 
     store = data_store.get()
     user_id = check_and_get_user_id(token)
-    check_token(user_id)
+    
     users = []
     for user_id in store['users']['user_id']:
         if store['users']['removed_user'][user_id] == False:
@@ -87,7 +87,7 @@ def user_profile_v1(token, u_id):
     '''
 
     store = data_store.get()
-    user_id = check_and_get_user_id(token)
+    _ = check_and_get_user_id(token)
     
     check_invalid_u_id(u_id)
     user = []
