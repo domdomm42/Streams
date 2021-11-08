@@ -91,33 +91,42 @@ def test_send_valid_messages(setup):
     # Joe sends a message to his channel, saying "Hi everyone!"
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Hi everyone!"}
     requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
-    message_0_time = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    message_0_time = int(datetime.now(timezone.utc).timestamp())
 
     # Joe sends another message to his channel, saying "Please pick your favourite book, ready for Monday 2pm."
     message_send_input = {"token": joe_smith_token, "channel_id": joes_funland_channel_id, "message": "Please pick your favourite book, ready for Monday 2pm."}
     requests.post(f'{BASE_URL}/message/send/v1', json = message_send_input)
-    message_1_time = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    message_1_time = int(datetime.now(timezone.utc).timestamp())
 
     # Joe wants to view all the channel's messages
     channel_messages_input = {'token': joe_smith_token, 'channel_id': joes_funland_channel_id, 'start': 0}
     response = requests.get(f'{BASE_URL}/channel/messages/v2', params = channel_messages_input).json()
-
-    response['messages'][0]['time_created'] = int(response['messages'][0]['time_created'])
-    response['messages'][1]['time_created'] = int(response['messages'][1]['time_created'])
-
+    
     assert response == {
         'messages': [
             {
                 'message_id': 1, 
                 'u_id': 0, 
                 'message': 'Please pick your favourite book, ready for Monday 2pm.', 
-                'time_created': int(message_1_time)
+                'time_created': message_1_time,
+                'reacts': {
+                    'react_id': 1,
+                    'u_ids': [],
+                    'is_this_user_reacted': False
+                },
+                'is_pinned': False
             }, 
             {
                 'message_id': 0, 
                 'u_id': 0, 
                 'message': 'Hi everyone!', 
-                'time_created': int(message_0_time)
+                'time_created': message_0_time,
+                'reacts': {
+                    'react_id': 1,
+                    'u_ids': [],
+                    'is_this_user_reacted': False
+                },
+                'is_pinned': False                
             }
         ], 
             'start': 0, 

@@ -1,5 +1,6 @@
 from src.data_store import data_store
 from src.auth_auth_helpers import reset_session_tracker
+from src.message import reset_message_id_tracker
 
 def clear_v1():
     '''
@@ -15,6 +16,7 @@ def clear_v1():
     '''
 
     reset_session_tracker()
+    reset_message_id_tracker()
 
     store = data_store.get()
     
@@ -48,3 +50,76 @@ def clear_v1():
     data_store.set(store)
 
     return 
+
+def print_store_debug():
+    store = data_store.get()
+    
+    print("----------------")
+    print("PRINTING LOGGED IN USERS")
+    print("----------------")
+    print(store['logged_in_users'])
+
+    print(" ")
+
+    print("----------------")
+    print("PRINTING USERS")
+    print("----------------")
+    print("Printing user_id:")
+    print(store['users']['user_id'])
+    print("Printing emails:")
+    print(store['users']['emails'])
+    print("Printing passwords (hashed):")
+    print(store['users']['passwords'])
+    print("Printing first_names:")
+    print(store['users']['first_names'])
+    print("Printing last_names:")
+    print(store['users']['last_names'])
+    print("Printing user_handles:")
+    print(store['users']['user_handles'])
+    print("Printing is_global_owner")
+    print(store['users']['is_global_owner'])
+    print("Printing Permissions")
+    print(store['users']['permissions'])
+
+    print(" ")
+
+    print("----------------")
+    print("PRINTING CHANNELS")
+    print("----------------")
+    print("Printing channel_id:")
+    print(store['channels']['channel_id'])
+    print("Printing channel_name:")
+    print(store['channels']['channel_name'])
+    print("Printing owner_user_id:")
+    print(store['channels']['owner_user_id'])
+    print("Printing is_public:")
+    print(store['channels']['is_public'])
+    print("Printing all_members:")
+    print(store['channels']['all_members'])
+    print("Printing messages:")
+    print(store['channels']['messages'])
+
+    print(" ")
+
+    print("----------------")
+    print("PRINTING MESSAGES")
+    print("----------------")
+    for message in store['messages']:
+        print(message)
+
+    print(" ")
+
+    print("----------------")
+    print("PRINTING DMS")
+    print("----------------")
+    print("Printing dm_id:")
+    print(store['dms']['dm_id'])
+    print("Printing owner_user_id:")
+    print(store['dms']['owner_user_id'])
+    print("Printing dm_name:")
+    print(store['dms']['dm_name'])
+    print("Printing all_members:")
+    print(store['dms']['all_members'])
+    print("Printing messages:")
+    print(store['dms']['messages'])
+    pass
