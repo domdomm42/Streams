@@ -7,7 +7,7 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 from src.users import *
-from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1, auth_passwordreset_request_v1
+from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1, auth_passwordreset_request_v1, auth_passwordreset_reset_v1
 from src.other import clear_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
 from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, channel_leave_v1, channel_addowner_v1, channel_removeowner_v1, channel_messages_v1
@@ -88,6 +88,11 @@ def password_reset_request():
     auth_passwordreset_request_v1(request_data['email'])
     return dumps({})
 
+@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+def password_reset_reset():
+    request_data = request.get_json()
+    auth_passwordreset_reset_v1(request_data['reset_code'], request_data['new_password'])
+    return dumps({})
 
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create():
