@@ -15,6 +15,7 @@ from src.message import message_send_v1, message_edit_v1, message_remove_v1, mes
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1
 
+
 '''
 Persistence implementation
 
@@ -318,6 +319,19 @@ def send_laterdm():
     response = message_sendlaterdm_v1(request_data['token'], request_data['dm_id'], request_data['message'], request_data['time_sent'])
     #save()
     return dumps(response)
+
+@APP.route("/user/stats/v1", methods = ['GET'])
+def user_stats():
+    token = request.args.get('token')
+    user_stats = user_stats_v1(token)
+    return dumps(user_stats)
+
+@APP.route("/users/stats/v1", methods = ['GET'])
+def users_stats():
+    token = request.args.get('token')
+    users_stats = users_stats_v1(token)
+    return dumps(users_stats)
+
 
 @APP.route("/debug/printstore", methods=['GET'])
 def print_store():
