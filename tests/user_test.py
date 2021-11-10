@@ -420,10 +420,11 @@ def test_successful_users_all():
 
 #def test_user_stats(setup):
 #    response_log_joe, _ = setup
-#    response = requests.get(f'{BASE_URL}user/stats/v1', params=response_log_joe['token'])
+#    user_all_info = {"token": response_log_joe["token"]}
+#    response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
 #    response_data = response.json()
 #    assert response_data == {}
-
+#
 #def test_users_stats(setup):
 #    response_log_joe, _ = setup
 #    response = requests.get(f'{BASE_URL}users/stats/v1', params=response_log_joe['token'])
