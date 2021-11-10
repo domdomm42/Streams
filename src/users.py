@@ -2,6 +2,7 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
 from src.message import check_if_message_id_exists_and_get_sender_id
+from datetime import datetime, timezone
 import re
 
 def user_profile_sethandle_v1(token, handle_str):
@@ -203,9 +204,9 @@ def user_profile_setemail_v1(token, email):
 #        if check_if_message_id_exists_and_get_sender_id(message['message_id']) == u_id:
 #            num_messages_sent = num_messages_sent + 1 
 #    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
-#    channels_joined = [{'num_channels_joined': 0, 'time_stamp': 0}]
-#    dms_joined = [{'num_dms_joined': 0, 'time_stamp': 0}]
-#    messages_sent = [{'num_messages_sent': 0, 'time_stamp': 0}]
+#    channels_joined = store['users']['channels_joined'][u_id]
+#    dms_joined = store['users']['dms_joined'][u_id]
+#    messages_sent = store['users']['message_sent'][u_id]
 #    channel_new_stat = {'num_channels_exist': num_channel_joined, 'time_stamp': time_stamp}
 #    dms_new_stat = {'num_dms_joined': num_dm_joined, 'time_stamp': time_stamp}
 #    messages_new_stat = {'num_messages_sent': num_messages_sent, 'time_stamp': time_stamp}
@@ -219,9 +220,9 @@ def user_profile_setemail_v1(token, email):
 #        involvement_rate = 1
 #    
 #    user_stats = {
-#        'channels_joined': channels_joined
-#        'dms_joined': dms_joined
-#        'messages_sent': messages_sent
+#        'channels_joined': channels_joined,
+#        'dms_joined': dms_joined,
+#        'messages_sent': messages_sent,
 #        'involvement_rate': involvement_rate
 #    }
 #
