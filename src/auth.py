@@ -204,15 +204,11 @@ def auth_passwordreset_request_v1(email):
     except:
         print('Something went wrong...')
 
-    generate_jwt(counter)
-
     logged_in_users_list = store['logged_in_users'][:]
 
     for loggedin in logged_in_users_list:
         if loggedin['user_id'] == counter:
             store['logged_in_users'].remove({'user_id': counter, 'session_id': loggedin['session_id']})
-
-
 
     data_store.set(store)
 
