@@ -1,6 +1,7 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
+from src.notifications import alert_user_channel_invited
 
 def channel_invite_v1(token, channel_id, u_id):
     """
@@ -27,7 +28,8 @@ def channel_invite_v1(token, channel_id, u_id):
     check_member_u_id(channel_id, u_id)
 
     store['channels']['all_members'][channel_id].append(u_id)
-
+    alert_user_channel_invited(auth_user_id, u_id, channel_id)
+    
     data_store.set(store)
     return {}
 

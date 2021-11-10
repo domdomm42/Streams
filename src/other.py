@@ -31,7 +31,8 @@ def clear_v1():
     store['users']['is_global_owner'] = []
     store['users']['removed_user'] = []
     store['users']['permissions'] = []
-    store['users']['password_reset_code'] = []  #new
+    store['users']['password_reset_code'] = []  #new - Dom
+    store['users']['notifications'] = [] # new -Ridho
 
     store['channels']['channel_id'] = []
     store['channels']['channel_name'] = []

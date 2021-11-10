@@ -1,6 +1,7 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
+from src.notifications import tag_users_in_channel_message, tag_users_in_dm_message
 from datetime import datetime, timezone
 import threading
 
@@ -70,6 +71,8 @@ def message_send_v1(token, channel_id, message):
     idx = store['channels']['channel_id'].index(channel_id)
     store['channels']['messages'][idx].append(message_id)
     
+    tag_users_in_channel_message(user_id, message, channel_id)
+
     data_store.set(store)
 
     return {
@@ -117,6 +120,8 @@ def message_senddm_v1(token, dm_id, message):
     idx = store['dms']['dm_id'].index(dm_id)
     store['dms']['messages'][idx].append(message_id)
     
+    tag_users_in_dm_message(user_id, message, dm_id)
+
     data_store.set(store)
 
     return {
@@ -165,11 +170,17 @@ def message_edit_v1(token, message_id, message):
             check_if_user_is_owner_of_channel_or_sender_or_global_owner(user_id, channel_id, sender_id)
             store['messages'][message_idx]['message'] = message
 
+            # Assumes the person who is editing the message is the owner of the message
+            tag_users_in_channel_message(user_id, message, channel_id)
+
         # Message belongs to a DM
         else:
             dm_id = dm_or_channel_id_of_message[0]
             check_if_user_is_owner_of_dm_or_sender(user_id, dm_id, sender_id)
             store['messages'][message_idx]['message'] = message
+
+            # Assumes the person who is editing the message is the owner of the message
+            tag_users_in_dm_message(user_id, message, dm_id)
 
         data_store.set(store)
 
@@ -213,7 +224,7 @@ def message_remove_v1(token, message_id):
         channel_idx = store['channels']['channel_id'].index(channel_id)
         store['messages'].pop(message_idx)
         store['channels']['messages'][channel_idx].remove(message_id)
-
+        
     # Message belongs to a DM
     else:
         dm_id = dm_or_channel_id_of_message[0]
@@ -297,7 +308,9 @@ def send_msg_later_thread(user_id, channel_id, message, time_sent, message_id):
 
     idx = store['channels']['channel_id'].index(channel_id)
     store['channels']['messages'][idx].append(message_id)
-    
+
+    tag_users_in_channel_message(user_id, message, channel_id)
+
     data_store.set(store)
 
 def message_sendlaterdm_v1(token, dm_id, message, time_sent):
@@ -372,6 +385,8 @@ def send_msgdm_later_thread(user_id, dm_id, message, time_sent, message_id):
     idx = store['dms']['dm_id'].index(dm_id)
     store['dms']['messages'][idx].append(message_id)
     
+    tag_users_in_dm_message(user_id, message, dm_id)
+
     data_store.set(store)
 
 def check_channel_id(channel_id):
@@ -648,4 +663,9 @@ if __name__ == '__main__':
     # # print('')
     # # print(dm_messages_v1(jim_joe_token, 0, 0))
     # # print('')
+
+    user_handles = ['jim', 'joe']
+    message = '123456782'
+    print(message[0:20])
+
     pass

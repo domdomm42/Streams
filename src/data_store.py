@@ -39,7 +39,8 @@ initial_object = {
         'is_global_owner':[],
         'removed_user': [],
         'permissions': [],
-        'password_reset_code': [] # NEW
+        'password_reset_code': [], # NEW
+        'notifications': [] #NEW
     },
 
     'channels': {

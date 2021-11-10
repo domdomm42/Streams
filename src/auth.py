@@ -109,6 +109,7 @@ def auth_register_v1(email, password, name_first, name_last):
     store['users']['first_names'].append(name_first)
     store['users']['last_names'].append(name_last)
     store['users']['password_reset_code'].append(0)  #dom added new line
+    store['users']['notifications'].append([])
 
     user_id = store['users']['user_id'][-1]
 
