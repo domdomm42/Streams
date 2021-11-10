@@ -43,6 +43,8 @@ def clear_v1():
     store['channels']['is_public'] = []
     store['channels']['all_members'] = []
     store['channels']['messages'] = []
+    store['channels']['standup_time_finish'] = []
+    store['channels']['is_standup_active'] = []
 
     store['messages'] = []
 

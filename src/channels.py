@@ -94,6 +94,9 @@ def channels_create_v1(token, name, is_public):
     store['channels']['is_public'].append(is_public)
     store['channels']['all_members'].append(all_members_in_channel)
     store['channels']['messages'].append([])
+    store['channels']['is_standup_active'].append(False)
+    store['channels']['standup_time_finish'].append(0)
+    store['channels']['standup_messages'].append([])
 
     i = 0
     for _ in store["channels"]["owner_user_id"]:
