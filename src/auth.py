@@ -204,7 +204,7 @@ def auth_passwordreset_request_v1(email):
     except:
         print('Something went wrong...')
 
-    token = generate_jwt(counter)
+    generate_jwt(counter)
 
     logged_in_users_list = store['logged_in_users'][:]
 
