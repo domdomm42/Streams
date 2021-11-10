@@ -52,7 +52,10 @@ initial_object = {
         'owner_user_id': [],
         'is_public': [],
         'all_members': [],
-        'messages': []
+        'messages': [],
+        'is_standup_active': [], #NEW
+        'standup_time_finish': [],
+        'standup_messages': []
     },
 
     'messages': [],
