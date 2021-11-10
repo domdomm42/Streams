@@ -4,6 +4,10 @@ from src.auth_auth_helpers import check_and_get_user_id
 from src.message import check_if_message_id_exists_and_get_sender_id
 from datetime import datetime, timezone
 import re
+import urllib.request
+import sys
+from PIL import Image
+
 
 def user_profile_sethandle_v1(token, handle_str):
     '''
@@ -172,90 +176,110 @@ def user_profile_setemail_v1(token, email):
 #    
 #    #check the url is start with https://
 #    http_check(img_url)
-#    #check the start and end is valid
-#    check_valid_startend(x_start, y_start, x_end, y_end)
 #    #check photo type
 #    check_type(img_url)
-#    imageDown(img_url)
-#    crop_image(img_url, x_start, y_start, x_end, y_end)
+#    imageDown(img_url, u_id)
+#    #check the start and end is valid
+#    check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id)
+#    
+#    
+#    
+#    crop_image(img_url, x_start, y_start, x_end, y_end, u_id)
 #    serve_image()
 #    return {}
 #
-#def user_stats_v1(token):
-#    #check valid token
-#    u_id = check_and_get_user_id(token)
-#
-#
-#
-#    store = data_store.get()
-#    num_channel_joined = 0
-#    num_dm_joined = 0
-#    num_messages_sent = 0
-#    num_channels = len(store['channels']['channel_id'])
-#    num_dms = len(store['dms']['dm_id'])
-#    num_messages = len(store['messages'])
-#    for channel_id in store['channels']['channel_id']:
-#        if u_id in store['channels']['all_members'][channel_id]:
-#            num_channel_joined = num_channel_joined + 1
-#    for dm_id in store['dms']['dm_id']:
-#        if u_id in store['dms']['all_members'][dm_id]:
-#            num_dm_joined = num_dm_joined + 1
-#    for message in store['messages']:
-#        if check_if_message_id_exists_and_get_sender_id(message['message_id']) == u_id:
-#            num_messages_sent = num_messages_sent + 1 
-#    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
-#    channels_joined = store['users']['channels_joined'][u_id]
-#    dms_joined = store['users']['dms_joined'][u_id]
-#    messages_sent = store['users']['message_sent'][u_id]
-#    channel_new_stat = {'num_channels_exist': num_channel_joined, 'time_stamp': time_stamp}
-#    dms_new_stat = {'num_dms_joined': num_dm_joined, 'time_stamp': time_stamp}
-#    messages_new_stat = {'num_messages_sent': num_messages_sent, 'time_stamp': time_stamp}
-#    channels_joined.append(channel_new_stat)
-#    dms_joined.append(dms_new_stat)
-#    messages_sent.append(messages_new_stat)
-#    if (num_channels + num_dms + num_messages) > 0:
-#        involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent)/(num_channels + num_dms + num_messages)
-#
-#    if involvement_rate > 1:
-#        involvement_rate = 1
-#    
-#    user_stats = {
-#        'channels_joined': channels_joined,
-#        'dms_joined': dms_joined,
-#        'messages_sent': messages_sent,
-#        'involvement_rate': involvement_rate
-#    }
-#
-#
-#
-#
-#
-#    return {'user_stats': user_stats}
-#
-#def users_stats_v1(token):
-#    u_id = check_and_get_user_id(token)
-#    num_channels = len(store['channels']['channel_id'])
-#    num_dms = len(store['dms']['dm_id'])
-#    num_messages = len(store['messages'])
-#    
-#    user_list = []
-#    for user_id in store['users']['user_id']:
-#        for channel_id in store['channels']['channel_id']:
-#            if user_id in store['channels']['all_members'][channel_id]:
-#                user_list.append(user_id)
-#        for dm_id in store['dms']['dm_id']:
-#            if user_id in store['dms']['dm_id'][dm_id]:
-#                user_list.append(user_id)
-#    
-#    user_list.set()
-#    active_user = len(user_list)
-#    num_user = len(store['users']['user_id'])
-#    utilization ratio = active_user/num_user
-#
-#
-#    return {'workspace_stats': workspace_stats}
-#
-#
+def user_stats_v1(token):
+    #check valid token
+    u_id = check_and_get_user_id(token)
+
+
+
+    store = data_store.get()
+    num_channel_joined = 0
+    num_dm_joined = 0
+    num_messages_sent = 0
+    num_channels = len(store['channels']['channel_id'])
+    num_dms = len(store['dms']['dm_id'])
+    num_messages = len(store['messages'])
+    for channel_id in store['channels']['channel_id']:
+        if u_id in store['channels']['all_members'][channel_id]:
+            num_channel_joined = num_channel_joined + 1
+    for dm_id in store['dms']['dm_id']:
+        if u_id in store['dms']['all_members'][dm_id]:
+            num_dm_joined = num_dm_joined + 1
+    for message in store['messages']:
+        if check_if_message_id_exists_and_get_sender_id(message['message_id']) == u_id:
+            num_messages_sent = num_messages_sent + 1 
+    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    channels_joined = store['users']['channels_joined'][u_id]
+    dms_joined = store['users']['dms_joined'][u_id]
+    messages_sent = store['users']['message_sent'][u_id]
+    channel_new_stat = {'num_channels_joined': num_channel_joined, 'time_stamp': time_stamp}
+    dms_new_stat = {'num_dms_joined': num_dm_joined, 'time_stamp': time_stamp}
+    messages_new_stat = {'num_messages_sent': num_messages_sent, 'time_stamp': time_stamp}
+    channels_joined.append(channel_new_stat)
+    dms_joined.append(dms_new_stat)
+    messages_sent.append(messages_new_stat)
+    if (num_channels + num_dms + num_messages) > 0:
+        involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent)/(num_channels + num_dms + num_messages)
+
+    if involvement_rate > 1:
+        involvement_rate = 1
+    
+    user_stats = {
+        'channels_joined': channels_joined,
+        'dms_joined': dms_joined,
+        'messages_sent': messages_sent,
+        'involvement_rate': involvement_rate
+    }
+
+
+
+
+
+    return {'user_stats': user_stats}
+
+def users_stats_v1(token):
+    u_id = check_and_get_user_id(token)
+    store = data_store.get()
+    num_channels_exist = len(store['channels']['channel_id'])
+    num_dms_exist = len(store['dms']['dm_id'])
+    num_messages_exist = len(store['messages'])
+    
+    user_list = []
+    for user_id in store['users']['user_id']:
+        for channel_id in store['channels']['channel_id']:
+            if user_id in store['channels']['all_members'][channel_id]:
+                user_list.append(user_id)
+        for dm_id in store['dms']['dm_id']:
+            if user_id in store['dms']['dm_id'][dm_id]:
+                user_list.append(user_id)
+    
+    user_list.set()
+    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    active_user = len(user_list)
+    num_user = len(store['users']['user_id'])
+    utilization_rate = active_user/num_user
+    channels_exist = store['channels_exist']
+    dms_exist = store['dms_exist']
+    messages_exist = store['messages_exist']
+    channel_new_stat = {'num_channels_exist': num_channels_exist, 'time_stamp': time_stamp}
+    dms_new_stat = {'num_dms_exist': num_dms_exist, 'time_stamp': time_stamp}
+    messages_new_stat = {'num_messages_sent': num_messages_exist, 'time_stamp': time_stamp}
+    channels_exist.append(channel_new_stat)
+    dms_exist.append(dms_new_stat)
+    messages_exist.append(messages_new_stat)
+    workspace_stats = {
+        'channels_exist': channels_exist,
+        'dms_exist': dms_exist,
+        'messages_exist': messages_exist,
+        'utilization_rate': utilization_rate
+    }
+
+
+    return {'workspace_stats': workspace_stats}
+
+
 #
 #
 #
@@ -275,14 +299,35 @@ def user_profile_setemail_v1(token, email):
 #
 #
 #def http_check(img_url):
+#    r = re.match("http://", img_url)
+#    if r == None:
+#        raise InputError(description='Invalid Url')
 #
-#def check_valid_startend(x_start, y_start, x_end, y_end):
+#def check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id):
+#    im = Image.open(f'image/{u_id}.jpg')
+#    width, height = im.size
+#    if x_start > x_end or y_start > y_end or x_start > width or x_end > width or y_start > height or y_end > height:
+#        raise InputError(description='Invalid Size')
 #
+#
+#
+#
+#
+##
 #def check_type(img_url):
-#
+#    resp = request.urlopen(img_url)
+#    img = Image.open(resp)
+#    if img.format != 'JPEG':
+#        raise InputError(description='Invalid Type')
+##
 #def imageDown(img_url):
-#
+#    urllib.request.urlretrieve(img_url, image/u_id.jpg)
+##
 #def crop_image(img_url, x_start, y_start, x_end, y_end):
+#    im = Image.open(f'image/{u_id}.jpg')
+#    cropped = im.crop((x_start, y_start, x_end, y_end))
+#    cropped.save(f'image/{u_id}.jpg')
+#
 #
 #def serve_image():
 

@@ -320,11 +320,18 @@ def send_laterdm():
     #save()
     return dumps(response)
 
-#@APP.route("/user/stats/v1", methods = ['GET'])
-#def user_stats():
-#    token = request.args.get('token')
-#    user_stats = user_stats_v1(token)
-#    return dumps(user_stats)
+@APP.route("/user/stats/v1", methods = ['GET'])
+def user_stats():
+    token = request.args.get('token')
+    user_stats = user_stats_v1(token)
+    return dumps(user_stats)
+
+@APP.route("/users/stats/v1", methods = ['GET'])
+def users_stats():
+    token = request.args.get('token')
+    users_stats = users_stats_v1(token)
+    return dumps(user_stats)
+
 
 @APP.route("/debug/printstore", methods=['GET'])
 def print_store():
