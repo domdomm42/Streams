@@ -240,7 +240,7 @@ def user_stats_v1(token):
     return {'user_stats': user_stats}
 
 def users_stats_v1(token):
-    u_id = check_and_get_user_id(token)
+    check_and_get_user_id(token)
     store = data_store.get()
     num_channels_exist = len(store['channels']['channel_id'])
     num_dms_exist = len(store['dms']['dm_id'])
@@ -255,7 +255,7 @@ def users_stats_v1(token):
             if user_id in store['dms']['dm_id'][dm_id]:
                 user_list.append(user_id)
     
-    user_list.set()
+    set(user_list)
     time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
     active_user = len(user_list)
     num_user = len(store['users']['user_id'])

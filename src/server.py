@@ -330,7 +330,7 @@ def user_stats():
 def users_stats():
     token = request.args.get('token')
     users_stats = users_stats_v1(token)
-    return dumps(user_stats)
+    return dumps(users_stats)
 
 
 @APP.route("/debug/printstore", methods=['GET'])
