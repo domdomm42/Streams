@@ -40,9 +40,10 @@ initial_object = {
         'removed_user': [],
         'permissions': [],
         'password_reset_code': [], # NEW
-        'channels_joined':[],    #NEW
-        'dms_joined':[],         #NEW
-        'messages_sent':[],      #NEW
+        'notifications': [], #NEW
+        'channels_joined': [],    #NEW
+        'dms_joined': [],         #NEW
+        'messages_sent': [],      #NEW
     },
 
     'channels': {

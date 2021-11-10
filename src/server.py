@@ -14,8 +14,7 @@ from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, 
 from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_senddm_v1, message_sendlater_v1, message_sendlaterdm_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1
-
-
+from src.notifications import notifications_get_v1
 '''
 Persistence implementation
 
@@ -320,6 +319,13 @@ def send_laterdm():
     #save()
     return dumps(response)
 
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications():
+    token = request.args.get('token')
+    notifications = notifications_get_v1(token)
+    #save()
+    return dumps(notifications)
+    
 @APP.route("/user/stats/v1", methods = ['GET'])
 def user_stats():
     token = request.args.get('token')

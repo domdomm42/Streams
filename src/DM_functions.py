@@ -2,6 +2,8 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth import auth_register_v1
 from src.auth_auth_helpers import check_and_get_user_id
+from src.notifications import alert_user_dm_invited
+from src.other import print_store_debug
 import requests
 
 
@@ -23,16 +25,17 @@ def dm_create_v1(token, u_ids):
         dm_id <integer>: the identifying number for each newly created DM
 
     '''
+    user_ids = u_ids[:]
+    
     store = data_store.get()
 
     # Validity checks for each token and u_ids
     auth_user_id = check_and_get_user_id(token)
     check_valid_user(u_ids, store)
-    
+
     # Add function caller/dm owner to user list
     u_ids.append(auth_user_id)
     all_users = u_ids
-
     # Create name for dm as stringated list of u_ids
     all_names = []
     for name in all_users:
@@ -56,6 +59,12 @@ def dm_create_v1(token, u_ids):
     store['dms']['owner_user_id'].append(auth_user_id)
     store['dms']['all_members'].append(all_users)
     store['dms']['messages'].append([])
+
+    # Notify relevant users that they have been added to a DM
+    # u_ids.pop()
+
+    for u_id in user_ids:
+        alert_user_dm_invited(auth_user_id, u_id, dm_id)
 
     data_store.set(store)
 
@@ -411,3 +420,13 @@ def get_message(message_id):
     for msg in store['messages']:
         if msg['message_id'] == message_id:
             return msg
+
+if __name__ == '__main__':
+    # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
+    # marry_mae_token = auth_register_v1('jimjoe12@gmail.com', 'password', 'Marry', 'Mae')['token']
+    # darron_mike = auth_register_v1('jimjoe123@gmail.com', 'password', 'Darron', 'Mike')['token']
+
+    # dm_create_v1(jim_joe_token, [1, 2])
+ 
+    # print_store_debug()
+    pass
