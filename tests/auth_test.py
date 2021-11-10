@@ -3,6 +3,7 @@ import requests
 import jwt
 from src.auth_auth_helpers import SECRET
 from src.config import *
+from src.data_store import *
 
 BASE_URL = url
 ACCESS_ERROR = 403
@@ -396,10 +397,38 @@ def test_double_logout():
 # def test_password_reset():
 #     requests.delete(f'{BASE_URL}/clear/v1')
 #     user_info_reg_1 = {"email": "TeamBeagle1531@gmail.com", "password": "password", "name_first": "Marry", "name_last": "Joe"}
-    
-#     response_data = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
+#     response_data_reg = requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
 
-#     user_info_password_reset = {"email": "TeamBeagle1531@gmail.com"}
-#     assert 1 == 1
+#     user_info_login_1 = {"email": "TeamBeagle1531@gmail.com", "password": "password"}
+#     response_data_login = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login_1)
+
+#     user_info_password_req = {"email": "TeamBeagle1531@gmail.com"}
+#     response_data_req = requests.post(f'{BASE_URL}/auth/passwordreset/request/v1', json = user_info_login_1)
+
+
+
+#     requests.get(f'{BASE_URL}/debug/printstore')
+    # store = data_store.get()
+    # code = store['users']['password_reset_code'][0]
+
+    # user_info_password_reset = {"reset_code": code, "new_password": "newpassword"}
+    # response_data_req = requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_login_1)
+
+    # user_info_login_2 = {"email": "TeamBeagle1531@gmail.com", "password": "1newpassword"}
+    # response_data_login = requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login_2)
+
+    # assert response_data_login['code'] == INPUT_ERROR
+
+
+#     auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "password")
+#     auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
+
+#     store = data_store.get()
+#     code = store['users']['password_reset_code'][0]
+
+#     auth_passwordreset_reset_v1(code, "dompassword")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
+#     print_store_debug()
 
 
