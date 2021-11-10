@@ -205,7 +205,15 @@ def auth_passwordreset_request_v1(email):
         print('Something went wrong...')
 
     token = generate_jwt(counter)
-    auth_logout_v1(token)
+
+    logged_in_users_list = store['logged_in_users'][:]
+
+    for loggedin in logged_in_users_list:
+        if loggedin['user_id'] == counter:
+            store['logged_in_users'].remove({'user_id': counter, 'session_id': loggedin['session_id']})
+
+
+
     data_store.set(store)
 
 def auth_passwordreset_reset_v1(reset_code, new_password):
@@ -437,14 +445,14 @@ def check_valid_password(email, password):
     raise InputError('Invalid Password!')
 
 
-# if __name__ == "__main__":
-#     auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
-#     auth_login_v1("TeamBeagle1531@gmail.com", "password")
-#     auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
+if __name__ == "__main__":
+    auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
+    auth_login_v1("TeamBeagle1531@gmail.com", "password")
+    auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
 
-#     store = data_store.get()
-#     code = store['users']['password_reset_code'][0]
+    store = data_store.get()
+    code = store['users']['password_reset_code'][0]
 
-#     auth_passwordreset_reset_v1(code, "dompassword")
-#     auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
-#     print_store_debug()
+    auth_passwordreset_reset_v1(code, "dompassword")
+    auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
+    print_store_debug()
