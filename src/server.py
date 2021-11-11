@@ -13,7 +13,7 @@ from src.channels import channels_create_v1, channels_list_v1, channels_listall_
 from src.channel import channel_invite_v1, channel_join_v1, channel_details_v1, channel_leave_v1, channel_addowner_v1, channel_removeowner_v1, channel_messages_v1
 from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_senddm_v1, message_sendlater_v1, message_sendlaterdm_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
-from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1
+from src.DM_functions import dm_create_v1, dm_list_v1, dm_remove_v1, dm_leave_v1, dm_messages_v1, dm_details_v1, message_react_v1, message_unreact_v1, message_pin_v1, message_unpin_v1, search_v1
 
 '''
 Persistence implementation
@@ -305,6 +305,33 @@ def dm_messages():
     #save()
     return dumps(messages)
 
+@APP.route('/message/react/v1', method=['POST'])
+def message_react():
+    request_data = request.get_json()
+    response = message_react_v1(request_data['token'], request_data['message_id'], request_data['react_id'])
+    return dumps(response)
+
+@APP.route('/message/unreact/v1', method=['POST'])
+def message_react():
+    request_data = request.get_json()
+    response = message_unreact_v1(request_data['token'], request_data['message_id'], request_data['react_id'])
+    return dumps(response)
+
+@APP.route('/message/pin/v1', method=['POST'])
+def message_react():
+    request_data = request.get_json()
+    response = message_pin_v1(request_data['token'], request_data['message_id'])
+    return dumps(response)
+
+@APP.route('/message/unpin/v1', method=['POST'])
+def message_react():
+    request_data = request.get_json()
+    response = message_unpin_v1(request_data['token'], request_data['message_id'])
+    return dumps(response)    
+@APP.route('/search/v1', method=['GET'])
+def search()
+    return dumps(search_v1(request.args.get('token'), request.args.get('query_str')))
+    
 @APP.route("/message/sendlater/v1", methods=['POST'])
 def send_later():
     request_data = request.get_json()

@@ -4,6 +4,73 @@ from src.auth import auth_register_v1
 from src.auth_auth_helpers import check_and_get_user_id
 import requests
 
+def search_v1(token, query_str):
+    pass
+
+def message_react_v1(token, message_id, react_id):
+    store = data_store.get()
+
+    auth_user_id = check_and_get_user_id(token)
+    check_message_id(auth_user_id, message_id, store)
+    check_react_id(react_id)
+
+    message_index = 0
+    for num in store['messages']:
+        if message_id == num['messsage_id']:
+            break
+        message_index += 1
+
+    if store['messages']['reacts']['is_this_user_reacted'] == True:
+        raise InputError("Message already contains the appropriate react")
+    else:
+        store['messages']['reacts']['is_this_user_reacted'] == True
+
+    return {}        
+
+
+
+
+
+
+def message_unreact_v1(token, message_id, react_id):
+    store = data_store.get()
+
+    auth_user_id = check_and_get_user_id(token)
+    check_message_id(auth_user_id, message_id, store)
+    check_react_id(react_id)
+
+    message_index = 0
+    for num in store['messages']:
+        if message_id == num['messsage_id']:
+            break
+        message_index += 1
+
+    if store['messages']['reacts']['is_this_user_reacted'] == False:
+        raise InputError("Message does not contain a react")
+    else:
+        store['messages']['reacts']['is_this_user_reacted'] == False
+
+    return {}   
+
+def message_pin_v1(token, message_id):
+    store = data_store.get()
+
+    auth_user_id = check_and_get_user_id(token)
+    check_message_id(auth_user_id, message_id, store)
+    user_index = index_from_u_id(auth_user_id, store)
+
+    if store['users']['is_global_owner'][index] == False:
+        check_owner_permission(auth_user_id, message_id, store)
+
+    
+    
+
+def message_unpin_v1(token, message_id):
+    store = data_store.get()
+
+    auth_user_id = check_and_get_user_id(token)
+    check_message_id(auth_user_id, message_id, store)
+    pass
 
 def dm_create_v1(token, u_ids):
     '''
@@ -411,3 +478,67 @@ def get_message(message_id):
     for msg in store['messages']:
         if msg['message_id'] == message_id:
             return msg
+
+def check_react_id(react_id):
+    '''
+    This function takes react_id to see if it follows the parameters, returns INPUTERROR if not
+
+    Arguments:
+        react_id(int) - id of react you want to access
+
+    Exceptions:
+        InputError - if the react_id is not equal to 1 (only applicable one)
+    '''
+    if react_id != 1:
+        raise InputError('Invalid react_id given')
+
+def check_message_id(auth_user, message_id, store):
+    '''
+    This function takes message to see if it exists, returns INPUTERROR if not
+
+    Arguments:
+        auth_user(int) - id of the person accessing the message
+        message_id(int) - id of message you want to access
+        store (dict) - data_store in use
+    Exceptions:
+        InputError - if the user is not within the DM or channel for the message
+    '''
+    if message_id in store['channels']['messages']:
+        index = store['channels']['messages'].index(message_id)
+
+        if auth_user not in store['channels']['all_members'][index]:
+            raise InputError('User is not a member of channel that contains message')
+
+    elif message_id in store['dms']['messages']:
+        index = store['channels']['messages'].index(message_id)
+
+        if auth_user not in store['dms']['all_members'][index]:
+            raise InputError('User is not a member of DM that contains message')
+    else:
+        raise InputError('Message does not exist')
+
+def check_owner_permission(auth_user, message_id, store):
+    '''
+    This function checks if the user is an owner in the channel where the message exists, returns ACCESSERROR if not
+
+    Arguments:
+        auth_user(int) - id of the person accessing the message
+        message_id(int) - id of message you want to access
+        store (dict) - data_store in use
+    Exceptions:
+        AccessError - if the user is not an owner within the DM or channel 
+    '''
+    if message_id in store['channels']['messages']:
+        index = store['channels']['messages'].index(message_id)
+
+        if auth_user not in store['channels']['owner_user_id'][index]:
+            raise InputError('User is not an owner of channel that contains message')
+
+    elif message_id in store['dms']['messages']:
+        index = store['channels']['messages'].index(message_id)
+
+        if auth_user not in store['dms']['owner_user_id'][index]:
+            raise AccessError('User is not an owner of the DM')
+
+
+

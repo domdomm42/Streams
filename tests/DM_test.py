@@ -203,6 +203,208 @@ def test_messages_not_member(setup):
     assert response_create_data['code'] == ACCESSERROR
 
 '''
+INVALIDITY TESTS FOR MESSAGE REACT & UNREACT
+'''
+def test_react_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    dm_react = {"token": '-1', "message_id": 1, 'react_id': 1}
+    response_create = requests.get(f'{BASE_URL}/message/react/v1', params = dm_react)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_unreact_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    dm_unreact = {"token": '-1', "message_id": 1, 'react_id': 1}
+    response_create = requests.get(f'{BASE_URL}/message/unreact/v1', params = dm_unreact)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_unreact_invalid_message_id(setup):
+    _, joe, _, _ = setup
+
+    # Tests react where the message does not exist
+    dm_react = {"token": joe, "message_id": 1, "react_id": 1}
+    response_create = requests.get(f'{BASE_URL}/message/react/v1', params = dm_react)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_message_id_unreact(setup):
+    _, joe, _, _ = setup
+
+    # Tests unreact where the message does not exist
+    dm_unreact = {"token": joe, "message_id": 1, "react_id": 1}
+    response_create = requests.get(f'{BASE_URL}/message/unreact/v1', params = dm_unreact)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_react_id_react(setup):
+    _, joe, _, _ = setup
+
+    # Tests a react id that does not exist
+    dm_react = {"token": joe, "message_id": 1, "react_id": 2}
+    response_create = requests.get(f'{BASE_URL}/message/react/v1', params = dm_react)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_react_id_unreact(setup):
+    _, joe, _, _ = setup
+
+    # Tests a react id that does not exist
+    dm_unreact = {"token": joe, "message_id": 1, "react_id": 2}
+    response_create = requests.get(f'{BASE_URL}/message/unreact/v1', params = dm_unreact)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_react(setup):
+    dm1, joe, _, _ = setup
+
+    # Tests if a message can be reacted twice
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.get(f'{BASE_URL}/message/senddm/v1', params = dm_message).json()
+
+    dm_react = {"token": joe, "message_id": response_create, "react_id": 1}
+    requests.get(f'{BASE_URL}/message/react/v1', params = dm_react)
+    
+    dm_react = {"token": joe, "message_id": response_create, "react_id": 1}
+    response_create = requests.get(f'{BASE_URL}/message/react/v1', params = dm_react).json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_unreact(setup):
+    dm1, joe, _, _ = setup
+
+    # Tests if a message that has no react can be unreacted
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.get(f'{BASE_URL}/message/senddm/v1', params = dm_message).json()
+    
+    dm_unreact = {"token": joe, "message_id": response_create, "react_id": 1}
+    response_create = requests.get(f'{BASE_URL}/message/unreact/v1', params = dm_unreact).json()
+    assert response_create_data['code'] == INPUTERROR
+'''
+INVALIDITY TESTS FOR MESSAGE PIN & UNPIN
+'''
+def test_pin_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    dm_pin = {"token": '-1', "message_id": 1}
+    response_create = requests.get(f'{BASE_URL}/message/pin/v1', params = dm_pin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_pin_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    dm_unpin = {"token": '-1', "message_id": 1}
+    response_create = requests.get(f'{BASE_URL}/message/unpin/v1', params = dm_unpin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_pin_invalid_message_id(setup):
+    _, joe, _, _ = setup
+
+    # Tests pin where a message does no exist
+    dm_pin = {"token": joe, "message_id": 1}
+    response_create = requests.get(f'{BASE_URL}/message/pin/v1', params = dm_pin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_unpin_invalid_message_id(setup):
+    _, joe, _, _ = setup
+
+    # Tests unpin where a message does no exist
+    dm_unpin = {"token": joe, "message_id": 1}
+    response_create = requests.get(f'{BASE_URL}/message/unpin/v1', params = dm_unpin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR    
+
+def test_pin_not_owner(setup):
+    dm1, joe, marry, _ = setup
+
+    # Tests a message pin where the caller is not the owner of the dm/channel
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.get(f'{BASE_URL}/message/senddm/v1', params = dm_message).json()
+
+    dm_pin = {"token": marry, "message_id": response_create}
+    response_create = requests.get(f'{BASE_URL}/message/pin/v1', params = dm_pin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR 
+
+def test_unpin_not_owner(setup):
+    dm1, joe, marry, _ = setup
+
+    # Tests a message pin where the caller is not the owner of the dm/channel
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.get(f'{BASE_URL}/message/senddm/v1', params = dm_message).json()
+
+    dm_unpin = {"token": marry, "message_id": response_create}
+    response_create = requests.get(f'{BASE_URL}/message/unpin/v1', params = dm_unpin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_already_pinned(setup):
+    dm1, joe, _, _ = setup
+
+    # Tests a message that is pinned raising inputerror
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.get(f'{BASE_URL}/message/senddm/v1', params = dm_message).json()
+
+    dm_pin = {"token": joe, "message_id": response_create}
+    response_create = requests.get(f'{BASE_URL}/message/pin/v1', params = dm_pin)
+
+    dm_pin = {"token": joe, "message_id": response_create}
+    response_create = requests.get(f'{BASE_URL}/message/pin/v1', params = dm_pin).json()
+    assert response_create['code'] == INPUTERROR
+
+def test_already_unpinned(setup):
+    dm1, joe, _, _ = setup
+
+    # Tests a message that has no pin raising inputerror
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.get(f'{BASE_URL}/message/senddm/v1', params = dm_message).json()
+
+    dm_unpin = {"token": joe, "message_id": response_create}
+    response_create = requests.get(f'{BASE_URL}/message/unpin/v1', params = dm_unpin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+'''
+INVALIDITY TESTS FOR SEARCH
+'''
+
+def test_invalid_token_search():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    search = {"token": '-1', "query_str": "big"}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_short_string_search(setup):
+    _, joe, _, _ = setup
+
+    # Tests an empty query string
+    search = {"token": joe, "query_str": ""}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_long_string_search(setup):
+    _, joe, _, _ = setup
+    string = 'bigbigbigbigbigbig' * 10
+
+    # Tests a 1000+ character string 
+    search = {"token": joe, "query_str": string}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+'''
 SAMPLE TESTING FOR DM_CREATE
 '''
 
