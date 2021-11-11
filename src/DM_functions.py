@@ -8,69 +8,139 @@ def search_v1(token, query_str):
     pass
 
 def message_react_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, add a "react" to that particular message
+
+    Arguments:
+        token <string>: identifying value for the calling user
+        message_id <int>: the identifying number for the message
+        react_id <int>: the identifying value for the mentioned react, only 1  
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        InputError: message_id is not valid/non-existent in the dm or channel of the user
+        InputError: react_id is not a valid react >< 1
+        InputError: the message already has a react of the same react_id 
+    '''    
     store = data_store.get()
 
     auth_user_id = check_and_get_user_id(token)
     check_message_id(auth_user_id, message_id, store)
     check_react_id(react_id)
 
-    message_index = 0
-    for num in store['messages']:
-        if message_id == num['messsage_id']:
-            break
-        message_index += 1
+    message_index = message_index_from_id(message_id, store)
 
     if store['messages']['reacts']['is_this_user_reacted'] == True:
         raise InputError("Message already contains the appropriate react")
     else:
         store['messages']['reacts']['is_this_user_reacted'] == True
 
-    return {}        
-
-
-
-
+        
+        data_store.set(store)
+    retu
+    rn {}        
 
 
 def message_unreact_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, remove a "react" to that particular message
+
+    Arguments:
+        token <string>: identifying value for the calling user
+        message_id <int>: the identifying number for the message
+        react_id <int>: the identifying value for the mentioned react, only 1  
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        InputError: message_id is not valid/non-existent in the dm or channel of the user
+        InputError: react_id is not a valid react >< 1
+        InputError: the message already has no react
+    '''    
     store = data_store.get()
 
     auth_user_id = check_and_get_user_id(token)
     check_message_id(auth_user_id, message_id, store)
     check_react_id(react_id)
 
-    message_index = 0
-    for num in store['messages']:
-        if message_id == num['messsage_id']:
-            break
-        message_index += 1
+    message_index = message_index_from_id(message_id, store)
 
     if store['messages']['reacts']['is_this_user_reacted'] == False:
         raise InputError("Message does not contain a react")
     else:
         store['messages']['reacts']['is_this_user_reacted'] == False
-
+    
+    data_store.set(store)
+    
     return {}   
 
 def message_pin_v1(token, message_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 'pin' that particular message
+
+    Arguments:
+        token <string>: identifying value for the calling user
+        message_id <int>: the identifying number for the message  
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        AccessError: the authorised user is not an owner of the channel/DM that contains the message
+        InputError: message_id is not valid/non-existent in the dm or channel of the user
+        InputError: the message already has a pin   
+    '''    
     store = data_store.get()
 
     auth_user_id = check_and_get_user_id(token)
     check_message_id(auth_user_id, message_id, store)
     user_index = index_from_u_id(auth_user_id, store)
 
-    if store['users']['is_global_owner'][index] == False:
+    if store['users']['is_global_owner'][user_index] == False:
         check_owner_permission(auth_user_id, message_id, store)
 
+    message_index = message_index_from_id(message_id, store)
+    if store['messages']['is_pinned'] == True:
+        raise InputError('Message has already been pinned')
+    else:
+        store['messages']['is_pinned'] == True:
     
+    data_store.set(store)
+    
+    return {}            
+
+
     
 
 def message_unpin_v1(token, message_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 'unpin' that particular message
+
+    Arguments:
+        token <string>: identifying value for the calling user
+        message_id <int>: the identifying number for the message  
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        AccessError: the authorised user is not an owner of the channel/DM that contains the message
+        InputError: message_id is not valid/non-existent in the dm or channel of the user
+        InputError: the message isnt pinned  
+    '''    
     store = data_store.get()
 
     auth_user_id = check_and_get_user_id(token)
     check_message_id(auth_user_id, message_id, store)
-    pass
+    user_index = index_from_u_id(auth_user_id, store)
+
+    if store['users']['is_global_owner'][user_index] == False:
+        check_owner_permission(auth_user_id, message_id, store)
+
+    message_index = message_index_from_id(message_id, store)
+    if store['messages']['is_pinned'] == False:
+        raise InputError('Message has already been unpinned')
+    else:
+        store['messages']['is_pinned'] == False:
+    
+    data_store.set(store)
+    
+    return {}
 
 def dm_create_v1(token, u_ids):
     '''
@@ -465,7 +535,7 @@ def get_message(message_id):
     This function takes message_id and returns the message associated with message_id
 
     Arguments:
-        message_id(int) - id of message you want to access
+        message_id <int> - id of message you want to access
 
     Exceptions:
         No given exceptions
@@ -484,7 +554,7 @@ def check_react_id(react_id):
     This function takes react_id to see if it follows the parameters, returns INPUTERROR if not
 
     Arguments:
-        react_id(int) - id of react you want to access
+        react_id <int> - id of react you want to access
 
     Exceptions:
         InputError - if the react_id is not equal to 1 (only applicable one)
@@ -497,9 +567,9 @@ def check_message_id(auth_user, message_id, store):
     This function takes message to see if it exists, returns INPUTERROR if not
 
     Arguments:
-        auth_user(int) - id of the person accessing the message
-        message_id(int) - id of message you want to access
-        store (dict) - data_store in use
+        auth_user <int> - id of the person accessing the message
+        message_id <int> - id of message you want to access
+        store <dict> - data_store in use
     Exceptions:
         InputError - if the user is not within the DM or channel for the message
     '''
@@ -522,9 +592,9 @@ def check_owner_permission(auth_user, message_id, store):
     This function checks if the user is an owner in the channel where the message exists, returns ACCESSERROR if not
 
     Arguments:
-        auth_user(int) - id of the person accessing the message
-        message_id(int) - id of message you want to access
-        store (dict) - data_store in use
+        auth_user <int> - id of the person accessing the message
+        message_id <int> - id of message you want to access
+        store <dict> - data_store in use
     Exceptions:
         AccessError - if the user is not an owner within the DM or channel 
     '''
@@ -532,7 +602,7 @@ def check_owner_permission(auth_user, message_id, store):
         index = store['channels']['messages'].index(message_id)
 
         if auth_user not in store['channels']['owner_user_id'][index]:
-            raise InputError('User is not an owner of channel that contains message')
+            raise AccesError('User is not an owner of channel that contains message')
 
     elif message_id in store['dms']['messages']:
         index = store['channels']['messages'].index(message_id)
@@ -540,5 +610,22 @@ def check_owner_permission(auth_user, message_id, store):
         if auth_user not in store['dms']['owner_user_id'][index]:
             raise AccessError('User is not an owner of the DM')
 
+def message_index_from_id(message_id, store):
+    '''
+    Loops through all message's to find the index of the value given
+    
+    Arguments:
+            message_id <int>: indetifying integer of the message
+            store <dictionary>: the data_store used to save all info
 
+    Return Values:
+            counter <int>: counts the index where the u_id is located      
+    '''
+    message_index = 0
+    for num in store['messages']:
+        if message_id == num['messsage_id']:
+            break
+        message_index += 1
+
+    return message_index    
 
