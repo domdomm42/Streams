@@ -28,14 +28,14 @@ def search_v1(token, query_str):
 
     message_list = []
     messages_dict = []
-    user_index = index_from_user_id(auth_user_id)
+    user_index = index_from_u_id(auth_user_id)
     for channel_id in store['users']['channels_joined']:
-        channel_index = index_from_channel_id(channel_id)
-        message_list.append(store['channels']['messages'][channel_index])
+        channel_index = index_from_channel_id(channel_id, store)
+        message_list.extend(store['channels']['messages'][channel_index])
 
     for dm_id in store['users']['dms_joined']:
-        dm_index = index_from_dm_id(dm_id)
-        message_list.append(store['dms']['messages'][dm_index])
+        dm_index = index_from_dm_id(dm_id, store)
+        message_list.extend(store['dms']['messages'][dm_index])
 
     for message in store['messages']:
         if message['message_id'] in message_list and query_str in message['message']:
@@ -70,11 +70,9 @@ def message_react_v1(token, message_id, react_id):
 
     if store['messages']['reacts']['is_this_user_reacted'] == True:
         raise InputError("Message already contains the appropriate react")
-    else:
-        store['messages']['reacts']['is_this_user_reacted'] == True
-
-        
-        data_store.set(store)
+    
+    store['messages']['reacts']['is_this_user_reacted'] = True
+    data_store.set(store)
     
     return {}        
 
@@ -102,10 +100,10 @@ def message_unreact_v1(token, message_id, react_id):
 
     message_index = message_index_from_id(message_id, store)
 
-    if store['messages']['reacts']['is_this_user_reacted'] == False:
+    if store['messages']['reacts'][message_index]['is_this_user_reacted'] == False:
         raise InputError("Message does not contain a react")
-    else:
-        store['messages']['reacts']['is_this_user_reacted'] == False
+    
+    store['messages']['reacts'][message_index]['is_this_user_reacted'] = False
     
     data_store.set(store)
     
@@ -135,10 +133,10 @@ def message_pin_v1(token, message_id):
         check_owner_permission(auth_user_id, message_id, store)
 
     message_index = message_index_from_id(message_id, store)
-    if store['messages']['is_pinned'] == True:
+    if store['messages'][message_index]['is_pinned'] == True:
         raise InputError('Message has already been pinned')
-    else:
-        store['messages']['is_pinned'] = True
+    
+    store['messages'][message_index]['is_pinned'] = True
     
     data_store.set(store)
     
@@ -171,10 +169,10 @@ def message_unpin_v1(token, message_id):
         check_owner_permission(auth_user_id, message_id, store)
 
     message_index = message_index_from_id(message_id, store)
-    if store['messages']['is_pinned'] == False:
+    if store['messages'][message_index]['is_pinned'] == False:
         raise InputError('Message has already been unpinned')
-    else:
-        store['messages']['is_pinned'] = False
+
+    store['messages'][message_index]['is_pinned'] = False
     
     data_store.set(store)
     
@@ -480,7 +478,7 @@ def check_user_in_dm(u_id, dm_id, store):
     Checks if the authorised user (token) is a member of the DM
 
     Arguments:
-            u_id <int>: indetifying integer of the user
+            u_id <int>: indtifying integer of the user
             dm_id <int>: dm ID being checked
             store <dictionary>: the data_store used to save all info
 
@@ -665,5 +663,15 @@ def message_index_from_id(message_id, store):
             break
         message_index += 1
 
-    return message_index    
+    return message_index 
+
+def index_from_channel_id(channel_id, store):
+    channel_index = 0
+    for num in store['channels']['channel_id']:
+        if channel_id == num:
+            break
+        channel_index += 1
+
+    return channel_index
+   
 
