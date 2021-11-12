@@ -64,7 +64,7 @@ def message_send_v1(token, channel_id, message):
     time_created = int(datetime.now(timezone.utc).timestamp())
 
     message_react = {'react_id': 1, 'u_ids': [], 'is_this_user_reacted': False}
-    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created, 'reacts': message_react, 'is_pinned': False}
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created, 'reacts': [message_react], 'is_pinned': False}
 
     store['messages'].append(message_info)
 
@@ -113,7 +113,7 @@ def message_senddm_v1(token, dm_id, message):
     time_created = int(datetime.now(timezone.utc).timestamp())
 
     message_react = {'react_id': 1, 'u_ids': [], 'is_this_user_reacted': False}
-    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created, 'reacts': message_react, 'is_pinned': False}
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created, 'reacts': [message_react], 'is_pinned': False}
 
     store['messages'].append(message_info)
 
@@ -302,7 +302,7 @@ def send_msg_later_thread(user_id, channel_id, message, time_sent, message_id):
     store = data_store.get()
 
     message_react = {'react_id': 1, 'u_ids': [], 'is_this_user_reacted': False}
-    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_sent, 'reacts': message_react, 'is_pinned': False}
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_sent, 'reacts': [message_react], 'is_pinned': False}
 
     store['messages'].append(message_info)
 
@@ -378,7 +378,7 @@ def send_msgdm_later_thread(user_id, dm_id, message, time_sent, message_id):
     store = data_store.get()
 
     message_react = {'react_id': 1, 'u_ids': [], 'is_this_user_reacted': False}
-    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_sent, 'reacts': message_react, 'is_pinned': False}
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_sent, 'reacts': [message_react], 'is_pinned': False}
 
     store['messages'].append(message_info)
 

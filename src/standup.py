@@ -190,7 +190,16 @@ def check_if_message_too_long(message):
     if len(message) > 1000:
         raise InputError(description="Message is too long")
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
+    list = [{'key': 1, 'value': 2}, {'key': 1, 'value': 2}, {'key': 2, 'value': 2}]
+
+    new_list = list[:]
+
+    for item in list:
+        if item['key'] == 1:
+            new_list.remove({'key': 1, 'value': item['value']})
+
+    print(new_list)
 #     jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
 #     marry_mae_token = auth_register_v1('jimjo2e@gmail.com', 'password', 'Marry', 'Mae')['token']
     

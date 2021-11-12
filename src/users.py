@@ -68,7 +68,8 @@ def user_all_v1(token):
             users.append({'u_id': user_id, 'email': user_email, 
                             'name_first': user_name_first, 
                             'name_last': user_name_last, 
-                            'handle_str': user_handle_str})
+                            'handle_str': user_handle_str, 
+                            'profile_img_url': ''})
 
     data_store.set(store)
 
@@ -95,16 +96,16 @@ def user_profile_v1(token, u_id):
     _ = check_and_get_user_id(token)
     
     check_invalid_u_id(u_id)
-    user = []
     u_id = store['users']['user_id'][u_id]
     user_email = store['users']['emails'][u_id]
     user_name_first = store['users']['first_names'][u_id]
     user_name_last = store['users']['last_names'][u_id]
     user_handle_str = store['users']['user_handles'][u_id]
-    user.append({'user_id': u_id, 'email': user_email, 
-                            'first_name': user_name_first, 
-                            'last_name': user_name_last, 
-                            'handle_str': user_handle_str})
+    user = {'u_id': u_id, 'email': user_email, 
+                            'name_first': user_name_first, 
+                            'name_last': user_name_last, 
+                            'handle_str': user_handle_str,
+                            'profile_img_url': ''}
 
     return {'user': user}
 
