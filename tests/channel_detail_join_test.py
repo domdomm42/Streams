@@ -135,6 +135,7 @@ def test_global_owner_join_private(setup):
     channel_details_info = {"token": response_log_joe['token'], "channel_id": channel_id_marry['channel_id']}
     response = requests.get(f'{BASE_URL}/channel/details/v2', params = channel_details_info)
     details = response.json()
+
     assert details == {
         'name': 'Marry',
         'is_public': False,
@@ -144,7 +145,8 @@ def test_global_owner_join_private(setup):
                 'handle_str': 'marryjoe',
                 'name_first': 'Marry',
                 'name_last': 'Joe',
-                'u_id': 1
+                'u_id': 1,
+                'profile_img_url': ''
             }
         ],
         'all_members': [
@@ -152,13 +154,15 @@ def test_global_owner_join_private(setup):
                 'handle_str': 'marryjoe',
                 'name_first': 'Marry',
                 'name_last': 'Joe',
-                'u_id': 1
+                'u_id': 1,
+                'profile_img_url': ''
             },
             {   'email': 'joe123@gmail.com',
                 'handle_str': 'joesmith',
                 'name_first': 'Joe',
                 'name_last': 'Smith',
-                'u_id': 0
+                'u_id': 0,
+                'profile_img_url': ''
             }
         ],
     }
@@ -182,7 +186,8 @@ def test_valid_channel_id_detail_1(setup):
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
-                'handle_str': 'joesmith'
+                'handle_str': 'joesmith',
+                'profile_img_url': ''
             }
         ], 
         'all_members': [
@@ -191,7 +196,8 @@ def test_valid_channel_id_detail_1(setup):
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
-                'handle_str': 'joesmith'
+                'handle_str': 'joesmith',
+                'profile_img_url': ''
             }
         ]
     }
@@ -215,7 +221,8 @@ def test_valid_channel_id_detail_2(setup):
                 'email': 'marryjoe222@gmail.com', 
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
-                'handle_str': 'marryjoe'
+                'handle_str': 'marryjoe',
+                'profile_img_url': ''
             }
         ], 
         'all_members': [
@@ -224,7 +231,8 @@ def test_valid_channel_id_detail_2(setup):
                 'email': 'marryjoe222@gmail.com', 
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
-                'handle_str': 'marryjoe'
+                'handle_str': 'marryjoe',
+                'profile_img_url': ''
             }
         ]
     }
@@ -252,7 +260,8 @@ def test_valid_channel_id_join(setup):
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
-                'handle_str': 'joesmith'
+                'handle_str': 'joesmith',
+                'profile_img_url': ''
             }
         ], 
         'all_members': [
@@ -261,13 +270,15 @@ def test_valid_channel_id_join(setup):
                 'email': 'joe123@gmail.com', 
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
-                'handle_str': 'joesmith'
+                'handle_str': 'joesmith',
+                'profile_img_url': ''
             }, 
             {   'u_id': 1, 
                 'email': 'marryjoe222@gmail.com', 
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
-                'handle_str': 'marryjoe'
+                'handle_str': 'marryjoe',
+                'profile_img_url': ''
             }
         ]
     }

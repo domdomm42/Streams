@@ -4,6 +4,7 @@ from src.auth import auth_register_v1
 from src.auth_auth_helpers import check_and_get_user_id
 from src.notifications import alert_user_dm_invited
 from src.other import print_store_debug
+from src.users import user_profile_v1
 import requests
 
 
@@ -174,14 +175,7 @@ def dm_details_v1(token, dm_id):
     # Gets the index of the u_id in the data_store and uses that to extract member information from users
     # u_id is just the index they are in the users library
     for u_id in store['dms']['all_members'][name_index]:
-        u_id_index = index_from_u_id(u_id, store)
-        new_dict = {
-            'u_id': store['users']['user_id'][u_id_index],
-            'email': store['users']['emails'][u_id_index],
-            'name_first': store['users']['first_names'][u_id_index],
-            'name_last': store['users']['last_names'][u_id_index],
-            'handle_str': store['users']['user_handles'][u_id_index]
-        }
+        new_dict = user_profile_v1(token, u_id)['user']
         u_id_list.append(new_dict)
             
 
@@ -280,8 +274,8 @@ def dm_messages_v1(token, dm_id, start):
         
         # Set is_this_user_reacted to True if the auth_user_id has reacted to the message
         msg = get_message(idx)
-        if auth_user_id in msg['reacts']['u_ids']:
-            msg['reacts']['is_this_user_reacted'] = True
+        if auth_user_id in msg['reacts'][0]['u_ids']:
+            msg['reacts'][0]['is_this_user_reacted'] = True
         messages.append(msg)
 
     return {
