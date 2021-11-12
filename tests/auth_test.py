@@ -407,7 +407,7 @@ def test_simple_password_reset():
     # auth_login_v1("TeamBeagle1531@gmail.com", "password")
 
     user_info_password_req = {"email": "TeamBeagle1531@gmail.com"}
-    request = requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_password_req)
+    requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_password_req)
 
     
     # store = data_store.get()
@@ -428,9 +428,8 @@ def test_new_pass_too_short():
    
 
     user_info_password_req = {"email": "TeamBeagle1531@gmailzz.com"}
-    request = requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_password_req)
-    request = request.json()
-
+    requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_password_req)
+    
     # requests.delete(f'{BASE_URL}/clear/v1')
     # auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
     # auth_login_v1("TeamBeagle1531@gmail.com", "password")
