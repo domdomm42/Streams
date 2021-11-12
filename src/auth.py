@@ -181,7 +181,7 @@ def auth_passwordreset_request_v1(email):
     gmail_password = '@beaglesend1531'
 
     sent_from = gmail_user
-    to = ['me@gmail.com', 'TeamBeagle1531@gmail.com']
+    to = [email]
     subject = 'Password Reset code'
     body = reset_code
 
@@ -214,10 +214,13 @@ def auth_passwordreset_request_v1(email):
 
 def auth_passwordreset_reset_v1(reset_code, new_password):
 
-    if reset_code == 0:
+    store = data_store.get()
+    if reset_code == 0 or reset_code not in store['users']['password_reset_code']:
         raise InputError(description="Reset code is not a valid reset code!")
 
-    store = data_store.get()
+    if len(new_password) < 6:
+        raise InputError(description="Password entered is less than 6 characters long!")
+
     counter = 0
     for codes in store['users']['password_reset_code']:
         if reset_code != codes:
@@ -226,12 +229,6 @@ def auth_passwordreset_reset_v1(reset_code, new_password):
 
     if counter == len(store['users']['password_reset_code']) and reset_code != store['users']['password_reset_code'][counter - 1]:
         raise InputError(description="Reset code is not a valid reset code!")
-
-    # if counter == 0:
-    #     raise InputError(description="Reset code is not a valid reset code!")
-
-    if len(new_password) < 6:
-        raise InputError(description="Password entered is less than 6 characters long!")
     
     store['users']['passwords'][counter] = hash(new_password)
     store['users']['password_reset_code'][counter] = 0
@@ -442,13 +439,18 @@ def check_valid_password(email, password):
 
 
 if __name__ == "__main__":
-    auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
-    auth_login_v1("TeamBeagle1531@gmail.com", "password")
+    clear_v1()
+    auth_register_v1("cottoneyedjoe@gmail.com", "password", "Cotton", "Eyed")
+    auth_login_v1("cottoneyedjoe@gmail.com", "password")
+
+    auth_register_v1("TeamBeagle1531@gmail.com", "password1", "Joe", "Tim")
+    auth_login_v1("TeamBeagle1531@gmail.com", "password1")
     auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
 
     store = data_store.get()
-    code = store['users']['password_reset_code'][0]
+    code = store['users']['password_reset_code'][1]
 
     auth_passwordreset_reset_v1(code, "dompassword")
     auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
+
     print_store_debug()
