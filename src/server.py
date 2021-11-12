@@ -305,31 +305,32 @@ def dm_messages():
     #save()
     return dumps(messages)
 
-@APP.route('/message/react/v1', method=['POST'])
+@APP.route("/message/react/v1", methods=['POST'])
 def message_react():
     request_data = request.get_json()
     response = message_react_v1(request_data['token'], request_data['message_id'], request_data['react_id'])
     return dumps(response)
 
-@APP.route('/message/unreact/v1', method=['POST'])
-def message_react():
+@APP.route('/message/unreact/v1', methods=['POST'])
+def message_unreact():
     request_data = request.get_json()
     response = message_unreact_v1(request_data['token'], request_data['message_id'], request_data['react_id'])
     return dumps(response)
 
-@APP.route('/message/pin/v1', method=['POST'])
-def message_react():
+@APP.route('/message/pin/v1', methods=['POST'])
+def message_pin():
     request_data = request.get_json()
     response = message_pin_v1(request_data['token'], request_data['message_id'])
     return dumps(response)
 
-@APP.route('/message/unpin/v1', method=['POST'])
-def message_react():
+@APP.route('/message/unpin/v1', methods=['POST'])
+def message_unpin():
     request_data = request.get_json()
     response = message_unpin_v1(request_data['token'], request_data['message_id'])
     return dumps(response)    
-@APP.route('/search/v1', method=['GET'])
-def search()
+
+@APP.route('/search/v1', methods=['GET'])
+def search():
     return dumps(search_v1(request.args.get('token'), request.args.get('query_str')))
     
 @APP.route("/message/sendlater/v1", methods=['POST'])

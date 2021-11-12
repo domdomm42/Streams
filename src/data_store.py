@@ -39,7 +39,11 @@ initial_object = {
         'is_global_owner':[],
         'removed_user': [],
         'permissions': [],
-        'password_reset_code': [] # NEW
+        'password_reset_code': [], # NEW
+        'notifications': [], #NEW
+        'channels_joined': [],    #NEW
+        'dms_joined': [],         #NEW
+        'messages_sent': [],      #NEW
     },
 
     'channels': {
@@ -60,7 +64,12 @@ initial_object = {
         'all_members': [],
         'messages': [], 
     },
+    'channels_exist': [], #NEW
+    'dms_exist': [],     #NEW
+    'messages_exist': []    #NEW
+
 }
+
 
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 

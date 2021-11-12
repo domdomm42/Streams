@@ -271,7 +271,7 @@ def test_invalid_react(setup):
     
     dm_react = {"token": joe, "message_id": response_create, "react_id": 1}
     response_create = requests.get(f'{BASE_URL}/message/react/v1', params = dm_react).json()
-    assert response_create_data['code'] == INPUTERROR
+    assert response_create['code'] == INPUTERROR
 
 def test_invalid_unreact(setup):
     dm1, joe, _, _ = setup
@@ -282,7 +282,7 @@ def test_invalid_unreact(setup):
     
     dm_unreact = {"token": joe, "message_id": response_create, "react_id": 1}
     response_create = requests.get(f'{BASE_URL}/message/unreact/v1', params = dm_unreact).json()
-    assert response_create_data['code'] == INPUTERROR
+    assert response_create['code'] == INPUTERROR
 '''
 INVALIDITY TESTS FOR MESSAGE PIN & UNPIN
 '''

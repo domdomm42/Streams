@@ -5,11 +5,49 @@ from src.auth_auth_helpers import check_and_get_user_id
 import requests
 
 def search_v1(token, query_str):
-    pass
+    '''
+    Returns a collection of messages where the query string is present and is occupied by the user
+
+    Arguements:
+        token <string>: identifying calue for the calling user
+        query_str <string>: the string to be searched for in messages
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        InputError: length of query_str is less than 1 or over 1000 characters
+
+    Return Values:
+        messages <list>: list of dictionaries containing the fields message_id, u_id,
+                         message, time_created
+    '''
+    store = data_store.get()
+
+    auth_user_id = check_and_get_user_id(token)
+    if len(query_str) > 1000 or len(query_str) < 1:
+        raise InputError('Invalid Query string given')
+
+    message_list = []
+    messages_dict = []
+    user_index = index_from_user_id(auth_user_id)
+    for channel_id in store['users']['channels_joined']:
+        channel_index = index_from_channel_id(channel_id)
+        message_list.append(store['channels']['messages'][channel_index])
+
+    for dm_id in store['users']['dms_joined']:
+        dm_index = index_from_dm_id(dm_id)
+        message_list.append(store['dms']['messages'][dm_index])
+
+    for message in store['messages']:
+        if message['message_id'] in message_list and query_str in message['message']:
+            messages_dict.append(message)
+
+    return {'messages': messages_dict}        
+
 
 def message_react_v1(token, message_id, react_id):
     '''
-    Given a message within a channel or DM the authorised user is part of, add a "react" to that particular message
+    Given a message within a channel or DM the authorised user is part of, add a "react" to 
+    that particular message
 
     Arguments:
         token <string>: identifying value for the calling user
@@ -37,8 +75,8 @@ def message_react_v1(token, message_id, react_id):
 
         
         data_store.set(store)
-    retu
-    rn {}        
+    
+    return {}        
 
 
 def message_unreact_v1(token, message_id, react_id):
@@ -100,7 +138,7 @@ def message_pin_v1(token, message_id):
     if store['messages']['is_pinned'] == True:
         raise InputError('Message has already been pinned')
     else:
-        store['messages']['is_pinned'] == True:
+        store['messages']['is_pinned'] = True
     
     data_store.set(store)
     
@@ -136,7 +174,7 @@ def message_unpin_v1(token, message_id):
     if store['messages']['is_pinned'] == False:
         raise InputError('Message has already been unpinned')
     else:
-        store['messages']['is_pinned'] == False:
+        store['messages']['is_pinned'] = False
     
     data_store.set(store)
     
