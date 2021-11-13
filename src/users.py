@@ -187,26 +187,40 @@ def user_profile_setemail_v1(token, email):
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
    #check valid token
     u_id = check_and_get_user_id(token)
+    store = data_store.get()
     
     #check the url is start with https://
     http_check(img_url)
     
     #check photo type
     check_type(img_url)
-    imageDown(img_url, u_id)
-    
-    #check the start and end is valid
-    check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id)
-    
-    
-    
-    #crop_image(img_url, x_start, y_start, x_end, y_end, u_id)
-    store = data_store.get()
+    #imageDown(img_url, u_id)
+    urllib.request.urlretrieve(img_url,'src/static/tmp.jpg')
 
-    store['users']['profile_img_url'][u_id] = crop_image(img_url, x_start, y_start, x_end, y_end)
+    #check the start and end is valid
+    #check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id)
+    
+    im = Image.open('src/static/tmp.jpg')
+    width, height = im.size
+
+    if x_start > x_end or y_start > y_end or x_start > width or x_end > width or y_start > height or y_end > height:
+        raise InputError(description='Invalid Size')
+
+
+    im = im.crop((x_start, y_start, x_end, y_end))
+
+    #cropped = im.crop((x_start, y_start, x_end, y_end))
+    im.save(f'src/static/{u_id}.jpg')
+    #cropped.save('src/static/{u_id}.jpg')
+    
+    crop_image(img_url, x_start, y_start, x_end, y_end)
+    
+
+    store['users']['profile_img_url'][f'{u_id}'] = f'src/static/{u_id}.jpg' 
+    #= crop_image(img_url, x_start, y_start, x_end, y_end)
     data_store.set(store)
 
-    serve_image()
+    #serve_image()
    
    
     return {}
@@ -334,7 +348,11 @@ def check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id):
     
     
     store = data_store.get()
-    im = Image.open(store['users']['profile_img_url'])
+    print('word')
+    print(store['users']['profile_img_url'])
+
+    im = Image.open(store['users']['profile_img_url'][u_id])
+    
     width, height = im.size
     if x_start > x_end or y_start > y_end or x_start > width or x_end > width or y_start > height or y_end > height:
         raise InputError(description='Invalid Size')
@@ -355,18 +373,19 @@ def imageDown(img_url, u_id):
     
     #urllib.request.urlretrieve(img_url, image/{u_id}.jpg)
     #urllib.request.urlretrieve(img_url, f'image/{u_id}.jpg')
-    urllib.request.urlretrieve(img_url, u_id)
+    urllib.request.urlretrieve(img_url,'src/static/tmp.jpg')
     #urllib.request.urlretrieve(f'{img_url}, image/{u_id}.jpg')
 
 def crop_image(img_url, x_start, y_start, x_end, y_end):
     
     #im = Image.open(f'image/{u_id}.jpg')
-    im = Image.open(img_url)
+    im = Image.open('src/static/tmp.jpg')
     
     cropped = im.crop((x_start, y_start, x_end, y_end))
     
+    cropped.save('src/static/{u_id}.jpg')
 
-    return cropped
+    return 'src/static/{u_id}.jpg'
     #cropped.save(f'image/{u_id}.jpg')
     #cropped
 
