@@ -29,11 +29,25 @@ def search_v1(token, query_str):
     message_list = []
     messages_dict = []
     user_index = index_from_u_id(auth_user_id, store)
-    for channel_id in store['users']['channels_joined'][user_index]:
+    
+    channels_joined = []
+    dms_joined = []
+    index = 0
+    for channel_id in store['channels']['channel_id']:
+        if auth_user_id in store['channels']['all_members'][index]:
+            channels_joined.append(channel_id)
+        index += 1
+    index = 0
+    for dm_id in store['dms']['dm_id']:
+        if auth_user_id in store['dms']['all_members'][index]:
+            dms_joined.append(dm_id)
+        index += 1
+            
+    for channel_id in channels_joined:
         channel_index = index_from_channel_id(channel_id, store)
         message_list.extend(store['channels']['messages'][channel_index])
 
-    for dm_id in store['users']['dms_joined'][user_index]:
+    for dm_id in dms_joined:
         dm_index = index_from_dm_id(dm_id, store)
         message_list.extend(store['dms']['messages'][dm_index])
 
@@ -68,10 +82,14 @@ def message_react_v1(token, message_id, react_id):
 
     message_index = message_index_from_id(message_id, store)
 
-    if store['messages'][message_index]['reacts']['is_this_user_reacted'] == True:
+    if auth_user_id in store['messages'][message_index]['reacts']['u_ids']:
         raise InputError("Message already contains the appropriate react")
+    else:
+        store['messages'][message_index]['reacts']['u_ids'].append(auth_user_id)
     
-    store['messages'][message_index]['reacts']['is_this_user_reacted'] = True
+    if auth_user_id == store['messages'][message_index]['u_id']:
+        store['messages'][message_index]['reacts']['is_this_user_reacted'] = True
+        
     data_store.set(store)
     
     return {}        
@@ -100,10 +118,13 @@ def message_unreact_v1(token, message_id, react_id):
 
     message_index = message_index_from_id(message_id, store)
 
-    if store['messages']['reacts'][message_index]['is_this_user_reacted'] == False:
+    if auth_user_id not in store['messages'][message_index]['reacts']['u_ids']:
         raise InputError("Message does not contain a react")
+    else:
+        store['messages'][message_index]['reacts']['u_ids'].remove(auth_user_id)
     
-    store['messages']['reacts'][message_index]['is_this_user_reacted'] = False
+    if auth_user_id == store['messages'][message_index]['u_id']:   
+        store['messages'][message_index]['reacts']['is_this_user_reacted'] = False
     
     data_store.set(store)
     

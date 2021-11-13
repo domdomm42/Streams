@@ -171,7 +171,7 @@ def test_messages_invalid_dm_id(setup):
 
     # Tests if a nonexistent dm is being called, raises InputError if so
     dm_messages = {"token": joe, "dm_id": 1, 'start': 0}
-    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == INPUTERROR
 
@@ -180,7 +180,7 @@ def test_messages_invalid_token():
 
     # Tests a nonexistant user trying to access the function, raising AccessError if unable
     dm_messages = {"token": '-1', "dm_id": 1, 'start': 0}
-    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == ACCESSERROR
 
@@ -189,7 +189,7 @@ def test_messages_invalid_start(setup):
 
     # Tests if start is greater than the number of messages in the dm (here being 0 messages)
     dm_messages = {"token": joe, "dm_id": 0, 'start': 5}
-    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == INPUTERROR
 
@@ -198,7 +198,7 @@ def test_messages_not_member(setup):
 
     # Tests if an unauthorised user (person who is not member of dm) can access the function, raising AccessError if not
     dm_messages = {"token": sam, "dm_id": 0, 'start': 0}
-    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', json = dm_messages)
+    response_create = requests.get(f'{BASE_URL}/dm/messages/v1', params = dm_messages)
     response_create_data = response_create.json()
     assert response_create_data['code'] == ACCESSERROR
 
@@ -607,6 +607,39 @@ def test_multiple_dm_messages(setup):
     assert response_create_data['end'] == 50   
 
 
+def test_long_string_search(setup):
+    _, joe, marry, _ = setup
+
+    # sends two messages from joe and marry
+    send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
+    send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}
+
+    # records the time and id of each message sent
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
+    timestamp1 = int(datetime.now(timezone.utc).timestamp())
+    message_id1 = response_create.json()['message_id']
+    
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
+    
+    search = {"token": joe, "query_str": 'big'}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    print(response_create_data)
+    
+    assert response_create_data['messages'] == [
+        {
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
+            'time_created': timestamp1,
+            'reacts': {
+                'react_id': 1,
+                'u_ids': [],
+                'is_this_user_reacted': False
+            },
+            'is_pinned': False
+        }] 
+    
 
 
 
