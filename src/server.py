@@ -38,8 +38,12 @@ def quit_gracefully(*args):
     exit(0)
 
 def defaultHandler(err):
+    
+    
     response = err.get_response()
-    print('response', err, err.get_response())
+    
+    
+    print('response', err, err.get_response())  
     response.data = dumps({
         "code": err.code,
         "name": "System Error",
@@ -229,6 +233,8 @@ def user_profile_setname():
     return dumps(response)
 
 
+
+
 # Update email
 @APP.route("/user/profile/setemail/v1", methods=['PUT'])
 def user_profile_setemail():
@@ -292,7 +298,21 @@ def notifications():
     token = request.args.get('token')
     notifications = notifications_get_v1(token)
     return dumps(notifications)
+
+
+
+@APP.route("/user/profile/uploadphoto/v1", methods = ['POST'])
+def user_profile_uploadphoto():
     
+
+    request_data = request.get_json()
+    response = user_profile_uploadphoto_v1(request_data['token'], request_data['img_url'], request_data['x_start'],request_data['y_start'], request_data['x_end'], request_data['y_end'])
+    
+    return dumps(response)
+
+
+
+
 @APP.route("/user/stats/v1", methods = ['GET'])
 def user_stats():
     token = request.args.get('token')
@@ -304,6 +324,8 @@ def users_stats():
     token = request.args.get('token')
     users_stats = users_stats_v1(token)
     return dumps(users_stats)
+
+
 
 @APP.route("/debug/printstore", methods=['GET'])
 def print_store():
