@@ -44,6 +44,7 @@ initial_object = {
         'channels_joined': [],    #NEW
         'dms_joined': [],         #NEW
         'messages_sent': [],      #NEW
+        'profile_img_url': []
     },
 
     'channels': {
@@ -65,7 +66,7 @@ initial_object = {
         'owner_user_id': [],
         'dm_name': [],
         'all_members': [],
-        'messages': [], 
+        'messages': [],
     },
     'channels_exist': [], #NEW
     'dms_exist': [],     #NEW

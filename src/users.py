@@ -22,12 +22,12 @@ def user_profile_sethandle_v1(token, handle_str):
             InputError('Invalid input') - length of handle_str is not between 3 and 20 characters inclusive
                                         - handle_str contains characters that are not alphanumeric
                                         - the handle is already used by another user
-    
+
     Return value:
         return {}
     '''
     user_id = check_and_get_user_id(token)
-    
+
     check_len(handle_str)
     check_alphanumeric(handle_str)
     check_duplicate(handle_str)
@@ -35,7 +35,7 @@ def user_profile_sethandle_v1(token, handle_str):
     store = data_store.get()
 
     store['users']['user_handles'][user_id] = handle_str
-    
+
     data_store.set(store)
     return {}
 
@@ -52,24 +52,21 @@ def user_all_v1(token):
     Return value:
         return {users} - Returns a list of all users and their details
     '''
-    
 
     store = data_store.get()
     user_id = check_and_get_user_id(token)
-    
+
     users = []
     for user_id in store['users']['user_id']:
         if store['users']['removed_user'][user_id] == False:
-            
             user_email = store['users']['emails'][user_id]
             user_name_first = store['users']['first_names'][user_id]
             user_name_last = store['users']['last_names'][user_id]
             user_handle_str = store['users']['user_handles'][user_id]
-            users.append({'u_id': user_id, 'email': user_email, 
-                            'name_first': user_name_first, 
-                            'name_last': user_name_last, 
-                            'handle_str': user_handle_str, 
-                            'profile_img_url': ''})
+            users.append({'u_id': user_id, 'email': user_email,
+                          'name_first': user_name_first,
+                          'name_last': user_name_last,
+                          'handle_str': user_handle_str})
 
     data_store.set(store)
 
@@ -78,7 +75,6 @@ def user_all_v1(token):
 
 # List of all valid users
 def user_profile_v1(token, u_id):
-    
     '''
     Returns information on the user_id, email, first name, last name and handle
 
@@ -94,18 +90,18 @@ def user_profile_v1(token, u_id):
 
     store = data_store.get()
     _ = check_and_get_user_id(token)
-    
+
     check_invalid_u_id(u_id)
+    user = []
     u_id = store['users']['user_id'][u_id]
     user_email = store['users']['emails'][u_id]
     user_name_first = store['users']['first_names'][u_id]
     user_name_last = store['users']['last_names'][u_id]
     user_handle_str = store['users']['user_handles'][u_id]
-    user = {'u_id': u_id, 'email': user_email, 
-                            'name_first': user_name_first, 
-                            'name_last': user_name_last, 
-                            'handle_str': user_handle_str,
-                            'profile_img_url': ''}
+    user.append({'user_id': u_id, 'email': user_email,
+                 'first_name': user_name_first,
+                 'last_name': user_name_last,
+                 'handle_str': user_handle_str})
 
     return {'user': user}
 
@@ -127,7 +123,7 @@ def user_profile_setname_v1(token, name_first, name_last):
     Return value:
         return {}
     '''
-    
+
     user_id = check_and_get_user_id(token)
     check_name_first_len(name_first)
     check_name_last_len(name_last)
@@ -158,7 +154,6 @@ def user_profile_setemail_v1(token, email):
     Return value:
         return {}
     '''
-    
 
     user_id = check_and_get_user_id(token)
     check_invalid_emails(email)
@@ -171,29 +166,58 @@ def user_profile_setemail_v1(token, email):
 
     return {}
 
-#def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end ):
-#    #check valid token
-#    u_id = check_and_get_user_id(token)
-#    
-#    #check the url is start with https://
-#    http_check(img_url)
-#    #check photo type
-#    check_type(img_url)
-#    imageDown(img_url, u_id)
-#    #check the start and end is valid
-#    check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id)
-#    
-#    
-#    
-#    crop_image(img_url, x_start, y_start, x_end, y_end, u_id)
-#    serve_image()
-#    return {}
-#
-def user_stats_v1(token):
-    #check valid token
+
+# IT3
+
+
+def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
+    # check valid token
     u_id = check_and_get_user_id(token)
+    store = data_store.get()
+
+    # check the url is start with https://
+    http_check(img_url)
+
+    # check photo type
+    check_type(img_url)
+    # imageDown(img_url, u_id)
+    urllib.request.urlretrieve(img_url, 'src/static/tmp.jpg')
+
+    # check the start and end is valid
+    # check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id)
+
+    im = Image.open('src/static/tmp.jpg')
+    width, height = im.size
+
+    if x_start >= x_end or y_start >= y_end or x_start >= width or x_end > width or y_start >= height or y_end > height:
+        raise InputError(description='Invalid Size')
+
+    if x_start < 0 or x_end < 0 or y_start < 0 or y_end < 0:
+        raise InputError(description='Invalid Size')
+
+    im = im.crop((x_start, y_start, x_end, y_end))
+
+    # cropped = im.crop((x_start, y_start, x_end, y_end))
+    im.save(f'src/static/{u_id}.jpg')
+    # cropped.save('src/static/{u_id}.jpg')
+
+    crop_image(img_url, x_start, y_start, x_end, y_end)
+
+    # store['users']['profile_img_url'][f'{u_id}'] = f'src/static/{u_id}.jpg'
+    # store['users']['profile_img_url'][u_id] = f'src/static/{u_id}.jpg'
+    store['users']['profile_img_url'].append(f'src/static/{u_id}.jpg')
+
+    # = crop_image(img_url, x_start, y_start, x_end, y_end)
+    data_store.set(store)
+
+    # serve_image()
+
+    return {}
 
 
+def user_stats_v1(token):
+    # check valid token
+    u_id = check_and_get_user_id(token)
 
     store = data_store.get()
     num_channel_joined = 0
@@ -210,9 +234,15 @@ def user_stats_v1(token):
             num_dm_joined = num_dm_joined + 1
     for message in store['messages']:
         if check_if_message_id_exists_and_get_sender_id(message['message_id']) == u_id:
-            num_messages_sent = num_messages_sent + 1 
+            num_messages_sent = num_messages_sent + 1
     time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+
+    # print(store['users']['channels_joined'])# empty
+
+    # channels_joined = store['users']['channels_joined']
+
     channels_joined = store['users']['channels_joined'][u_id]
+
     dms_joined = store['users']['dms_joined'][u_id]
     messages_sent = store['users']['message_sent'][u_id]
     channel_new_stat = {'num_channels_joined': num_channel_joined, 'time_stamp': time_stamp}
@@ -222,11 +252,12 @@ def user_stats_v1(token):
     dms_joined.append(dms_new_stat)
     messages_sent.append(messages_new_stat)
     if (num_channels + num_dms + num_messages) > 0:
-        involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent)/(num_channels + num_dms + num_messages)
+        involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent) / (
+                    num_channels + num_dms + num_messages)
 
     if involvement_rate > 1:
         involvement_rate = 1
-    
+
     user_stats = {
         'channels_joined': channels_joined,
         'dms_joined': dms_joined,
@@ -234,11 +265,8 @@ def user_stats_v1(token):
         'involvement_rate': involvement_rate
     }
 
-
-
-
-
     return {'user_stats': user_stats}
+
 
 def users_stats_v1(token):
     check_and_get_user_id(token)
@@ -246,7 +274,7 @@ def users_stats_v1(token):
     num_channels_exist = len(store['channels']['channel_id'])
     num_dms_exist = len(store['dms']['dm_id'])
     num_messages_exist = len(store['messages'])
-    
+
     user_list = []
     for user_id in store['users']['user_id']:
         for channel_id in store['channels']['channel_id']:
@@ -255,12 +283,12 @@ def users_stats_v1(token):
         for dm_id in store['dms']['dm_id']:
             if user_id in store['dms']['dm_id'][dm_id]:
                 user_list.append(user_id)
-    
+
     set(user_list)
     time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
     active_user = len(user_list)
     num_user = len(store['users']['user_id'])
-    utilization_rate = active_user/num_user
+    utilization_rate = active_user / num_user
     channels_exist = store['channels_exist']
     dms_exist = store['dms_exist']
     messages_exist = store['messages_exist']
@@ -277,10 +305,11 @@ def users_stats_v1(token):
         'utilization_rate': utilization_rate
     }
 
-
     return {'workspace_stats': workspace_stats}
 
 
+#    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+
 #
 #
 #
@@ -294,50 +323,64 @@ def users_stats_v1(token):
 #
 #
 #
-#
-######Helper Function##########    
-#
-#
-#
-#def http_check(img_url):
-#    r = re.match("http://", img_url)
-#    if r == None:
-#        raise InputError(description='Invalid Url')
-#
-#def check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id):
-#    im = Image.open(f'image/{u_id}.jpg')
-#    width, height = im.size
-#    if x_start > x_end or y_start > y_end or x_start > width or x_end > width or y_start > height or y_end > height:
-#        raise InputError(description='Invalid Size')
+######Helper Function##########
 #
 #
 #
-#
-#
-##
-#def check_type(img_url):
-#    resp = request.urlopen(img_url)
-#    img = Image.open(resp)
-#    if img.format != 'JPEG':
-#        raise InputError(description='Invalid Type')
-##
-#def imageDown(img_url):
-#    urllib.request.urlretrieve(img_url, image/u_id.jpg)
-##
-#def crop_image(img_url, x_start, y_start, x_end, y_end):
-#    im = Image.open(f'image/{u_id}.jpg')
-#    cropped = im.crop((x_start, y_start, x_end, y_end))
-#    cropped.save(f'image/{u_id}.jpg')
-#
-#
-#def serve_image():
+def http_check(img_url):
+    r = re.match("http://", img_url)
+    if r == None:
+        raise InputError(description='Invalid Url')
 
 
+def check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id):
+    # im = Image.open(f'image/{u_id}.jpg')
+
+    store = data_store.get()
+    # print('word')
+    # print(store['users']['profile_img_url'])
+
+    im = Image.open(store['users']['profile_img_url'][u_id])
+
+    width, height = im.size
+    if x_start > x_end or y_start > y_end or x_start > width or x_end > width or y_start > height or y_end > height or x_start < 0 or y_start < 0:
+        raise InputError(description='Invalid Size')
 
 
+#
+def check_type(img_url):
+    resp = urllib.request.urlopen(img_url)
+    img = Image.open(resp)
+    if img.format != 'JPEG':
+        raise InputError(description='Invalid Type')
+    #
 
 
+def imageDown(img_url, u_id):
+    # urllib.request.urlretrieve(img_url, image/{u_id}.jpg)
+    # urllib.request.urlretrieve(img_url, f'image/{u_id}.jpg')
+    urllib.request.urlretrieve(img_url, 'src/static/tmp.jpg')
+    # urllib.request.urlretrieve(f'{img_url}, image/{u_id}.jpg')
 
+
+def crop_image(img_url, x_start, y_start, x_end, y_end):
+    # im = Image.open(f'image/{u_id}.jpg')
+    im = Image.open('src/static/tmp.jpg')
+
+    cropped = im.crop((x_start, y_start, x_end, y_end))
+
+    cropped.save('src/static/{u_id}.jpg')
+
+    return 'src/static/{u_id}.jpg'
+    # cropped.save(f'image/{u_id}.jpg')
+    # cropped
+
+
+def serve_image():
+    pass
+
+
+# #########################
 
 
 def check_len(handle_str):
@@ -347,7 +390,8 @@ def check_len(handle_str):
     '''
     if len(handle_str) < 3 or len(handle_str) > 20:
         raise InputError(description='Invalid User Name')
-    
+
+
 def check_alphanumeric(handle_str):
     '''
     check teh handle is only contain number and char
@@ -355,6 +399,7 @@ def check_alphanumeric(handle_str):
     '''
     if handle_str.isalnum() == False:
         raise InputError(description='Invalid User Name')
+
 
 def check_duplicate(handle_str):
     '''
@@ -365,6 +410,7 @@ def check_duplicate(handle_str):
     for name in store['users']['user_handles']:
         if name == handle_str:
             raise InputError(description='This name has been used!')
+
 
 def check_name_first_len(first_name):
     '''
@@ -382,6 +428,7 @@ def check_name_first_len(first_name):
     if len(first_name) < 1 or len(first_name) > 50:
         raise InputError(description='Invalid First Name')
 
+
 def check_name_last_len(last_name):
     '''
     Checks length of first name
@@ -397,6 +444,7 @@ def check_name_last_len(last_name):
     '''
     if len(last_name) < 1 or len(last_name) > 50:
         raise InputError(description='Invalid Last Name')
+
 
 def check_invalid_emails(email):
     '''
@@ -417,7 +465,8 @@ def check_invalid_emails(email):
     if re.fullmatch(regex, email) and email not in store['users']['emails']:
         pass
     else:
-        raise InputError(description = 'This email is already registered!')
+        raise InputError(description='This email is already registered!')
+
 
 def check_invalid_u_id(u_id):
     '''
