@@ -124,11 +124,10 @@ def message_pin_v1(token, message_id):
         InputError: the message already has a pin   
     '''    
     store = data_store.get()
-
+    
     auth_user_id = check_and_get_user_id(token)
     check_message_id(auth_user_id, message_id, store)
     user_index = index_from_u_id(auth_user_id, store)
-
     if store['users']['is_global_owner'][user_index] == False:
         check_owner_permission(auth_user_id, message_id, store)
 
@@ -160,7 +159,7 @@ def message_unpin_v1(token, message_id):
         InputError: the message isnt pinned  
     '''    
     store = data_store.get()
-
+    
     auth_user_id = check_and_get_user_id(token)
     check_message_id(auth_user_id, message_id, store)
     user_index = index_from_u_id(auth_user_id, store)
@@ -609,19 +608,27 @@ def check_message_id(auth_user, message_id, store):
     Exceptions:
         InputError - if the user is not within the DM or channel for the message
     '''
-    if message_id in store['channels']['messages']:
-        index = store['channels']['messages'].index(message_id)
+    
+    if any(message_id in sublist for sublist in store['channels']['messages']):
+        index = next(i for i, v in enumerate(store['channels']['messages']) if message_id in v)
 
         if auth_user not in store['channels']['all_members'][index]:
             raise InputError('User is not a member of channel that contains message')
-
-    elif message_id in store['dms']['messages']:
-        index = store['channels']['messages'].index(message_id)
+        else:
+            return
+    
+    if any(message_id in sublist for sublist in store['dms']['messages']):
+        
+        index = next(i for i, v in enumerate(store['dms']['messages']) if message_id in v)
 
         if auth_user not in store['dms']['all_members'][index]:
             raise InputError('User is not a member of DM that contains message')
-    else:
-        raise InputError('Message does not exist')
+        else:
+            return
+    
+    raise InputError('Message does not exist in DM/Channel that user has joined')    
+        
+    
 
 def check_owner_permission(auth_user, message_id, store):
     '''
@@ -634,17 +641,22 @@ def check_owner_permission(auth_user, message_id, store):
     Exceptions:
         AccessError - if the user is not an owner within the DM or channel 
     '''
-    if message_id in store['channels']['messages']:
-        index = store['channels']['messages'].index(message_id)
+    if any(message_id in sublist for sublist in store['channels']['messages']):
+        index = next(i for i, v in enumerate(store['channels']['messages']) if message_id in v)
 
-        if auth_user not in store['channels']['owner_user_id'][index]:
+        if auth_user != store['channels']['owner_user_id'][index]:
             raise AccessError('User is not an owner of channel that contains message')
+        else:
+            return
 
-    elif message_id in store['dms']['messages']:
-        index = store['channels']['messages'].index(message_id)
-
-        if auth_user not in store['dms']['owner_user_id'][index]:
+    if any(message_id in sublist for sublist in store['dms']['messages']):
+        
+        index = next(i for i, v in enumerate(store['dms']['messages']) if message_id in v)
+        if auth_user != store['dms']['owner_user_id'][index]:
             raise AccessError('User is not an owner of the DM')
+        else:
+            return
+     
 
 def message_index_from_id(message_id, store):
     '''
