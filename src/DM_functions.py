@@ -28,7 +28,6 @@ def search_v1(token, query_str):
 
     message_list = []
     messages_dict = []
-    user_index = index_from_u_id(auth_user_id, store)
     
     channels_joined = []
     dms_joined = []

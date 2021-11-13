@@ -295,7 +295,7 @@ def test_pin_invalid_token():
     response_create_data = response_create.json()
     assert response_create_data['code'] == ACCESSERROR
 
-def test_pin_invalid_token():
+def test_unpin_invalid_token():
     requests.delete(f'{BASE_URL}/clear/v1')
 
     # Tests a nonexistant user trying to access the function, raising AccessError if unable
@@ -607,7 +607,7 @@ def test_multiple_dm_messages(setup):
     assert response_create_data['end'] == 50   
 
 
-def test_long_string_search(setup):
+def test_simple_string_search(setup):
     _, joe, marry, _ = setup
 
     # sends two messages from joe and marry
