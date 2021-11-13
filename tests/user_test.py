@@ -486,10 +486,10 @@ def test_upload_invalid_start_end_xy(setup):
     photo_info = {
         "token": response_log_joe['token'],
         "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
-        "x_start": 999, 
+        "x_start": 99, 
         "y_start": 10, 
-        "x_end": 9999, 
-        "y_end": 100 
+        "x_end": 99, 
+        "y_end": 10 
     }
 
 
@@ -802,6 +802,48 @@ def test_upload_valid_same(setup):
 
 
 
+
+
+
+
+
+'''
+def test_user_stats(setup):
+    response_log_joe, _ = setup
+    user_all_info = {"token": response_log_joe["token"]}
+    response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
+    response_data = response.json()
+    assert response_data == {}
+
+def test_users_stats(setup):
+    response_log_joe, _ = setup
+    user_all_info = {"token": response_log_joe["token"]}
+
+   
+    response = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info)
+    response_data = response.json()
+    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    
+    
+    assert response_data == {'workspace_stats': {'channels_exist': [{'num_channels_exist': 0, 'time_stamp': time_stamp},
+        {'num_channels_exist': 0, 'time_stamp': time_stamp}], 
+        'dms_exist': [{'num_dms_exist': 0, 'time_stamp': time_stamp},
+        {'num_dms_exist': 0,
+        'time_stamp': time_stamp}],
+        'messages_exist': [{'num_messages_sent': 0,
+        'time_stamp': time_stamp},
+        {'num_messages_sent': 0,
+        'time_stamp': time_stamp}],
+        'utilization_rate': 0.0}}
+
+
+
+
+'''
+
+
+
+
 # def test_user_stats(setup):
 #     response_log_joe, _ = setup
 #     user_all_info = {"token": response_log_joe["token"]}
@@ -860,3 +902,53 @@ def test_upload_valid_same(setup):
 
 
 
+
+# def test_user_stats(setup):
+#     response_log_joe, _ = setup
+#     user_all_info = {"token": response_log_joe["token"]}
+#     response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
+#     store = data_store.get()
+
+#     u_id = check_and_get_user_id(response_log_joe["token"])
+
+#     channels_joined = store['users']['channels_joined'][u_id]
+#     dms_joined = store['users']['dms_joined'][u_id]
+#     messages_sent = store['users']['message_sent'][u_id]
+
+
+#     if (num_channels + num_dms + num_messages) > 0:
+#         involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent)/(num_channels + num_dms + num_messages)
+
+#     if involvement_rate > 1:
+#         involvement_rate = 1
+
+#     user_stats = {
+#         'channels_joined': channels_joined,
+#         'dms_joined': dms_joined,
+#         'messages_sent': messages_sent,
+#         'involvement_rate': involvement_rate
+#     }
+
+
+#     response_data = response.json()
+#     assert response_data == {'user_stats': user_stats}
+
+# def test_users_stats(setup):
+#     response_log_joe, _ = setup
+#     response = requests.get(f'{BASE_URL}users/stats/v1', params=response_log_joe['token'])
+#     response_data = response.json()
+#     user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+
+#     store = data_store.get()
+#     #u_id = check_and_get_user_id(token)
+#     #utilization_rate = active_user/num_user
+#     channels_exist = store['channels_exist']
+#     dms_exist = store['dms_exist']
+#     messages_exist = store['messages_exist']
+
+#     assert response_data == {
+#         'channels_exist': channels_exist,
+#         'dms_exist': dms_exist,
+#         'messages_exist': messages_exist,
+#         'utilization_rate': utilization_rate
+#     }

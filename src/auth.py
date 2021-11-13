@@ -5,6 +5,8 @@ import jwt
 import smtplib
 from src.other import *
 
+from datetime import datetime, timezone
+
 import string    
 import random
 import re
@@ -90,6 +92,8 @@ def auth_register_v1(email, password, name_first, name_last):
     check_last_name(name_last)
 
     create_user_handle(name_first, name_last)
+    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp() # Augustus and Simon add this line
+    store['users']['channels_joined'].append(0)
 
     if store['users']['user_id'] == []: # First user to register
         store['users']['user_id'].append(0)
@@ -97,6 +101,15 @@ def auth_register_v1(email, password, name_first, name_last):
         #dom's added line
         store['users']['permissions'].append(1)
         store['users']['removed_user'].append(False)
+
+        # Augustus and Simon add these
+
+        store['users']['channels_joined'].append(0)
+
+
+
+
+
     else:
         store['users']['user_id'].append(store['users']['user_id'][-1] + 1)
         store['users']['is_global_owner'].append(False)
@@ -110,6 +123,8 @@ def auth_register_v1(email, password, name_first, name_last):
     store['users']['last_names'].append(name_last)
     store['users']['password_reset_code'].append(0)  #dom added new line
     store['users']['notifications'].append([])
+
+    
 
     user_id = store['users']['user_id'][-1]
 

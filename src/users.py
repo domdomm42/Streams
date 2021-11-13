@@ -256,7 +256,15 @@ def user_stats_v1(token):
         if check_if_message_id_exists_and_get_sender_id(message['message_id']) == u_id:
             num_messages_sent = num_messages_sent + 1 
     time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    
+    #print(store['users']['channels_joined'])# empty
+    
+    #channels_joined = store['users']['channels_joined']
+
+    
     channels_joined = store['users']['channels_joined'][u_id]
+    
+    
     dms_joined = store['users']['dms_joined'][u_id]
     messages_sent = store['users']['message_sent'][u_id]
     channel_new_stat = {'num_channels_joined': num_channel_joined, 'time_stamp': time_stamp}
@@ -325,7 +333,8 @@ def users_stats_v1(token):
     return {'workspace_stats': workspace_stats}
 
 
-#
+#    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+
 #
 #
 #
