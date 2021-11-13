@@ -338,13 +338,14 @@ def check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id):
 
 #
 def check_type(img_url):
-    resp = request.urlopen(img_url)
+    
+    resp = urllib.request.urlopen(img_url)
     img = Image.open(resp)
     if img.format != 'JPEG':
         raise InputError(description='Invalid Type')
     #
 def imageDown(img_url):
-    #urllib.request.urlretrieve(img_url, image/{u_id}.jpg)
+    #urllib.urllib.request.urlretrieve(img_url, image/{u_id}.jpg)
     urllib.request.urlretrieve(f'{img_url}, image/{u_id}.jpg')
 
 def crop_image(img_url, x_start, y_start, x_end, y_end):
