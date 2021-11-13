@@ -186,28 +186,30 @@ def user_profile_setemail_v1(token, email):
 
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
    #check valid token
-   u_id = check_and_get_user_id(token)
+    u_id = check_and_get_user_id(token)
+    
+    #check the url is start with https://
+    http_check(img_url)
+    
+    #check photo type
+    check_type(img_url)
+    imageDown(img_url, u_id)
+    
+    #check the start and end is valid
+    check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id)
+    
+    
+    
+    #crop_image(img_url, x_start, y_start, x_end, y_end, u_id)
+    store = data_store.get()
+
+    store['users']['profile_img_url'][u_id] = crop_image(img_url, x_start, y_start, x_end, y_end)
+    data_store.set(store)
+
+    serve_image()
    
-   #check the url is start with https://
-   http_check(img_url)
    
-   #check photo type
-   check_type(img_url)
-   imageDown(img_url, u_id)
-   
-   #check the start and end is valid
-   check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id)
-   
-   
-   
-   crop_image(img_url, x_start, y_start, x_end, y_end, u_id)
-   
-   
-   
-   serve_image()
-   
-   
-   return {}
+    return {}
 
 
 
@@ -327,7 +329,12 @@ def http_check(img_url):
         raise InputError(description='Invalid Url')
 
 def check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id):
-    im = Image.open(f'image/{u_id}.jpg')
+    
+    #im = Image.open(f'image/{u_id}.jpg')
+    
+    
+    store = data_store.get()
+    im = Image.open(store['users']['profile_img_url'])
     width, height = im.size
     if x_start > x_end or y_start > y_end or x_start > width or x_end > width or y_start > height or y_end > height:
         raise InputError(description='Invalid Size')
@@ -344,19 +351,28 @@ def check_type(img_url):
     if img.format != 'JPEG':
         raise InputError(description='Invalid Type')
     #
-def imageDown(img_url):
-    #urllib.urllib.request.urlretrieve(img_url, image/{u_id}.jpg)
-    urllib.request.urlretrieve(f'{img_url}, image/{u_id}.jpg')
+def imageDown(img_url, u_id):
+    
+    #urllib.request.urlretrieve(img_url, image/{u_id}.jpg)
+    #urllib.request.urlretrieve(img_url, f'image/{u_id}.jpg')
+    urllib.request.urlretrieve(img_url, u_id)
+    #urllib.request.urlretrieve(f'{img_url}, image/{u_id}.jpg')
 
 def crop_image(img_url, x_start, y_start, x_end, y_end):
-    im = Image.open(f'image/{u_id}.jpg')
+    
+    #im = Image.open(f'image/{u_id}.jpg')
+    im = Image.open(img_url)
+    
     cropped = im.crop((x_start, y_start, x_end, y_end))
     
+
+    return cropped
     #cropped.save(f'image/{u_id}.jpg')
     #cropped
 
 def serve_image():
 
+    
     pass
 
 # #########################

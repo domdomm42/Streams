@@ -429,31 +429,77 @@ def test_upload_invalid_http(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
-def test_upload_invalid_start_end(setup):
+def test_upload_invalid_start_end_x(setup):
     response_log_joe, _ = setup
     photo_info = {
         "token": response_log_joe['token'],
-        "img_url": "http://www.cse.unsw.edu.au/~richardb/index_files/RichardBuckland-200.png",
-        "x_start": 399, 
-        "y_start": 399, 
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 39, 
+        "y_start": 10, 
         "x_end": 1, 
-        "y_end": 1 
+        "y_end": 100 
     }
+
+
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_invalid_start_end_y(setup):
+    response_log_joe, _ = setup
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 9, 
+        "y_start": 39, 
+        "x_end": 19, 
+        "y_end": 9 
+    }
+
+
+    
    
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
     assert response_data['code'] == 400
 
-def test_upload_out_of_ranges(setup):
+
+
+
+
+
+
+
+
+def test_upload_out_of_ranges_x(setup):
     response_log_joe, _ = setup
     
     # 159 * 200
     photo_info = {
         "token": response_log_joe['token'],
-        "img_url": "http://www.cse.unsw.edu.au/~richardb/index_files/RichardBuckland-200.png",
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
         "x_start": 1, 
-        "y_start": -1, 
+        "y_start": 1, 
         "x_end": 999, 
+        "y_end": 99
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+
+def test_upload_out_of_ranges_y(setup):
+    response_log_joe, _ = setup
+    
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1, 
+        "y_start": 1, 
+        "x_end": 99, 
         "y_end": 999
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)

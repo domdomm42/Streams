@@ -44,6 +44,7 @@ initial_object = {
         'channels_joined': [],    #NEW
         'dms_joined': [],         #NEW
         'messages_sent': [],      #NEW
+        'profile_img_url': []
     },
 
     'channels': {
