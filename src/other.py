@@ -36,6 +36,7 @@ def clear_v1():
     store['users']['channels_joined'] = [] # new -Simon
     store['users']['dms_joined'] = [] # new -Simon
     store['users']['messages_sent'] = []# new -Simon
+    store['users']['profile_img_url'] = []
 
     store['channels']['channel_id'] = []
     store['channels']['channel_name'] = []
@@ -89,6 +90,8 @@ def print_store_debug():
     print(store['users']['permissions'])
     print("Printing Password reset codes")
     print(store['users']['password_reset_code'])
+    print("Printing Profile IMG URL")
+    print(store['users']['profile_img_url'])
 
     print(" ")
 

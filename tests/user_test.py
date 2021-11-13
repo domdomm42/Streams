@@ -75,7 +75,6 @@ def test_user_all_output(setup):
     user_all_info = {"token": response_log_joe["token"]}
     response = requests.get(f'{BASE_URL}users/all/v1', params=user_all_info)
     response_data = response.json()
-    print(response_data)
         
     # Match the corresponding data
     assert response_data == {
@@ -777,25 +776,6 @@ def test_upload_not_jpg_invalid(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
-
-def test_upload_valid(setup):
-    response_log_joe, _ = setup
-
-    # 159 * 200
-    photo_info = {
-        "token": response_log_joe['token'],
-        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
-        "x_start": 10,
-        "y_start": 10,
-        "x_end": 90,
-        "y_end": 90
-    }
-    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
-    # response_data = response.json()
-
-    assert response.status_code == 200
-
-
 def test_upload_valid_same(setup):
     response_log_joe, _ = setup
 
@@ -812,6 +792,27 @@ def test_upload_valid_same(setup):
     # response_data = response.json()
 
     assert response.status_code == 200
+
+    
+def test_upload_valid(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 10,
+        "y_start": 10,
+        "x_end": 90,
+        "y_end": 90
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+
+
+    assert response.status_code == 200
+
+
+
 
 '''
 def test_user_stats(setup):

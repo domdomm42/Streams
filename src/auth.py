@@ -127,6 +127,7 @@ def auth_register_v1(email, password, name_first, name_last):
     store['users']['last_names'].append(name_last)
     store['users']['password_reset_code'].append(0)  # dom added new line
     store['users']['notifications'].append([])
+    store['users']['profile_img_url'].append('')
 
     user_id = store['users']['user_id'][-1]
 
@@ -458,16 +459,3 @@ def check_valid_password(email, password):
             counter = counter + 1
 
     raise InputError('Invalid Password!')
-
-
-if __name__ == "__main__":
-    auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
-    auth_login_v1("TeamBeagle1531@gmail.com", "password")
-    auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
-
-    store = data_store.get()
-    code = store['users']['password_reset_code'][0]
-
-    auth_passwordreset_reset_v1(code, "dompassword")
-    auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
-    print_store_debug()

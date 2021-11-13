@@ -377,25 +377,6 @@ def index_from_dm_id(dm_id, store):
         counter += 1
     return counter
 
-
-def index_from_u_id(u_id, store):
-    '''
-    Loops through all u_id's to find the index of the value given
-    
-    Arguments:
-            u_id <int>: indetifying integer of the user
-            store <dictionary>: the data_store used to save all info
-
-    Return Values:
-            counter <int>: counts the index where the u_id is located      
-    '''
-    counter = 0
-    for num in store['users']['user_id']:
-        if u_id == num:
-            break
-        counter += 1
-    return counter
-
 def get_message(message_id):
     '''
     This function takes message_id and returns the message associated with message_id

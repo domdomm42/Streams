@@ -408,13 +408,6 @@ def test_simple_password_reset():
 
     user_info_password_req = {"email": "TeamBeagle1531@gmail.com"}
     requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_password_req)
-
-    
-    # store = data_store.get()
-    # code = store['users']['password_reset_code'][0]
-
-    # auth_passwordreset_reset_v1(code, "dompassword")
-    # assert auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
     
     
 def test_new_pass_too_short():
@@ -429,17 +422,7 @@ def test_new_pass_too_short():
 
     user_info_password_req = {"email": "TeamBeagle1531@gmailzz.com"}
     requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_password_req)
-    
-    # requests.delete(f'{BASE_URL}/clear/v1')
-    # auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
-    # auth_login_v1("TeamBeagle1531@gmail.com", "password")
-    # auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
 
-    # store = data_store.get()
-    # code = store['users']['password_reset_code'][0]
-
-    # with pytest.raises(InputError):
-    #     auth_passwordreset_reset_v1(code, "dom")
 
 
 def test_invalid_reset_code():
