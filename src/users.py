@@ -203,8 +203,10 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     im = Image.open('src/static/tmp.jpg')
     width, height = im.size
 
-    if x_start > x_end or y_start > y_end or x_start > width or x_end > width or y_start > height or y_end > height:
+    if x_start >= x_end or y_start >= y_end or x_start >= width or x_end >= width or y_start >= height or y_end >= height:
         raise InputError(description='Invalid Size')
+
+
 
 
     im = im.crop((x_start, y_start, x_end, y_end))
@@ -351,8 +353,8 @@ def check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id):
     
     
     store = data_store.get()
-    print('word')
-    print(store['users']['profile_img_url'])
+    #print('word')
+    #print(store['users']['profile_img_url'])
 
     im = Image.open(store['users']['profile_img_url'][u_id])
     

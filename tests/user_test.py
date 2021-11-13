@@ -481,7 +481,7 @@ def test_upload_invalid_start_end_x(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
-def test_upload_invalid_start_end_x1(setup):
+def test_upload_invalid_start_end_xy(setup):
     response_log_joe, _ = setup
     photo_info = {
         "token": response_log_joe['token'],
@@ -559,6 +559,106 @@ def test_upload_out_of_ranges_y(setup):
     response_data = response.json()
     assert response_data['code'] == 400
 
+
+def test_upload_out_of_ranges_xy(setup):
+    response_log_joe, _ = setup
+    
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1, 
+        "y_start": 1, 
+        "x_end": 999, 
+        "y_end": 999
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_upload_out_of_ranges_xya(setup):
+    response_log_joe, _ = setup
+    
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 199, 
+        "y_start": 1, 
+        "x_end": 9999, 
+        "y_end": 999
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_out_of_ranges_xyb(setup):
+    response_log_joe, _ = setup
+    
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1, 
+        "y_start": 199, 
+        "x_end": 999, 
+        "y_end": 9999
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_upload_out_of_ranges_0(setup):
+    response_log_joe, _ = setup
+    
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 0, 
+        "y_start": 0, 
+        "x_end": 0, 
+        "y_end": 0
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_same_x(setup):
+    response_log_joe, _ = setup
+    
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1, 
+        "y_start": 10, 
+        "x_end": 1, 
+        "y_end": 99
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+def test_upload_same_y(setup):
+    response_log_joe, _ = setup
+    
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 10, 
+        "y_start": 1, 
+        "x_end": 99, 
+        "y_end": 1
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
 def test_upload_not_jpg(setup):
     response_log_joe, _ = setup
     
@@ -576,6 +676,8 @@ def test_upload_not_jpg(setup):
     assert response_data['code'] == 400
 
 
+
+
 def test_upload_valid(setup):
     response_log_joe, _ = setup
     
@@ -589,7 +691,7 @@ def test_upload_valid(setup):
         "y_end": 90
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
-    response_data = response.json()
+    #response_data = response.json()
 
     assert response.status_code == 200
 
