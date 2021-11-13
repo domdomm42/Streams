@@ -259,7 +259,7 @@ def user_profile():
 @APP.route("/user/profile/setname/v1", methods=['PUT'])
 def user_profile_setname():
     request_data = request.get_json()
-    response = user_profile_setname_v1(request_data['token'], request_data['first_names'], request_data['last_names'])
+    response = user_profile_setname_v1(request_data['token'], request_data['name_first'], request_data['name_last'])
     return dumps(response)
 
 
@@ -267,7 +267,7 @@ def user_profile_setname():
 @APP.route("/user/profile/setemail/v1", methods=['PUT'])
 def user_profile_setemail():
     request_data = request.get_json()
-    response = user_profile_setemail_v1(request_data['token'], request_data['emails'])
+    response = user_profile_setemail_v1(request_data['token'], request_data['email'])
     return dumps(response)
 
 

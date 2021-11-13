@@ -1,6 +1,7 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
+from src.other import print_store_debug
 from src.message import check_if_message_id_exists_and_get_sender_id
 from datetime import datetime, timezone
 import re
@@ -22,12 +23,12 @@ def user_profile_sethandle_v1(token, handle_str):
             InputError('Invalid input') - length of handle_str is not between 3 and 20 characters inclusive
                                         - handle_str contains characters that are not alphanumeric
                                         - the handle is already used by another user
-
+    
     Return value:
         return {}
     '''
     user_id = check_and_get_user_id(token)
-
+    
     check_len(handle_str)
     check_alphanumeric(handle_str)
     check_duplicate(handle_str)
@@ -35,7 +36,7 @@ def user_profile_sethandle_v1(token, handle_str):
     store = data_store.get()
 
     store['users']['user_handles'][user_id] = handle_str
-
+    
     data_store.set(store)
     return {}
 
@@ -52,21 +53,24 @@ def user_all_v1(token):
     Return value:
         return {users} - Returns a list of all users and their details
     '''
+    
 
     store = data_store.get()
     user_id = check_and_get_user_id(token)
-
+    
     users = []
     for user_id in store['users']['user_id']:
         if store['users']['removed_user'][user_id] == False:
+            
             user_email = store['users']['emails'][user_id]
             user_name_first = store['users']['first_names'][user_id]
             user_name_last = store['users']['last_names'][user_id]
             user_handle_str = store['users']['user_handles'][user_id]
-            users.append({'u_id': user_id, 'email': user_email,
-                          'name_first': user_name_first,
-                          'name_last': user_name_last,
-                          'handle_str': user_handle_str})
+            users.append({'u_id': user_id, 'email': user_email, 
+                            'name_first': user_name_first, 
+                            'name_last': user_name_last, 
+                            'handle_str': user_handle_str, 
+                            'profile_img_url': ''})
 
     data_store.set(store)
 
@@ -75,6 +79,7 @@ def user_all_v1(token):
 
 # List of all valid users
 def user_profile_v1(token, u_id):
+    
     '''
     Returns information on the user_id, email, first name, last name and handle
 
@@ -90,18 +95,18 @@ def user_profile_v1(token, u_id):
 
     store = data_store.get()
     _ = check_and_get_user_id(token)
-
+    
     check_invalid_u_id(u_id)
-    user = []
     u_id = store['users']['user_id'][u_id]
     user_email = store['users']['emails'][u_id]
     user_name_first = store['users']['first_names'][u_id]
     user_name_last = store['users']['last_names'][u_id]
     user_handle_str = store['users']['user_handles'][u_id]
-    user.append({'user_id': u_id, 'email': user_email,
-                 'first_name': user_name_first,
-                 'last_name': user_name_last,
-                 'handle_str': user_handle_str})
+    user = {'u_id': u_id, 'email': user_email, 
+                            'name_first': user_name_first, 
+                            'name_last': user_name_last, 
+                            'handle_str': user_handle_str,
+                            'profile_img_url': ''}
 
     return {'user': user}
 
@@ -123,7 +128,7 @@ def user_profile_setname_v1(token, name_first, name_last):
     Return value:
         return {}
     '''
-
+    
     user_id = check_and_get_user_id(token)
     check_name_first_len(name_first)
     check_name_last_len(name_last)
@@ -133,6 +138,8 @@ def user_profile_setname_v1(token, name_first, name_last):
     store['users']['first_names'][user_id] = name_first
     store['users']['last_names'][user_id] = name_last
 
+    print('sdhf')
+    print_store_debug()
     data_store.set(store)
 
     return {}
@@ -154,6 +161,7 @@ def user_profile_setemail_v1(token, email):
     Return value:
         return {}
     '''
+    
 
     user_id = check_and_get_user_id(token)
     check_invalid_emails(email)
@@ -165,6 +173,16 @@ def user_profile_setemail_v1(token, email):
     data_store.set(store)
 
     return {}
+
+
+
+
+
+
+
+
+
+
 
 
 # IT3
