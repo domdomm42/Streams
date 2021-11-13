@@ -667,7 +667,7 @@ def message_index_from_id(message_id, store):
             store <dictionary>: the data_store used to save all info
 
     Return Values:
-            counter <int>: counts the index where the u_id is located      
+            counter <int>: counts the index where the message is located      
     '''
     message_index = 0
     for num in store['messages']:
@@ -678,6 +678,16 @@ def message_index_from_id(message_id, store):
     return message_index 
 
 def index_from_channel_id(channel_id, store):
+    '''
+    Loops through all channels's to find the index of the value given
+    
+    Arguments:
+            channel_id <int>: indetifying integer of the channel
+            store <dictionary>: the data_store used to save all info
+
+    Return Values:
+            counter <int>: counts the index where the channel is located      
+    '''
     channel_index = 0
     for num in store['channels']['channel_id']:
         if channel_id == num:
