@@ -5,26 +5,29 @@ import jwt
 import smtplib
 from src.other import *
 
-import string    
+from datetime import datetime, timezone
+
+import string
 import random
 import re
 
 SECRET = 'BEAGLE'
 
+
 def auth_login_v1(email, password):
-    ''' 
-    The Function above takes in email and password and checks if the email is 
+    '''
+    The Function above takes in email and password and checks if the email is
     registered, if email is registered, it will then check if password matches,
     if email and password is registered and correct, the user id will be returned
 
     Arguments:
         email - Integers      - Used to check whether the email given is registered
         password - Integers   - Used to check whether the password matches the email
-    
+
     Exceptions:
-        Input Error - Occurs when either the email is not registered or the password given 
+        Input Error - Occurs when either the email is not registered or the password given
                       does not match the email.
-    
+
     Return Value:
         Returns 'auth_user_id': counter - When check_valid_email and check_valid_password == 1 and
                                           when the index of the list of password == index of list of email.
@@ -35,7 +38,7 @@ def auth_login_v1(email, password):
     email_list = []
     user_handles_list = []
 
-    check_valid_email(email) 
+    check_valid_email(email)
     check_valid_password(email, hash(password))
 
     for data_email in store["users"]["emails"]:
@@ -90,17 +93,31 @@ def auth_register_v1(email, password, name_first, name_last):
     check_last_name(name_last)
 
     create_user_handle(name_first, name_last)
+    # time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp() # Augustus and Simon add this line
 
-    if store['users']['user_id'] == []: # First user to register
+    datetime.now().replace(tzinfo=timezone.utc).timestamp()  # Augustus and Simon add this line
+
+    store['users']['channels_joined'].append(0)
+
+    if store['users']['user_id'] == []:  # First user to register
         store['users']['user_id'].append(0)
-        store['users']['is_global_owner'].append(True) 
-        #dom's added line
+        store['users']['is_global_owner'].append(True)
+        # dom's added line
         store['users']['permissions'].append(1)
         store['users']['removed_user'].append(False)
+
+        # Augustus and Simon add these
+
+        store['users']['channels_joined'].append(0)
+
+
+
+
+
     else:
         store['users']['user_id'].append(store['users']['user_id'][-1] + 1)
         store['users']['is_global_owner'].append(False)
-        #dom's added line 
+        # dom's added line
         store['users']['permissions'].append(2)
         store['users']['removed_user'].append(False)
 
@@ -108,7 +125,7 @@ def auth_register_v1(email, password, name_first, name_last):
     store['users']['passwords'].append(hash(password))
     store['users']['first_names'].append(name_first)
     store['users']['last_names'].append(name_last)
-    store['users']['password_reset_code'].append(0)  #dom added new line
+    store['users']['password_reset_code'].append(0)  # dom added new line
     store['users']['notifications'].append([])
 
     user_id = store['users']['user_id'][-1]
@@ -119,6 +136,7 @@ def auth_register_v1(email, password, name_first, name_last):
         'token': generate_jwt(user_id),
         'auth_user_id': user_id
     }
+
 
 def auth_logout_v1(token):
     '''
@@ -131,7 +149,7 @@ def auth_logout_v1(token):
         No given exceptions.
 
     Return Value:
-        {} 
+        {}
     '''
 
     decoded_token = jwt.decode(token, SECRET, algorithms=['HS256'])
@@ -155,8 +173,8 @@ def auth_logout_v1(token):
     data_store.set(store)
     return ({})
 
-def auth_passwordreset_request_v1(email):
 
+def auth_passwordreset_request_v1(email):
     store = data_store.get()
     valid_email_check = 0
     counter = 0
@@ -164,24 +182,24 @@ def auth_passwordreset_request_v1(email):
     for stored_email in store['users']['emails']:
         if email != stored_email:
             counter += 1
-            
+
         valid_email_check += 1
         break
 
     if counter == len(store['users']['emails']) and email != store['users']['emails'][counter - 1]:
         return 1
 
-    if valid_email_check > 0: 
+    if valid_email_check > 0:
         reset_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
 
     store['users']['password_reset_code'][counter] = reset_code
-    
+
     ################################################################################
     gmail_user = 'TeamBeagleSender@gmail.com'
     gmail_password = '@beaglesend1531'
 
     sent_from = gmail_user
-    to = [email]
+    to = ['me@gmail.com', 'TeamBeagle1531@gmail.com']
     subject = 'Password Reset code'
     body = reset_code
 
@@ -212,24 +230,28 @@ def auth_passwordreset_request_v1(email):
 
     data_store.set(store)
 
-def auth_passwordreset_reset_v1(reset_code, new_password):
 
-    store = data_store.get()
-    if reset_code == 0 or reset_code not in store['users']['password_reset_code']:
+def auth_passwordreset_reset_v1(reset_code, new_password):
+    if reset_code == 0:
         raise InputError(description="Reset code is not a valid reset code!")
 
-    if len(new_password) < 6:
-        raise InputError(description="Password entered is less than 6 characters long!")
-
+    store = data_store.get()
     counter = 0
     for codes in store['users']['password_reset_code']:
         if reset_code != codes:
             counter += 1
         break
 
-    if counter == len(store['users']['password_reset_code']) and reset_code != store['users']['password_reset_code'][counter - 1]:
+    if counter == len(store['users']['password_reset_code']) and reset_code != store['users']['password_reset_code'][
+        counter - 1]:
         raise InputError(description="Reset code is not a valid reset code!")
-    
+
+    # if counter == 0:
+    #     raise InputError(description="Reset code is not a valid reset code!")
+
+    if len(new_password) < 6:
+        raise InputError(description="Password entered is less than 6 characters long!")
+
     store['users']['passwords'][counter] = hash(new_password)
     store['users']['password_reset_code'][counter] = 0
 
@@ -262,10 +284,11 @@ def check_email(email):
     if re.fullmatch(regex, email) and email not in store['users']['emails']:
         pass
     else:
-        raise InputError(description = 'This email is already registered!')
+        raise InputError(description='This email is already registered!')
+
 
 # --- Check password ---
-# This function takes in a password (string) and checks if the 
+# This function takes in a password (string) and checks if the
 # password is >= 6 characters
 # This function does not return anything
 def check_password(password):
@@ -287,7 +310,7 @@ def check_password(password):
 
 
 # --- Check first name ---
-# This function takes in the user's first name (string) and checks 
+# This function takes in the user's first name (string) and checks
 # if the first name is between 1 and 50 characters inclusive
 # This function does not return anything
 def check_first_name(name_first):
@@ -307,8 +330,9 @@ def check_first_name(name_first):
     if len(name_first) < 1 or len(name_first) > 50:
         raise InputError('Invalid first name!')
 
+
 # --- Check last name ---
-# This function takes in the user's last name (string) and checks 
+# This function takes in the user's last name (string) and checks
 # if the last name is between 1 and 50 characters inclusive
 # This function does not return anything
 def check_last_name(name_last):
@@ -328,6 +352,7 @@ def check_last_name(name_last):
     if len(name_last) < 1 or len(name_last) > 50:
         raise InputError('Invalid last name!')
 
+
 # --- Create user_handle ---
 # This function takes in the user's first and last name (strings)
 # and creates a unique user_handle (string)
@@ -346,12 +371,11 @@ def create_user_handle(name_first, name_last):
         No return value, just appends to the dictionary in data_store.
     '''
 
-
     user_handle = (name_first.lower() + name_last.lower())[0:20]
 
     # Obtain data
     store = data_store.get()
-    
+
     # Check if the user_handle is unique,
     # If user_handle is not unique, then the function will add
     # a number at the end of the function
@@ -360,10 +384,11 @@ def create_user_handle(name_first, name_last):
     while user_handle in store['users']['user_handles']:
         user_handle = user_handle_copy + str(i)
         i += 1
-    
+
     store['users']['user_handles'].append(user_handle)
 
     data_store.set(store)
+
 
 # --- Checks if email is registered ---
 # This function takes in an email and checks if
@@ -382,23 +407,21 @@ def check_valid_email(email):
         No return value, only raises error if email is not registered.
     '''
 
-
     store = data_store.get()
     email_list = []
-
 
     for data_email in store["users"]["emails"]:
         email_list.append(data_email)
 
     for stored_email_list in email_list:
         if stored_email_list == email:
-            
             return 1
-    
+
     raise InputError('Email not registered!')
 
+
 # --- Checks if password matches registered email ---
-# This function takes in password and check if 
+# This function takes in password and check if
 # password matches the registered email, if it doesn't, return
 # Error.
 def check_valid_password(email, password):
@@ -414,10 +437,9 @@ def check_valid_password(email, password):
     Return Value:
         No return value, only raises error password doesn't match email.
     '''
-    
+
     email_list = []
     password_list = []
-    
 
     store = data_store.get()
     for data_email in store["users"]["emails"]:
@@ -439,18 +461,13 @@ def check_valid_password(email, password):
 
 
 if __name__ == "__main__":
-    clear_v1()
-    auth_register_v1("cottoneyedjoe@gmail.com", "password", "Cotton", "Eyed")
-    auth_login_v1("cottoneyedjoe@gmail.com", "password")
-
-    auth_register_v1("TeamBeagle1531@gmail.com", "password1", "Joe", "Tim")
-    auth_login_v1("TeamBeagle1531@gmail.com", "password1")
+    auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
+    auth_login_v1("TeamBeagle1531@gmail.com", "password")
     auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
 
     store = data_store.get()
-    code = store['users']['password_reset_code'][1]
+    code = store['users']['password_reset_code'][0]
 
     auth_passwordreset_reset_v1(code, "dompassword")
     auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
-
     print_store_debug()
