@@ -92,7 +92,10 @@ def auth_register_v1(email, password, name_first, name_last):
     check_last_name(name_last)
 
     create_user_handle(name_first, name_last)
-    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp() # Augustus and Simon add this line
+    #time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp() # Augustus and Simon add this line
+    
+    datetime.now().replace(tzinfo=timezone.utc).timestamp() # Augustus and Simon add this line
+
     store['users']['channels_joined'].append(0)
 
     if store['users']['user_id'] == []: # First user to register
