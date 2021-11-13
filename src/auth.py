@@ -98,7 +98,7 @@ def auth_register_v1(email, password, name_first, name_last):
     datetime.now().replace(tzinfo=timezone.utc).timestamp()  # Augustus and Simon add this line
 
     store['users']['channels_joined'].append(0)
-
+    store['users']['channels_joined'].append(0)
     if store['users']['user_id'] == []:  # First user to register
         store['users']['user_id'].append(0)
         store['users']['is_global_owner'].append(True)

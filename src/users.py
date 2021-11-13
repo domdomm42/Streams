@@ -216,12 +216,16 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     im = im.crop((x_start, y_start, x_end, y_end))
 
     # cropped = im.crop((x_start, y_start, x_end, y_end))
-    im.save(f'src/static/{u_id}.jpg')
+    
     # cropped.save('src/static/{u_id}.jpg')
 
     crop_image(img_url, x_start, y_start, x_end, y_end)
 
+    im.save(f'src/static/{u_id}.jpg')
+
+
     # store['users']['profile_img_url'][f'{u_id}'] = f'src/static/{u_id}.jpg'
+    
     # store['users']['profile_img_url'][u_id] = f'src/static/{u_id}.jpg'
     store['users']['profile_img_url'].append(f'src/static/{u_id}.jpg')
 
