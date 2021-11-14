@@ -203,6 +203,210 @@ def test_messages_not_member(setup):
     assert response_create_data['code'] == ACCESSERROR
 
 '''
+INVALIDITY TESTS FOR MESSAGE REACT & UNREACT
+'''
+def test_react_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    dm_react = {"token": '-1', "message_id": 1, 'react_id': 1}
+    response_create = requests.post(f'{BASE_URL}/message/react/v1', json = dm_react).json()
+    
+    assert response_create['code'] == ACCESSERROR
+
+def test_unreact_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    dm_unreact = {"token": '-1', "message_id": 1, 'react_id': 1}
+    response_create = requests.post(f'{BASE_URL}/message/unreact/v1', json = dm_unreact)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_unreact_invalid_message_id(setup):
+    _, joe, _, _ = setup
+
+    # Tests react where the message does not exist
+    dm_react = {"token": joe, "message_id": 1, "react_id": 1}
+    response_create = requests.post(f'{BASE_URL}/message/react/v1', json = dm_react)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_message_id_unreact(setup):
+    _, joe, _, _ = setup
+
+    # Tests unreact where the message does not exist
+    dm_unreact = {"token": joe, "message_id": 1, "react_id": 1}
+    response_create = requests.post(f'{BASE_URL}/message/unreact/v1', json = dm_unreact)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_react_id_react(setup):
+    _, joe, _, _ = setup
+
+    # Tests a react id that does not exist
+    dm_react = {"token": joe, "message_id": 1, "react_id": 2}
+    response_create = requests.post(f'{BASE_URL}/message/react/v1', json = dm_react)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_react_id_unreact(setup):
+    _, joe, _, _ = setup
+
+    # Tests a react id that does not exist
+    dm_unreact = {"token": joe, "message_id": 1, "react_id": 2}
+    response_create = requests.post(f'{BASE_URL}/message/unreact/v1', json = dm_unreact)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_invalid_react(setup):
+    dm1, joe, _, _ = setup
+
+    # Tests if a message can be reacted twice
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = dm_message).json()
+
+    dm_react = {"token": joe, "message_id": response_create, "react_id": 1}
+    requests.post(f'{BASE_URL}/message/react/v1', json = dm_react)
+    
+    dm_react = {"token": joe, "message_id": response_create, "react_id": 1}
+    response_create = requests.post(f'{BASE_URL}/message/react/v1', json = dm_react).json()
+    assert response_create['code'] == INPUTERROR
+
+def test_invalid_unreact(setup):
+    dm1, joe, _, _ = setup
+
+    # Tests if a message that has no react can be unreacted
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = dm_message).json()
+    
+    dm_unreact = {"token": joe, "message_id": response_create, "react_id": 1}
+    response_create = requests.post(f'{BASE_URL}/message/unreact/v1', json = dm_unreact).json()
+    assert response_create['code'] == INPUTERROR
+'''
+INVALIDITY TESTS FOR MESSAGE PIN & UNPIN
+'''
+def test_pin_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    dm_pin = {"token": '-1', "message_id": 1}
+    response_create = requests.post(f'{BASE_URL}/message/pin/v1', json = dm_pin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_unpin_invalid_token():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    dm_unpin = {"token": '-1', "message_id": 1}
+    response_create = requests.post(f'{BASE_URL}/message/unpin/v1', json = dm_unpin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_pin_invalid_message_id(setup):
+    _, joe, _, _ = setup
+
+    # Tests pin where a message does no exist
+    dm_pin = {"token": joe, "message_id": 1}
+    response_create = requests.post(f'{BASE_URL}/message/pin/v1', json = dm_pin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_unpin_invalid_message_id(setup):
+    _, joe, _, _ = setup
+
+    # Tests unpin where a message does no exist
+    dm_unpin = {"token": joe, "message_id": 1}
+    response_create = requests.post(f'{BASE_URL}/message/unpin/v1', json = dm_unpin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR    
+
+def test_pin_not_owner(setup):
+    dm1, joe, marry, _ = setup
+
+    # Tests a message pin where the caller is not the owner of the dm/channel
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = dm_message).json()
+
+    dm_pin = {"token": marry, "message_id": response_create['message_id']}
+    response_create = requests.post(f'{BASE_URL}/message/pin/v1', json = dm_pin)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR 
+
+def test_unpin_not_owner(setup):
+    dm1, joe, marry, _ = setup
+
+    # Tests a message pin where the caller is not the owner of the dm/channel
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = dm_message).json()
+
+    dm_unpin = {"token": marry, "message_id": response_create['message_id']}
+    response_create = requests.post(f'{BASE_URL}/message/unpin/v1', json = dm_unpin)
+    response_create_data = response_create.json()
+    
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_already_pinned(setup):
+    dm1, joe, _, _ = setup
+
+    # Tests a message that is pinned raising inputerror
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = dm_message).json()
+
+    dm_pin = {"token": joe, "message_id": response_create}
+    response_create = requests.post(f'{BASE_URL}/message/pin/v1', json = dm_pin).json()
+
+    dm_pin = {"token": joe, "message_id": response_create}
+    response_create = requests.post(f'{BASE_URL}/message/pin/v1', json = dm_pin).json()
+    assert response_create['code'] == INPUTERROR
+
+def test_already_unpinned(setup):
+    dm1, joe, _, _ = setup
+
+    # Tests a message that has no pin raising inputerror
+    dm_message = {'token': joe, 'dm_id': dm1, 'message': 'big'}
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = dm_message).json()
+
+    dm_unpin = {"token": joe, "message_id": response_create}
+    response_create = requests.post(f'{BASE_URL}/message/unpin/v1', json = dm_unpin)
+    response_create_data = response_create.json()
+    
+    assert response_create_data['code'] == INPUTERROR
+
+'''
+INVALIDITY TESTS FOR SEARCH
+'''
+
+def test_invalid_token_search():
+    requests.delete(f'{BASE_URL}/clear/v1')
+
+    # Tests a nonexistant user trying to access the function, raising AccessError if unable
+    search = {"token": '-1', "query_str": "big"}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == ACCESSERROR
+
+def test_short_string_search(setup):
+    _, joe, _, _ = setup
+
+    # Tests an empty query string
+    search = {"token": joe, "query_str": ""}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+def test_long_string_search(setup):
+    _, joe, _, _ = setup
+    string = 'bigbigbigbigbigbig' * 200
+
+    # Tests a 1000+ character string 
+    search = {"token": joe, "query_str": string}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    assert response_create_data['code'] == INPUTERROR
+
+'''
 SAMPLE TESTING FOR DM_CREATE
 '''
 
@@ -409,11 +613,140 @@ def test_multiple_dm_messages(setup):
     assert response_create_data['start'] == 0
     assert response_create_data['end'] == 50   
 
+    
+def test_simple_string_search(setup):
+    _, joe, marry, _ = setup
 
+    # sends two messages from joe and marry
+    send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
+    send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}
 
+    # records the time and id of each message sent
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
+    timestamp1 = int(datetime.now(timezone.utc).timestamp())
+    message_id1 = response_create.json()['message_id']
+    
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
+    
+    message_react = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/react/v1', json = message_react)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/pin/v1', json = message_pin)
+    
+    search = {"token": joe, "query_str": 'big'}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    
+    
+    assert response_create_data['messages'] == [
+        {
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
+            'time_created': timestamp1,
+            'reacts': [
+                {
+                'react_id': 1,
+                'u_ids': [0],
+                'is_this_user_reacted': True
+            }
+            ],
+            'is_pinned': True
+        }] 
+def test_complex_react_pin_search(setup):
+    _, joe, marry, _ = setup
 
+    # sends two messages from joe and marry
+    send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
+    send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}
 
+    # records the time and id of each message sent
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
+    timestamp1 = int(datetime.now(timezone.utc).timestamp())
+    message_id1 = response_create.json()['message_id']
+    
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
+    
+    # react and pin the first message
+    message_react = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/react/v1', json = message_react)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/pin/v1', json = message_pin)
+    
+    # unreact and unpin the first message, returning it to original value
+    message_unreact = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/unreact/v1', json = message_unreact)
+    message_unpin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/unpin/v1', json = message_unpin)
+    
+    search = {"token": joe, "query_str": 'big'}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    
+    
+    assert response_create_data['messages'] == [
+        {
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
+            'time_created': timestamp1,
+            'reacts': [
+                {
+                'react_id': 1,
+                'u_ids': [],
+                'is_this_user_reacted': False
+            }
+            ],
+            'is_pinned': False
+        }] 
 
+def test_complex_react_pin_channel_search(setup):
+    _, joe, marry, _ = setup
+    channel1 = {'token': joe, 'name': 'Joe', 'is_public': True}
+    # sends two messages from joe and marry
+    send_ch1 = {'token': joe, 'channel_id': 0, 'message': 'big tings bruv'}
+    send_ch2 = {'token': marry, 'channel_id': 0, 'message': 'small tings bruv'}
+    requests.post(f'{BASE_URL}/channels/create/v2', json = channel1)
+    # records the time and id of each message sent
+    response_create = requests.post(f'{BASE_URL}/message/send/v1', json = send_ch1)
+    timestamp1 = int(datetime.now(timezone.utc).timestamp())
+    
+    message_id1 = response_create.json()['message_id']
+    
+    response_create = requests.post(f'{BASE_URL}/message/send/v1', json = send_ch2)
+    
+    # react and pin the first message
+    message_react = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/react/v1', json = message_react)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/pin/v1', json = message_pin)
+    
+    # unreact and unpin the first message, returning it to original value
+    message_unreact = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/unreact/v1', json = message_unreact)
+    message_unpin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/unpin/v1', json = message_unpin)
+    
+    search = {"token": joe, "query_str": 'big'}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    
+    
+    assert response_create_data['messages'] == [
+        {
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
+            'time_created': timestamp1,
+            'reacts': [
+                {
+                'react_id': 1,
+                'u_ids': [],
+                'is_this_user_reacted': False
+            }
+            ],
+            'is_pinned': False
+        }] 
 
 
 
