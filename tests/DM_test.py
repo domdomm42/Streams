@@ -709,7 +709,6 @@ def test_pin(setup):
     requests.post(f'{BASE_URL}/channels/create/v2', json = channel1)
     # records the time and id of each message sent
     response_create = requests.post(f'{BASE_URL}/message/send/v1', json = send_ch1)
-    timestamp1 = int(datetime.now(timezone.utc).timestamp())
     
     message_id1 = response_create.json()['message_id']
     
@@ -733,7 +732,6 @@ def test_unpin(setup):
     requests.post(f'{BASE_URL}/channels/create/v2', json = channel1)
     # records the time and id of each message sent
     response_create = requests.post(f'{BASE_URL}/message/send/v1', json = send_ch1)
-    timestamp1 = int(datetime.now(timezone.utc).timestamp())
     
     message_id1 = response_create.json()['message_id']
     
