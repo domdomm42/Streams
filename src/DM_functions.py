@@ -1,14 +1,10 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
-from src.auth import auth_register_v1
 from src.auth_auth_helpers import check_and_get_user_id
 from src.users import user_profile_v1
-from src.notifications import alert_user_dm_invited
-from src.other import print_store_debug
-from src.message import message_send_v1
-from src.channels import channels_create_v1
+from src.notifications import alert_user_dm_invited, alert_user_reacted_to_message_dm, alert_user_reacted_to_message_channel
+from src.message import get_dm_or_channel_id_of_message
 from datetime import datetime, timezone
-import requests
 
 def search_v1(token, query_str):
     '''
@@ -94,7 +90,13 @@ def message_react_v1(token, message_id, react_id):
     
     if auth_user_id == store['messages'][message_index]['u_id']:
         store['messages'][message_index]['reacts'][0]['is_this_user_reacted'] = True
-        
+    
+    dm_or_channel_id_of_message = get_dm_or_channel_id_of_message(message_id)
+    if dm_or_channel_id_of_message[1] == 'channel':
+        alert_user_reacted_to_message_channel(auth_user_id, store['messages'][message_index]['u_id'], dm_or_channel_id_of_message[0])
+    else:
+        alert_user_reacted_to_message_dm(auth_user_id, store['messages'][message_index]['u_id'], dm_or_channel_id_of_message[0])
+
     data_store.set(store)
     
     return {}        

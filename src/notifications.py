@@ -1,5 +1,4 @@
 from src.data_store import data_store
-from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
 
 def notifications_get_v1(token):
@@ -81,5 +80,39 @@ def tag_users_in_dm_message(sender_id, message, dm_id):
                 'notification_message': f'{sender_user_handle} tagged you in {dm_name}: {message[0:20]}' 
             }
             store['users']['notifications'][tagged_user_id].append(notification)
+
+    data_store.set(store)
+
+def alert_user_reacted_to_message_dm(reacter_to_message_id, owner_of_message_id, dm_id):
+
+    store = data_store.get()
+
+    reacter_to_message_user_handle = store['users']['user_handles'][reacter_to_message_id]
+    dm_name = store['dms']['dm_name'][dm_id]
+
+    notification = {
+        'channel_id': -1,
+        'dm_id': dm_id,
+        'notification_message': f'{reacter_to_message_user_handle} reacted to your message in {dm_name}'
+    }
+
+    store['users']['notifications'][owner_of_message_id].append(notification)
+
+    data_store.set(store)
+
+def alert_user_reacted_to_message_channel(reacter_to_message_id, owner_of_message_id, channel_id):
+
+    store = data_store.get()
+
+    reacter_to_message_user_handle = store['users']['user_handles'][reacter_to_message_id]
+    channel_name = store['channels']['channel_name'][channel_id]
+
+    notification = {
+        'channel_id': -1,
+        'dm_id': channel_id,
+        'notification_message': f'{reacter_to_message_user_handle} reacted to your message in {channel_name}'
+    }
+
+    store['users']['notifications'][owner_of_message_id].append(notification)
 
     data_store.set(store)
