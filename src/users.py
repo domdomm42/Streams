@@ -216,7 +216,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     if x_start >= x_end or y_start >= y_end or x_start >= width or x_end > width or y_start >= height or y_end > height:
         raise InputError(description='Invalid Size')
 
-    if x_start < 0 or x_end < 0 or y_start < 0 or y_end < 0:
+    if x_start < 0 or x_end <= 0 or y_start < 0 or y_end <= 0:
         raise InputError(description='Invalid Size')
 
     im = im.crop((x_start, y_start, x_end, y_end))
