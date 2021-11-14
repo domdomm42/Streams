@@ -481,14 +481,16 @@ def test_simple_dm_details(setup):
             'email': 'marry123@gmail.com',
             'name_first': 'Marry', 
             'name_last': 'Smith',
-            'handle_str': 'marrysmith'
+            'handle_str': 'marrysmith',
+            'profile_img_url': ''
         },
         {
             'u_id': 0,
             'email': 'joe123@gmail.com',
             'name_first': 'Joe', 
             'name_last': 'Smith',
-            'handle_str':  'joesmith'
+            'handle_str':  'joesmith',
+            'profile_img_url': ''
         }
     ]
 '''
@@ -513,7 +515,8 @@ def test_simple_dm_leave(setup):
             'email': 'marry123@gmail.com',
             'name_first': 'Marry', 
             'name_last': 'Smith',
-            'handle_str': 'marrysmith'
+            'handle_str': 'marrysmith',
+            'profile_img_url': ''
         }
     ]
 
@@ -568,11 +571,13 @@ def test_simple_dm_messages(setup):
             'u_id': 1,
             'message': 'small tings bruv',
             'time_created': timestamp1,
-            'reacts': {
-                'react_id': 1,
-                'u_ids': [],
-                'is_this_user_reacted': False
-            },
+            'reacts': [
+                {
+                    'react_id': 1,
+                    'u_ids': [],
+                    'is_this_user_reacted': False
+                }
+            ],
             'is_pinned': False
         },
         {
@@ -580,11 +585,13 @@ def test_simple_dm_messages(setup):
             'u_id': 0,
             'message': 'big tings bruv',
             'time_created': timestamp2,
-            'reacts': {
-                'react_id': 1,
-                'u_ids': [],
-                'is_this_user_reacted': False
-            },
+            'reacts': [
+                {
+                    'react_id': 1,
+                    'u_ids': [],
+                    'is_this_user_reacted': False
+                }
+            ],
             'is_pinned': False
         } 
     ]

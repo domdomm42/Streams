@@ -109,11 +109,13 @@ def test_send_valid_messages(setup):
                 'u_id': 0, 
                 'message': 'Please pick your favourite book, ready for Monday 2pm.', 
                 'time_created': message_1_time,
-                'reacts': {
-                    'react_id': 1,
-                    'u_ids': [],
-                    'is_this_user_reacted': False
-                },
+                'reacts': [
+                    {
+                        'react_id': 1,
+                        'u_ids': [],
+                        'is_this_user_reacted': False
+                    }
+                ],
                 'is_pinned': False
             }, 
             {
@@ -121,11 +123,13 @@ def test_send_valid_messages(setup):
                 'u_id': 0, 
                 'message': 'Hi everyone!', 
                 'time_created': message_0_time,
-                'reacts': {
-                    'react_id': 1,
-                    'u_ids': [],
-                    'is_this_user_reacted': False
-                },
+                'reacts': [
+                    {
+                        'react_id': 1,
+                        'u_ids': [],
+                        'is_this_user_reacted': False
+                    }
+                ],
                 'is_pinned': False                
             }
         ], 

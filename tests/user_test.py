@@ -58,13 +58,14 @@ def test_valid_u_id(setup):
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data['user'] == [{
+    assert response_data['user'] == {
         'email': 'joe123@gmail.com',
-        'first_name': 'Joe',
-        'last_name': 'Smith',
+        'name_first': 'Joe',
+        'name_last': 'Smith',
         'handle_str': 'joesmith',
-        'user_id': 0,
-    }]
+        'u_id': 0,
+        'profile_img_url': '',
+    }
 
 # Test valid user all
 def test_user_all_output(setup):
@@ -84,12 +85,14 @@ def test_user_all_output(setup):
             'handle_str': 'joesmith',
             'name_first': 'Joe',
             'name_last': 'Smith',
-            'u_id': 0},
+            'u_id': 0,
+            'profile_img_url': ''},
             {'email': 'marryjoe222@gmail.com',
             'handle_str': 'marryjoe',
             'name_first': 'Marry',
             'name_last': 'Joe',
-            'u_id': 1},
+            'u_id': 1,
+            'profile_img_url': ''},
 
         ]
     }
@@ -106,12 +109,13 @@ def test_user_profile_output(setup):
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data['user'] == [{
+    assert response_data['user'] == {
         'email': 'marryjoe222@gmail.com',
-        'first_name': 'Marry',
-        'last_name': 'Joe',
+        'name_first': 'Marry',
+        'name_last': 'Joe',
         'handle_str': 'marryjoe',
-        'user_id': 1}]
+        'u_id': 1,
+        'profile_img_url': ''}
 
 # Test for name
 
@@ -122,7 +126,7 @@ def test_user_name_first_too_short(setup):
     response_log_joe, _ = setup
 
     # Last name is valid, last name out of range (1-50 characters)
-    setname_info = {"token": response_log_joe["token"], "first_names": "", "last_names": "a"}
+    setname_info = {"token": response_log_joe["token"], "name_first": "", "name_last": "a"}
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
     response_data = response.json()
 
@@ -136,7 +140,7 @@ def test_user_name_last_too_short(setup):
     response_log_joe, _ = setup
 
     # First name is valid, last name out of range (1-50 characters)
-    setname_info = {"token": response_log_joe["token"], "first_names": "a", "last_names": ""}
+    setname_info = {"token": response_log_joe["token"], "name_first": "a", "name_last": ""}
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
     response_data = response.json()
     
@@ -151,7 +155,7 @@ def test_user_name_first_too_long(setup):
     
     # Last name is valid, first name out of range (1-50 characters)
     setname_info = {"token": response_log_joe["token"],
-                    "first_names": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz", "last_names": "a"}
+                    "name_first": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz", "name_last": "a"}
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
     response_data = response.json()
     
@@ -165,8 +169,8 @@ def test_user_name_last_too_long(setup):
     response_log_joe, _ = setup  
     
     # First name is valid, last name out of range (1-50 characters)
-    setname_info = {"token": response_log_joe["token"], "first_names": 'a',
-                    "last_names": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz"}
+    setname_info = {"token": response_log_joe["token"], "name_first": 'a',
+                    "name_last": "abcdefghijklmnopqrstuvwxyz1531abcdefghijklmnopqrstuvwxyz"}
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
     response_data = response.json()
 
@@ -180,8 +184,8 @@ def test_user_name_duplication(setup):
     response_log_joe, response_log_marry = setup
     
     # Two same names "a" "Smith",  there are no restrictions
-    setname_info1 = {"token": response_log_joe["token"], "first_names": "a", "last_names": "Smith"}
-    setname_info2 = {"token": response_log_marry["token"], "first_names": "a", "last_names": "Smith"}
+    setname_info1 = {"token": response_log_joe["token"], "name_first": "a", "name_last": "Smith"}
+    setname_info2 = {"token": response_log_marry["token"], "name_first": "a", "name_last": "Smith"}
 
     requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info1)
     response = requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info2)
@@ -196,20 +200,21 @@ def test_valid_name(setup):
     response_log_joe, _ = setup
     
     # Input valid first name "a" and valid last "b"
-    setname_info = {"token": response_log_joe['token'], "first_names": "a", "last_names": "b"}
+    setname_info = {"token": response_log_joe['token'], "name_first": "a", "name_last": "b"}
     requests.put(f'{BASE_URL}user/profile/setname/v1', json=setname_info)
     user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
     response = requests.get(f'{BASE_URL}user/profile/v1', params=user_profile_info)
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data['user'] == [{
+    assert response_data['user'] == {
         'email': 'joe123@gmail.com',
-        'first_name': 'a',
-        'last_name': 'b',
+        'name_first': 'a',
+        'name_last': 'b',
         'handle_str': 'joesmith',
-        'user_id': 0,
-    }]
+        'u_id': 0,
+        'profile_img_url': ''
+    }
 
 # Test for email
 
@@ -220,8 +225,8 @@ def test_user_email_duplication(setup):
     response_log_joe, response_log_marry = setup
     
     # Input two same emails
-    setemail_info1 = {"token": response_log_joe["token"], "emails": "kobebryant24881@gmail.com"}
-    setemail_info2 = {"token": response_log_marry["token"], "emails": "kobebryant24881@gmail.com"}
+    setemail_info1 = {"token": response_log_joe["token"], "email": "kobebryant24881@gmail.com"}
+    setemail_info2 = {"token": response_log_marry["token"], "email": "kobebryant24881@gmail.com"}
 
     requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info1)
     response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info2)
@@ -238,8 +243,8 @@ def test_user_email_duplication_invalid_capital(setup):
     response_log_joe, response_log_marry = setup
     
     # One lowercase the other uppercase
-    setemail_info1 = {"token": response_log_joe["token"], "emails": "aaa@gmail.com"}
-    setemail_info2 = {"token": response_log_marry["token"], "emails": "AAA@gmail.com"}
+    setemail_info1 = {"token": response_log_joe["token"], "email": "aaa@gmail.com"}
+    setemail_info2 = {"token": response_log_marry["token"], "email": "AAA@gmail.com"}
 
     requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info1)
     response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info2)
@@ -254,7 +259,7 @@ def test_user_email_invalid(setup):
     response_log_joe, _ = setup
     
     # Input "abcde" is invalid 
-    setemail_info = {"token": response_log_joe["token"], "emails": "abcde"}
+    setemail_info = {"token": response_log_joe["token"], "email": "abcde"}
     response = requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
     response_data = response.json()
     
@@ -266,20 +271,21 @@ def test_valid_email(setup):
 
     # Load data from setup
     response_log_joe, _ = setup
-    setemail_info = {"token": response_log_joe['token'], "emails": "joe123@gmail.com"}
+    setemail_info = {"token": response_log_joe['token'], "email": "joe123@gmail.com"}
     requests.put(f'{BASE_URL}user/profile/setemail/v1', json=setemail_info)
     user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
     response = requests.get(f'{BASE_URL}user/profile/v1', params=user_profile_info)
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data['user'] == [{
+    assert response_data['user'] == {
         'email': 'joe123@gmail.com',
-        'first_name': 'Joe',
-        'last_name': 'Smith',
+        'name_first': 'Joe',
+        'name_last': 'Smith',
         'handle_str': 'joesmith',
-        'user_id': 0,
-    }]
+        'u_id': 0,
+        'profile_img_url': ''
+    }
 
 # Test for handle
 
@@ -371,13 +377,14 @@ def test_valid_handle(setup):
     response_data = response.json()
     
     # Match the corresponding data
-    assert response_data['user'] == [{
+    assert response_data['user'] == {
         'email': 'joe123@gmail.com',
-        'first_name': 'Joe',
-        'last_name': 'Smith',
+        'name_first': 'Joe',
+        'name_last': 'Smith',
         'handle_str': 'KobeBryant',
-        'user_id': 0,
-    }]
+        'u_id': 0,
+        'profile_img_url': ''
+    }
     
     requests.delete(f'{BASE_URL}/clear/v1')
 
@@ -401,35 +408,537 @@ def test_successful_users_all():
             'handle_str': 'sheriffwoody',
             'name_first': 'sheriff',
             'name_last': 'woody',
-            'u_id': 0},
+            'u_id': 0,
+            'profile_img_url': ''},
             {'email': 'buzz.lightyear@starcommand.com',
             'handle_str': 'buzzlightyear',
             'name_first': 'buzz',
             'name_last':'lightyear',
-            'u_id': 1}]
+            'u_id': 1,
+            'profile_img_url': ''}]
     }
 
 
-#def test_upload_invalid_start_end(setup):
-#    response_log_joe, _ = setup
-#    photo_info = {"token": response_log_joe['token'], "img_url": 
-#    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdq7PHvMwR6eqzZsCnjd-b7On4Z0BeWGNmpQ&usqp=CAU", "x_start": 399, "y_start": 399, "x_end": 1, "y_end": 1 }
-#    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
-#    response_data = response.json()
-#    assert response_data['code'] == 400
-
-#def test_user_stats(setup):
-#    response_log_joe, _ = setup
-#    response = requests.get(f'{BASE_URL}user/stats/v1', params=response_log_joe['token'])
-#    response_data = response.json()
-#    assert response_data == {}
-
-#def test_users_stats(setup):
-#    response_log_joe, _ = setup
-#    response = requests.get(f'{BASE_URL}users/stats/v1', params=response_log_joe['token'])
-#    response_data = response.json()
-#    assert response_data == {}
-#
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def test_upload_invalid_http(setup):
+    response_log_joe, _ = setup
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdq7PHvMwR6eqzZsCnjd-b7On4Z0BeWGNmpQ&usqp=CAU",
+        "x_start": 9,
+        "y_start": 9,
+        "x_end": 99,
+        "y_end": 99
+    }
+
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_invalid_http1(setup):
+    response_log_joe, _ = setup
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "https://web.cse.unsw.edu.au/~apps/hopper/student/",
+        "x_start": 9,
+        "y_start": 9,
+        "x_end": 99,
+        "y_end": 99
+    }
+
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+# def test_upload_valid_http1(setup):
+#     response_log_joe, _ = setup
+#     photo_info = {
+#         "token": response_log_joe['token'],
+#         "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+#         "x_start": 9,
+#         "y_start": 9,
+#         "x_end": 99,
+#         "y_end": 99
+#     }
+
+#     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+#     response_data = response.json()
+#     assert response.status_code == 200
+
+
+def test_upload_invalid_start_end_x(setup):
+    response_log_joe, _ = setup
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 39,
+        "y_start": 10,
+        "x_end": 1,
+        "y_end": 100
+    }
+
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_invalid_start_end_xy(setup):
+    response_log_joe, _ = setup
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 99,
+        "y_start": 10,
+        "x_end": 99,
+        "y_end": 10
+    }
+
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_invalid_start_end_y(setup):
+    response_log_joe, _ = setup
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 9,
+        "y_start": 39,
+        "x_end": 19,
+        "y_end": 9
+    }
+
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_out_of_ranges_x(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1,
+        "y_start": 1,
+        "x_end": 999,
+        "y_end": 99
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_out_of_ranges_y(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1,
+        "y_start": 1,
+        "x_end": 99,
+        "y_end": 999
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_out_of_ranges_xy(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1,
+        "y_start": 1,
+        "x_end": 999,
+        "y_end": 999
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_out_of_ranges_xya(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 199,
+        "y_start": 1,
+        "x_end": 9999,
+        "y_end": 999
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_out_of_ranges_xyb(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1,
+        "y_start": 199,
+        "x_end": 999,
+        "y_end": 9999
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_out_of_ranges_0(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 0,
+        "y_start": 0,
+        "x_end": 0,
+        "y_end": 0
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_same_x(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 1,
+        "y_start": 10,
+        "x_end": 1,
+        "y_end": 99
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_same_y(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 10,
+        "y_start": 1,
+        "x_end": 99,
+        "y_end": 1
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_same_xy(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 99,
+        "y_start": 99,
+        "x_end": 99,
+        "y_end": 99
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_negative_x(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": -9,
+        "y_start": 9,
+        "x_end": 99,
+        "y_end": 99
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_negative_y(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 9,
+        "y_start": -9,
+        "x_end": 99,
+        "y_end": 99
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_negative_xy(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": -9,
+        "y_start": -9,
+        "x_end": 99,
+        "y_end": 99
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_not_jpg(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://www.cse.unsw.edu.au/~richardb/index_files/RichardBuckland-200.png",
+        "x_start": 10,
+        "y_start": 10,
+        "x_end": 90,
+        "y_end": 90
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_not_jpg_invalid(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://www.cse.unsw.edu.au/~richardb/index_files/RichardBuckland-200.png",
+        "x_start": 999,
+        "y_start": 100,
+        "x_end": 90,
+        "y_end": 909
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    response_data = response.json()
+    assert response_data['code'] == 400
+
+
+def test_upload_valid(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 10,
+        "y_start": 10,
+        "x_end": 90,
+        "y_end": 90
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    # response_data = response.json()
+
+    assert response.status_code == 200
+
+
+def test_upload_valid_same(setup):
+    response_log_joe, _ = setup
+
+    # 159 * 200
+    photo_info = {
+        "token": response_log_joe['token'],
+        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+        "x_start": 0,
+        "y_start": 0,
+        "x_end": 159,
+        "y_end": 200
+    }
+    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
+    # response_data = response.json()
+
+    assert response.status_code == 200
+
+'''
+def test_user_stats(setup):
+    response_log_joe, _ = setup
+    user_all_info = {"token": response_log_joe["token"]}
+    response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
+    response_data = response.json()
+    assert response_data == {}
+
+
+def test_users_stats(setup):
+    response_log_joe, _ = setup
+    user_all_info = {"token": response_log_joe["token"]}
+
+    response = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info)
+    response_data = response.json()
+    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+
+    assert response_data == {'workspace_stats': {'channels_exist': [{'num_channels_exist': 0, 'time_stamp': time_stamp},
+                                                                    {'num_channels_exist': 0,
+                                                                     'time_stamp': time_stamp}],
+                                                 'dms_exist': [{'num_dms_exist': 0, 'time_stamp': time_stamp},
+                                                               {'num_dms_exist': 0,
+                                                                'time_stamp': time_stamp}],
+                                                 'messages_exist': [{'num_messages_sent': 0,
+                                                                     'time_stamp': time_stamp},
+                                                                    {'num_messages_sent': 0,
+                                                                     'time_stamp': time_stamp}],
+                                                 'utilization_rate': 0.0}}
+'''
+# def test_user_stats(setup):
+#     response_log_joe, _ = setup
+#     user_all_info = {"token": response_log_joe["token"]}
+#     response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
+#     store = data_store.get()
+
+#     u_id = check_and_get_user_id(response_log_joe["token"])
+
+#     channels_joined = store['users']['channels_joined'][u_id]
+#     dms_joined = store['users']['dms_joined'][u_id]
+#     messages_sent = store['users']['message_sent'][u_id]
+
+
+#     if (num_channels + num_dms + num_messages) > 0:
+#         involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent)/(num_channels + num_dms + num_messages)
+
+#     if involvement_rate > 1:
+#         involvement_rate = 1
+
+#     user_stats = {
+#         'channels_joined': channels_joined,
+#         'dms_joined': dms_joined,
+#         'messages_sent': messages_sent,
+#         'involvement_rate': involvement_rate
+#     }
+
+
+#     response_data = response.json()
+#     assert response_data == {'user_stats': user_stats}
+
+# def test_users_stats(setup):
+#     response_log_joe, _ = setup
+#     response = requests.get(f'{BASE_URL}users/stats/v1', params=response_log_joe['token'])
+#     response_data = response.json()
+#     user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+
+#     store = data_store.get()
+#     #u_id = check_and_get_user_id(token)
+#     #utilization_rate = active_user/num_user
+#     channels_exist = store['channels_exist']
+#     dms_exist = store['dms_exist']
+#     messages_exist = store['messages_exist']
+
+#     assert response_data == {
+#         'channels_exist': channels_exist,
+#         'dms_exist': dms_exist,
+#         'messages_exist': messages_exist,
+#         'utilization_rate': utilization_rate
+#     }
+
+
+# def test_user_stats(setup):
+#     response_log_joe, _ = setup
+#     user_all_info = {"token": response_log_joe["token"]}
+#     response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
+#     store = data_store.get()
+
+#     u_id = check_and_get_user_id(response_log_joe["token"])
+
+#     channels_joined = store['users']['channels_joined'][u_id]
+#     dms_joined = store['users']['dms_joined'][u_id]
+#     messages_sent = store['users']['message_sent'][u_id]
+
+
+#     if (num_channels + num_dms + num_messages) > 0:
+#         involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent)/(num_channels + num_dms + num_messages)
+
+#     if involvement_rate > 1:
+#         involvement_rate = 1
+
+#     user_stats = {
+#         'channels_joined': channels_joined,
+#         'dms_joined': dms_joined,
+#         'messages_sent': messages_sent,
+#         'involvement_rate': involvement_rate
+#     }
+
+
+#     response_data = response.json()
+#     assert response_data == {'user_stats': user_stats}
+
+# def test_users_stats(setup):
+#     response_log_joe, _ = setup
+#     response = requests.get(f'{BASE_URL}users/stats/v1', params=response_log_joe['token'])
+#     response_data = response.json()
+#     user_profile_info = {"token": response_log_joe['token'], "u_id": 0}
+
+#     store = data_store.get()
+#     #u_id = check_and_get_user_id(token)
+#     #utilization_rate = active_user/num_user
+#     channels_exist = store['channels_exist']
+#     dms_exist = store['dms_exist']
+#     messages_exist = store['messages_exist']
+
+#     assert response_data == {
+#         'channels_exist': channels_exist,
+#         'dms_exist': dms_exist,
+#         'messages_exist': messages_exist,
+#         'utilization_rate': utilization_rate
+#     }
