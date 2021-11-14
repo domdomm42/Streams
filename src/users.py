@@ -271,7 +271,7 @@ def user_stats_v1(token):
 
 
 
-    print(store)
+    #print(store)
     messages_sent = store['users']['messages_sent']
     
     messages_sent = store['users']['messages_sent']
