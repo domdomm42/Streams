@@ -1,6 +1,7 @@
 from src.data_store import data_store
 from src.auth_auth_helpers import reset_session_tracker
 from src.message import reset_message_id_tracker
+from datetime import datetime, timezone
 
 def clear_v1():
     '''
@@ -20,40 +21,61 @@ def clear_v1():
 
     store = data_store.get()
     
-    store['logged_in_users'] = []
+    store = {
+        'logged_in_users': [],
 
-    store['users']['user_id'] = []
-    store['users']['emails'] = []
-    store['users']['passwords'] = []
-    store['users']['first_names'] = []
-    store['users']['last_names'] = []
-    store['users']['user_handles'] = []
-    store['users']['is_global_owner'] = []
-    store['users']['removed_user'] = []
-    store['users']['permissions'] = []
-    store['users']['password_reset_code'] = []  #new - Dom
-    store['users']['notifications'] = [] # new -Ridho
-    store['users']['channels_joined'] = [] # new -Simon
-    store['users']['dms_joined'] = [] # new -Simon
-    store['users']['messages_sent'] = []# new -Simon
-    store['users']['profile_img_url'] = []
+        'users': {
+            'user_id': [],
+            'emails': [],
+            'passwords': [],
+            'first_names': [],
+            'last_names': [],
+            'user_handles': [],
+            'is_global_owner':[],
+            'removed_user': [],
+            'permissions': [],
+            'password_reset_code': [], # NEW
+            'notifications': [], #NEW
+            'channels_joined': [],    #NEW
+            'dms_joined': [],
+            'messages_sent': [],
+            'channels_user_data': [],
+            'dms_user_data': [],
+            'messages_sent_user_data': [],
+            'involvement_rate': [],      #NEW
+            'profile_img_url': [],
+        },
 
-    store['channels']['channel_id'] = []
-    store['channels']['channel_name'] = []
-    store['channels']['owner_user_id'] = []
-    store['channels']['is_public'] = []
-    store['channels']['all_members'] = []
-    store['channels']['messages'] = []
-    store['channels']['standup_time_finish'] = []
-    store['channels']['is_standup_active'] = []
+        'channels': {
+            'channel_id': [],
+            'channel_name': [],
+            'owner_user_id': [],
+            'is_public': [],
+            'all_members': [],
+            'messages': [],
+            'is_standup_active': [], #NEW
+            'standup_time_finish': [],
+            'standup_messages': []
+        },
 
-    store['messages'] = []
+        'messages': [],
 
-    store['dms']['dm_id'] = []
-    store['dms']['owner_user_id'] = []
-    store['dms']['dm_name'] = []
-    store['dms']['all_members'] = []
-    store['dms']['messages'] = []
+        'dms': {
+            'dm_id': [],
+            'owner_user_id': [],
+            'dm_name': [],
+            'all_members': [],
+            'messages': [],
+        },
+
+        'channels_exist': 0, #NEW
+        'dms_exist': 0,     #NEW
+        'messages_exist': 0,    #NEW
+        'workspace_stat_channels': [],
+        'workspace_stat_dms': [],
+        'workspace_stat_messages': [],
+        'utilization_rate': 0
+    }
 
     data_store.set(store)
 

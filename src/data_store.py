@@ -39,12 +39,16 @@ initial_object = {
         'is_global_owner':[],
         'removed_user': [],
         'permissions': [],
-        'password_reset_code': [], # NEW
-        'notifications': [], #NEW
-        'channels_joined': [],    #NEW
-        'dms_joined': [],         #NEW
-        'messages_sent': [],      #NEW
-        'profile_img_url': []
+        'password_reset_code': [],
+        'notifications': [],
+        'channels_joined': [],    
+        'dms_joined': [],
+        'messages_sent': [],
+        'channels_user_data': [],
+        'dms_user_data': [],
+        'messages_sent_user_data': [],
+        'involvement_rate': [],      
+        'profile_img_url': [],
     },
 
     'channels': {
@@ -54,7 +58,7 @@ initial_object = {
         'is_public': [],
         'all_members': [],
         'messages': [],
-        'is_standup_active': [], #NEW
+        'is_standup_active': [], 
         'standup_time_finish': [],
         'standup_messages': []
     },
@@ -68,10 +72,15 @@ initial_object = {
         'all_members': [],
         'messages': [],
     },
-    'channels_exist': [], #NEW
-    'dms_exist': [],     #NEW
-    'messages_exist': []    #NEW
 
+    'channels_exist': 0, 
+    'dms_exist': 0,     
+    'messages_exist': 0,  
+    'workspace_stat_channels': [],
+    'workspace_stat_dms': [],
+    'workspace_stat_messages': [],
+    'utilization_rate': 0
+    
 }
 
 

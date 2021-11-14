@@ -344,7 +344,7 @@ def test_unpin_not_owner(setup):
     dm_unpin = {"token": marry, "message_id": response_create['message_id']}
     response_create = requests.post(f'{BASE_URL}/message/unpin/v1', json = dm_unpin)
     response_create_data = response_create.json()
-    print(response_create_data)
+    
     assert response_create_data['code'] == ACCESSERROR
 
 def test_already_pinned(setup):
@@ -371,7 +371,7 @@ def test_already_unpinned(setup):
     dm_unpin = {"token": joe, "message_id": response_create}
     response_create = requests.post(f'{BASE_URL}/message/unpin/v1', json = dm_unpin)
     response_create_data = response_create.json()
-    print(response_create_data)
+    
     assert response_create_data['code'] == INPUTERROR
 
 '''
@@ -613,7 +613,7 @@ def test_multiple_dm_messages(setup):
     assert response_create_data['start'] == 0
     assert response_create_data['end'] == 50   
 
-
+    
 def test_simple_string_search(setup):
     _, joe, marry, _ = setup
 
@@ -628,10 +628,15 @@ def test_simple_string_search(setup):
     
     response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
     
+    message_react = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/react/v1', json = message_react)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/pin/v1', json = message_pin)
+    
     search = {"token": joe, "query_str": 'big'}
     response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
     response_create_data = response_create.json()
-    print(response_create_data)
+    
     
     assert response_create_data['messages'] == [
         {
@@ -641,19 +646,56 @@ def test_simple_string_search(setup):
             'time_created': timestamp1,
             'reacts': [
                 {
-                    'react_id': 1,
-                    'u_ids': [],
-                    'is_this_user_reacted': False
-                }   
+                'react_id': 1,
+                'u_ids': [0],
+                'is_this_user_reacted': True
+            }
+            ],
+            'is_pinned': True
+        }] 
+def test_complex_react_pin_search(setup):
+    _, joe, marry, _ = setup
+
+    # sends two messages from joe and marry
+    send_dm1 = {'token': joe, 'dm_id': 0, 'message': 'big tings bruv'}
+    send_dm2 = {'token': marry, 'dm_id': 0, 'message': 'small tings bruv'}
+
+    # records the time and id of each message sent
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm1)
+    timestamp1 = int(datetime.now(timezone.utc).timestamp())
+    message_id1 = response_create.json()['message_id']
+    
+    response_create = requests.post(f'{BASE_URL}/message/senddm/v1', json = send_dm2)
+    
+    # react and pin the first message
+    message_react = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/react/v1', json = message_react)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/pin/v1', json = message_pin)
+    
+    # unreact and unpin the first message, returning it to original value
+    message_unreact = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/unreact/v1', json = message_unreact)
+    message_unpin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/unpin/v1', json = message_unpin)
+    
+    search = {"token": joe, "query_str": 'big'}
+    response_create = requests.get(f'{BASE_URL}/search/v1', params = search)
+    response_create_data = response_create.json()
+    
+    
+    assert response_create_data['messages'] == [
+        {
+            'message_id': message_id1,
+            'u_id': 0,
+            'message': 'big tings bruv',
+            'time_created': timestamp1,
+            'reacts': [
+                {
+                'react_id': 1,
+                'u_ids': [],
+                'is_this_user_reacted': False
+            }
             ],
             'is_pinned': False
         }] 
-    
-
-
-
-
-
-
-
-
