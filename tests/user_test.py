@@ -1027,4 +1027,30 @@ def test_users_stats_multiple(setup):
 
 
 
+def test_users_stats200(setup):
+    response_log_joe, _ = setup
+    user_all_info = {"token": response_log_joe["token"]}
 
+    response = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info)
+    #response_data = response.json()
+    #time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+
+    assert response.status_code == 200
+
+def test_user_stats200(setup):
+    response_log_joe, _ = setup
+    user_all_info = {"token": response_log_joe["token"]}
+    response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
+    
+    assert response.status_code == 200
+    
+    # response_data = response.json()
+    
+    # time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    
+    
+    # assert response_data == {'user_stats': {
+    #     'channels_joined': [{'num_channels_joined': 0, 'time_stamp': time_stamp}],
+    #     'dms_joined': [{'num_dms_joined': 0, 'time_stamp': time_stamp}],
+    #     'involvement_rate': 0, 
+    #     'messages_sent': [{'num_messages_sent': 0, 'time_stamp': time_stamp}]}}
