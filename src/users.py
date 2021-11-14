@@ -1,14 +1,10 @@
 from src.data_store import data_store
 from src.error import InputError
 from src.auth_auth_helpers import check_and_get_user_id
-from src.auth import auth_register_v1
-from src.channels import channels_create_v1
-from src.message import message_send_v1
 import re
 import urllib.request
 from PIL import Image
 from src.config import *
-
 
 def user_profile_sethandle_v1(token, handle_str):
     '''
@@ -174,22 +170,7 @@ def user_profile_setemail_v1(token, email):
 
     return {}
 
-
-
-
-
-
-
-
-
-
-
-
-# IT3
-
-# Deal with the user's photo, upload, crop and save
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
-    
     '''
     Given a URL of an image on the internet.
     Crops the image within bounds (x_start, y_start) and (x_end, y_end). 
@@ -197,30 +178,20 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     The URL needs to be a non-https URL (it should just have "http://" in the URL.)
     '''
     
-
-    # check valid token
     u_id = check_and_get_user_id(token)
     store = data_store.get()
 
-    # check the url is start with https://
+
     http_check(img_url)
 
-    # check photo type
     check_type(img_url)
     
-    # imageDown
-    # Save the im in temporary folder undre scr called 'static'
     urllib.request.urlretrieve(img_url, 'src/static/tmp.jpg')
-
-    
-
     
     im = Image.open('src/static/tmp.jpg')
     
     # Get the width and height of the im
     width, height = im.size
-    
-    
     
     # check the start and end is valid
     if x_start >= x_end or y_start >= y_end or x_start >= width or x_end > width or y_start >= height or y_end > height:
@@ -230,34 +201,23 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     if x_start < 0 or x_end <= 0 or y_start < 0 or y_end <= 0:
         raise InputError(description='Invalid Size')
 
-
     im = im.crop((x_start, y_start, x_end, y_end))
 
     # Crop the im
     crop_image(x_start, y_start, x_end, y_end)
 
-
     # Save the im in temporary folder undre scr called 'static'
     im.save(f'src/static/{u_id}.jpg')
-
 
     # store im into profile_img_url
     store['users']['profile_img_url'][u_id] = f'http://localhost:{port}/src/static/{u_id}.jpg'
 
-
-    # Store the data
     data_store.set(store)
-
-
 
     return {}
 
-
-
 # Show the stat of the current user
 def user_stats_v1(token):
-    
-
     '''
     Fetches the required statistics about this user's use of UNSW Streams.
     return with Dictionary of shape {
@@ -274,8 +234,6 @@ def user_stats_v1(token):
 
     store = data_store.get()
 
-
-    # return the dict of user_stats
     user_stats = {
         'channels_joined': store['users']['channels_user_data'][u_id],
         'dms_joined': store['users']['dms_user_data'][u_id],
@@ -285,8 +243,6 @@ def user_stats_v1(token):
 
     return {'user_stats': user_stats}
     
-
-# Show the stats of all users
 def users_stats_v1(token):
     
     '''
@@ -299,31 +255,32 @@ def users_stats_v1(token):
     }
     '''
 
-    
-    # Get the u_id from token
     check_and_get_user_id(token)
 
     store = data_store.get()
 
-    # return the dict of workspace_stats
     workspace_stats = {
         'channels_exist': store['workspace_stat_channels'],
         'dms_exist': store['workspace_stat_dms'],
         'messages_exist': store['workspace_stat_messages'],
         'utilization_rate': store['utilization_rate']
     }
-
-    
     return {'workspace_stats': workspace_stats}
-
-
-
-
-######Helper Function##########
-
 
 # Check if the url is valid
 def http_check(img_url):
+    '''
+    Check HTTP
+
+    Arguments:
+        img_url    (string) - Handle string
+
+    Exception:
+        Input Error        - Invalid type
+
+    Return value:
+        No Return Value
+    '''
     r = re.match("http://", img_url)
     if r == None:
         raise InputError(description='Invalid Url')
@@ -331,18 +288,37 @@ def http_check(img_url):
 
 # Check if the type is not jpg/jpeg
 def check_type(img_url):
+    '''
+    Check image type
+
+    Arguments:
+        img_url    (string) - Handle string
+
+    Exception:
+        Input Error        - Invalid type
+
+    Return value:
+        No Return Value
+    '''
     resp = urllib.request.urlopen(img_url)
     img = Image.open(resp)
     if img.format != 'JPEG':
         raise InputError(description='Invalid Type')
 
-
-
-
 # Crop the image from the static folder
 def crop_image(x_start, y_start, x_end, y_end):
-    
-    # unnecessary img_url?
+    '''
+    Crop image
+
+    Arguments:
+        x_start     (string) - x start value
+        y_start     (string) - y start value
+        x_end       (string) - x end value
+        y_end       (string) - y end value
+
+    Return value:
+        No Return Value
+    '''
 
     im = Image.open('src/static/tmp.jpg')
 
@@ -352,24 +328,30 @@ def crop_image(x_start, y_start, x_end, y_end):
 
     return 'src/static/{u_id}.jpg'
 
-
-#########################
-
-# IT2
-
 def check_len(handle_str):
     '''
-    check the handle is length correct
-    it return InputError if it is invalid
+    Check the length
+
+    Arguments:
+        handle_str    (string) - Handle string
+
+    Return value:
+        No Return Value
     '''
+
     if len(handle_str) < 3 or len(handle_str) > 20:
         raise InputError(description='Invalid User Name')
 
 
 def check_alphanumeric(handle_str):
     '''
-    check teh handle is only contain number and char
-    it takes handle and return Input Error if it is invalid
+    Check the alphanumeric
+
+    Arguments:
+        handle_str    (string) - Handle string
+
+    Return value:
+        No Return Value
     '''
     if handle_str.isalnum() == False:
         raise InputError(description='Invalid User Name')
@@ -377,8 +359,13 @@ def check_alphanumeric(handle_str):
 
 def check_duplicate(handle_str):
     '''
-    check handle is been used or not
-    if it is , return InputError
+    Check the duplicate
+
+    Arguments:
+        handle_str    (string) - Handle string
+
+    Return value:
+        No Return Value
     '''
     store = data_store.get()
     for name in store['users']['user_handles']:
@@ -457,15 +444,6 @@ def check_invalid_u_id(u_id):
     store = data_store.get()
     if u_id not in store['users']['user_id']:
         raise InputError(description='This user does not exist!')
-
-if __name__ == '__main__':
-    token = auth_register_v1("jimjoe@gmail.com", "password", "Jim", "Joe")['token']
-    print(users_stats_v1(token))
-    channels_create_v1(token, 'Jim', False)
-    print(users_stats_v1(token))
-    message_send_v1(token, 0, "Hi there!")
-    print(users_stats_v1(token))
-    
 
 
 

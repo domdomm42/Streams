@@ -742,10 +742,7 @@ def append_workspace_stats_dm():
 
     store = data_store.get()
     
-    # Determine how many channels, dms and messages exists
     dms_exist = store['dms_exist']
-    # dms_exist = store['dms_exist']
-    # messages_exist = store['messages_exist']
 
     time_stamp = int(datetime.now(timezone.utc).timestamp())
 
