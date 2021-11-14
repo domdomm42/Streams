@@ -187,8 +187,17 @@ def user_profile_setemail_v1(token, email):
 
 # IT3
 
-
+# Deal with the user's photo, upload, crop and save
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
+    
+    '''
+    Given a URL of an image on the internet.
+    Crops the image within bounds (x_start, y_start) and (x_end, y_end). 
+    Position (0,0) is the top left. 
+    The URL needs to be a non-https URL (it should just have "http://" in the URL.)
+    '''
+    
+
     # check valid token
     u_id = check_and_get_user_id(token)
     store = data_store.get()
@@ -198,50 +207,75 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
     # check photo type
     check_type(img_url)
-    # imageDown(img_url, u_id)
+    
+    # imageDown
+    # Save the im in temporary folder undre scr called 'static'
     urllib.request.urlretrieve(img_url, 'src/static/tmp.jpg')
 
-    # check the start and end is valid
-    # check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id)
+    
 
+    
     im = Image.open('src/static/tmp.jpg')
+    
+    # Get the width and height of the im
     width, height = im.size
-
+    
+    
+    
+    # check the start and end is valid
     if x_start >= x_end or y_start >= y_end or x_start >= width or x_end > width or y_start >= height or y_end > height:
         raise InputError(description='Invalid Size')
 
-    if x_start < 0 or x_end < 0 or y_start < 0 or y_end < 0:
+    # check the min of x/y start/end
+    if x_start < 0 or x_end <= 0 or y_start < 0 or y_end <= 0:
         raise InputError(description='Invalid Size')
+
 
     im = im.crop((x_start, y_start, x_end, y_end))
 
-    # cropped = im.crop((x_start, y_start, x_end, y_end))
-    
-    # cropped.save('src/static/{u_id}.jpg')
+    # Crop the im
+    crop_image(x_start, y_start, x_end, y_end)
 
-    crop_image(img_url, x_start, y_start, x_end, y_end)
 
+    # Save the im in temporary folder undre scr called 'static'
     im.save(f'src/static/{u_id}.jpg')
 
 
-    # store['users']['profile_img_url'][f'{u_id}'] = f'src/static/{u_id}.jpg'
-    
+    # store im into profile_img_url
     store['users']['profile_img_url'][u_id] = f'http://localhost:{port}/src/static/{u_id}.jpg'
-    # store['users']['profile_img_url'].append(f'src/static/{u_id}.jpg')
 
-    # = crop_image(img_url, x_start, y_start, x_end, y_end)
+
+    # Store the data
     data_store.set(store)
 
-    # serve_image()
+
 
     return {}
 
 
+
+# Show the stat of the current user
 def user_stats_v1(token):
+    
+
+    '''
+    Fetches the required statistics about this user's use of UNSW Streams.
+    return with Dictionary of shape {
+        channels_joined: [{num_channels_joined, time_stamp}],
+        dms_joined: [{num_dms_joined, time_stamp}], 
+        messages_sent: [{num_messages_sent, time_stamp}], 
+        involvement_rate 
+    }
+    
+    '''
+    
+    # Get the u_id from token
     u_id = check_and_get_user_id(token)
 
     store = data_store.get()
 
+
+    # return the dict of user_stats
     user_stats = {
         'channels_joined': store['users']['channels_user_data'][u_id],
         'dms_joined': store['users']['dms_user_data'][u_id],
@@ -251,11 +285,27 @@ def user_stats_v1(token):
 
     return {'user_stats': user_stats}
     
+
+# Show the stats of all users
 def users_stats_v1(token):
+    
+    '''
+    Fetches the required statistics about the use(all users) of UNSW Streams.
+    return with Dictionary of shape {
+        channels_exist: [{num_channels_exist, time_stamp}], 
+        dms_exist: [{num_dms_exist, time_stamp}], 
+        messages_exist: [{num_messages_exist, time_stamp}], 
+        utilization_rate 
+    }
+    '''
+
+    
+    # Get the u_id from token
     check_and_get_user_id(token)
 
     store = data_store.get()
 
+    # return the dict of workspace_stats
     workspace_stats = {
         'channels_exist': store['workspace_stat_channels'],
         'dms_exist': store['workspace_stat_dms'],
@@ -264,73 +314,36 @@ def users_stats_v1(token):
     }
 
     
-    # num_channels_exist = len(store['channels']['channel_id'])
-    # num_dms_exist = len(store['dms']['dm_id'])
-    # num_messages_exist = len(store['messages'])
-
-    # user_list = []
-    # for user_id in store['users']['user_id']:
-    #     for channel_id in store['channels']['channel_id']:
-    #         if user_id in store['channels']['all_members'][channel_id]:
-    #             user_list.append(user_id)
-    #     for dm_id in store['dms']['dm_id']:
-    #         if user_id in store['dms']['dm_id'][dm_id]:
-    #             user_list.append(user_id)
-
-    # set(user_list)
-    # time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
-    # active_user = len(user_list)
-    # num_user = len(store['users']['user_id'])
-    # utilization_rate = active_user / num_user
-    # channels_exist = store['channels_exist']
-    # dms_exist = store['dms_exist']
-    # messages_exist = store['messages_exist']
-    # channel_new_stat = {'num_channels_exist': num_channels_exist, 'time_stamp': time_stamp}
-    # dms_new_stat = {'num_dms_exist': num_dms_exist, 'time_stamp': time_stamp}
-    # messages_new_stat = {'num_messages_sent': num_messages_exist, 'time_stamp': time_stamp}
-    # channels_exist.append(channel_new_stat)
-    # dms_exist.append(dms_new_stat)
-    # messages_exist.append(messages_new_stat)
     return {'workspace_stats': workspace_stats}
 
 
 
-#    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
 
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 ######Helper Function##########
-#
-#
-#
+
+
+# Check if the url is valid
 def http_check(img_url):
     r = re.match("http://", img_url)
     if r == None:
         raise InputError(description='Invalid Url')
 
 
-#
+# Check if the type is not jpg/jpeg
 def check_type(img_url):
     resp = urllib.request.urlopen(img_url)
     img = Image.open(resp)
     if img.format != 'JPEG':
         raise InputError(description='Invalid Type')
-    #
 
 
-def crop_image(img_url, x_start, y_start, x_end, y_end):
-    # im = Image.open(f'image/{u_id}.jpg')
+
+
+# Crop the image from the static folder
+def crop_image(x_start, y_start, x_end, y_end):
+    
+    # unnecessary img_url?
+
     im = Image.open('src/static/tmp.jpg')
 
     cropped = im.crop((x_start, y_start, x_end, y_end))
@@ -340,8 +353,9 @@ def crop_image(img_url, x_start, y_start, x_end, y_end):
     return 'src/static/{u_id}.jpg'
 
 
-# #########################
+#########################
 
+# IT2
 
 def check_len(handle_str):
     '''

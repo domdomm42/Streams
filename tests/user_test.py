@@ -388,13 +388,16 @@ def test_valid_handle(setup):
     
     requests.delete(f'{BASE_URL}/clear/v1')
 
-
+# Test for the valid users_all
 def test_successful_users_all():
     requests.delete(f'{BASE_URL}/clear/v1')
+    
+    # define the users
     user_woody_reg = {"email": "sheriff.woody@andysroom.com", "password": "qazwsx!!", "name_first": "sheriff", "name_last": "woody"}
     user_buzz_reg = {"email": "buzz.lightyear@starcommand.com", "password": "qazwsx@@", "name_first":  "buzz", "name_last": "lightyear"}
     user_woody_log_info = {"email": "sheriff.woody@andysroom.com", "password": "qazwsx!!"}
 
+    # store two users
     requests.post(f'{BASE_URL}/auth/register/v2', json=user_woody_reg)
     requests.post(f'{BASE_URL}/auth/register/v2', json=user_buzz_reg)
     user_woody = requests.post(f'{BASE_URL}/auth/login/v2', json=user_woody_log_info)
@@ -443,9 +446,12 @@ def test_successful_users_all():
 
 
 
-
+# Test if the url is http
 def test_upload_invalid_http(setup):
     response_log_joe, _ = setup
+    
+    
+    # invalid https
     photo_info = {
         "token": response_log_joe['token'],
         "img_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdq7PHvMwR6eqzZsCnjd-b7On4Z0BeWGNmpQ&usqp=CAU",
@@ -457,11 +463,18 @@ def test_upload_invalid_http(setup):
 
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+
+# Test if the url is http
 def test_upload_invalid_http1(setup):
     response_log_joe, _ = setup
+    
+    # Test invalid https, even not photo
     photo_info = {
         "token": response_log_joe['token'],
         "img_url": "https://web.cse.unsw.edu.au/~apps/hopper/student/",
@@ -473,27 +486,17 @@ def test_upload_invalid_http1(setup):
 
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+
+    # assert 400 error
     assert response_data['code'] == 400
 
 
-# def test_upload_valid_http1(setup):
-#     response_log_joe, _ = setup
-#     photo_info = {
-#         "token": response_log_joe['token'],
-#         "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
-#         "x_start": 9,
-#         "y_start": 9,
-#         "x_end": 99,
-#         "y_end": 99
-#     }
 
-#     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
-#     response_data = response.json()
-#     assert response.status_code == 200
-
-
+# Test if x_start < x_end
 def test_upload_invalid_start_end_x(setup):
     response_log_joe, _ = setup
+    
+    # x_start > x_end; 39>1, invalid
     photo_info = {
         "token": response_log_joe['token'],
         "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
@@ -505,11 +508,18 @@ def test_upload_invalid_start_end_x(setup):
 
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+
+# Test if both start < end
 def test_upload_invalid_start_end_xy(setup):
     response_log_joe, _ = setup
+    
+    # 99 < 10
     photo_info = {
         "token": response_log_joe['token'],
         "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
@@ -521,11 +531,16 @@ def test_upload_invalid_start_end_xy(setup):
 
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
-
+# Test if y_start < y_end
 def test_upload_invalid_start_end_y(setup):
     response_log_joe, _ = setup
+    
+    
+    # 39 >9
     photo_info = {
         "token": response_log_joe['token'],
         "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
@@ -537,9 +552,13 @@ def test_upload_invalid_start_end_y(setup):
 
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+# Test if > width/height
 def test_upload_out_of_ranges_x(setup):
     response_log_joe, _ = setup
 
@@ -554,9 +573,14 @@ def test_upload_out_of_ranges_x(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+
+# Test if > width/height
 def test_upload_out_of_ranges_y(setup):
     response_log_joe, _ = setup
 
@@ -571,9 +595,13 @@ def test_upload_out_of_ranges_y(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+# Test if > width/height
 def test_upload_out_of_ranges_xy(setup):
     response_log_joe, _ = setup
 
@@ -588,9 +616,13 @@ def test_upload_out_of_ranges_xy(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+
+# Test if > width/height
 def test_upload_out_of_ranges_xya(setup):
     response_log_joe, _ = setup
 
@@ -605,9 +637,14 @@ def test_upload_out_of_ranges_xya(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+
+# Test if > width/height
 def test_upload_out_of_ranges_xyb(setup):
     response_log_joe, _ = setup
 
@@ -622,9 +659,13 @@ def test_upload_out_of_ranges_xyb(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+
+# Test if all 0
 def test_upload_out_of_ranges_0(setup):
     response_log_joe, _ = setup
 
@@ -639,9 +680,11 @@ def test_upload_out_of_ranges_0(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
-
+# Test if start == end
 def test_upload_same_x(setup):
     response_log_joe, _ = setup
 
@@ -656,9 +699,11 @@ def test_upload_same_x(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
-
+# Test if start == end
 def test_upload_same_y(setup):
     response_log_joe, _ = setup
 
@@ -673,9 +718,12 @@ def test_upload_same_y(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+# Test if start == end
 def test_upload_same_xy(setup):
     response_log_joe, _ = setup
 
@@ -690,9 +738,13 @@ def test_upload_same_xy(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+# Test if < 0
 def test_upload_negative_x(setup):
     response_log_joe, _ = setup
 
@@ -707,9 +759,11 @@ def test_upload_negative_x(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
-
+# Test if < 0
 def test_upload_negative_y(setup):
     response_log_joe, _ = setup
 
@@ -724,9 +778,13 @@ def test_upload_negative_y(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+# Test if < 0
 def test_upload_negative_xy(setup):
     response_log_joe, _ = setup
 
@@ -741,9 +799,13 @@ def test_upload_negative_xy(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+    
+    # assert 400 error
     assert response_data['code'] == 400
 
 
+
+# Test if not a jpg
 def test_upload_not_jpg(setup):
     response_log_joe, _ = setup
 
@@ -758,9 +820,11 @@ def test_upload_not_jpg(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+
+    # assert 400 error
     assert response_data['code'] == 400
 
-
+# Test if not a jpg
 def test_upload_not_jpg_invalid(setup):
     response_log_joe, _ = setup
 
@@ -775,8 +839,13 @@ def test_upload_not_jpg_invalid(setup):
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
     response_data = response.json()
+
+    # assert 400 error
     assert response_data['code'] == 400
 
+
+
+# Test same photo twice
 def test_upload_valid_same(setup):
     response_log_joe, _ = setup
 
@@ -790,11 +859,14 @@ def test_upload_valid_same(setup):
         "y_end": 200
     }
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
-    # response_data = response.json()
 
+
+    # assert 400 error
     assert response.status_code == 200
 
     
+
+# Test for valid case
 def test_upload_valid(setup):
     response_log_joe, _ = setup
 
@@ -807,6 +879,8 @@ def test_upload_valid(setup):
         "x_end": 90,
         "y_end": 90
     }
+
+
     response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
 
 
@@ -814,13 +888,16 @@ def test_upload_valid(setup):
 
 
 
-
+# Test valid user stat
 def test_user_stats(setup):
     response_log_joe, _ = setup
+
+    # Get info from token
     user_all_info = {"token": response_log_joe["token"]}
     response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
     response_data = response.json()
     
+    # Find the current time
     time_stamp = int(datetime.now(timezone.utc).timestamp())
 
     
@@ -832,13 +909,17 @@ def test_user_stats(setup):
         }}
 
 
-
+# Test valid users stat
 def test_users_stats(setup):
     response_log_joe, _ = setup
+    
+    # Get info from token
     user_all_info = {"token": response_log_joe["token"]}
 
     response = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info)
     response_data = response.json()
+    
+    # Get the current time
     time_stamp = int(datetime.now(timezone.utc).timestamp())
 
     assert response_data == {'workspace_stats': {
@@ -847,32 +928,8 @@ def test_users_stats(setup):
         'messages_exist': [{'num_messages_exist': 0, 'time_stamp': time_stamp}],
         'utilization_rate': 0}}
 
-# def test_users_stats_multiple(setup):
-#     response_log_joe, response_log_marry = setup
-    
-#     user_all_info = {"token": response_log_joe["token"]}
 
-#     response = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info)
-#     #response_data = response.json()
-#     time_stamp = int(datetime.now(timezone.utc).timestamp())
-
-#     user_all_info1 = {"token": response_log_marry["token"]}
-
-#     response = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info1)
-    
-#     time_stamp1 = int(datetime.now(timezone.utc).timestamp())
-#     response_data = response.json()
-
-
-#     assert response_data == {'workspace_stats': {
-#         'channels_exist': [{'num_channels_exist': 0, 'time_stamp': time_stamp}],
-#         'dms_exist': [{'num_dms_exist': 0, 'time_stamp': time_stamp}],
-#         'messages_exist': [{'num_messages_exist': 0, 'time_stamp': time_stamp}],
-#         'utilization_rate': 0}}
-
-
-
-
+# Test the valid one with 200
 def test_users_stats200(setup):
     response_log_joe, _ = setup
     user_all_info = {"token": response_log_joe["token"]}
@@ -881,6 +938,8 @@ def test_users_stats200(setup):
 
     assert response.status_code == 200
 
+
+# Test the valid one with 200
 def test_user_stats200(setup):
     response_log_joe, _ = setup
     user_all_info = {"token": response_log_joe["token"]}
