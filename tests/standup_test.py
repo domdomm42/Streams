@@ -29,6 +29,7 @@ def setup():
 
     return joe_smith_data, joes_funland_data, marry_mae_data
 
+# testing simple standup case
 def test_simple_standup(setup):
 
     joe_smith_data, joes_funland_data, marry_mae_data = setup
@@ -41,6 +42,7 @@ def test_simple_standup(setup):
 
     assert response.status_code == 200
 
+# testing for errors when successful standup duration ends
 def test_standup_finish_sametime(setup):
     joe_smith_data, joes_funland_data, marry_mae_data = setup
 
@@ -56,6 +58,7 @@ def test_standup_finish_sametime(setup):
     time.sleep(3)
     assert response.status_code == 200
 
+# Edge case testing negative time length
 def test_negative_time_length(setup):
     joe_smith_data, joes_funland_data, marry_mae_data = setup
 
@@ -68,7 +71,7 @@ def test_negative_time_length(setup):
 
     assert response['code'] == INPUT_ERROR
 
-    
+# Testing invalid channel id    
 def test_simple_standup_invalidchannel(setup):
 
     joe_smith_data, joes_funland_data, marry_mae_data = setup
@@ -82,6 +85,7 @@ def test_simple_standup_invalidchannel(setup):
 
     assert response['code'] == INPUT_ERROR
 
+# testing sending message in standup when user not in channel
 def test_simple_not_in_channel(setup):
 
     joe_smith_data, joes_funland_data, marry_mae_data = setup
@@ -98,6 +102,7 @@ def test_simple_not_in_channel(setup):
 
     assert response['code'] == ACCESS_ERROR
 
+# testing active standup
 def test_start_active_again(setup):
     joe_smith_data, joes_funland_data, marry_mae_data = setup
 
@@ -123,7 +128,7 @@ def test_start_inactive(setup):
     assert response.status_code == 200
     
 
-
+# checking for errors when sending messages in standup
 def test_standup_send(setup):
     joe_smith_data, joes_funland_data, marry_mae_data = setup
 
@@ -138,7 +143,7 @@ def test_standup_send(setup):
 
     assert response.status_code == 200
 
-
+# testing for invalid channel_id
 def test_standup_send_invalid_cid(setup):
     joe_smith_data, joes_funland_data, marry_mae_data = setup
 
@@ -154,6 +159,7 @@ def test_standup_send_invalid_cid(setup):
 
     assert response['code'] == INPUT_ERROR
 
+# Edge case testing long message
 def test_standup_send_long_message(setup):
     joe_smith_data, joes_funland_data, marry_mae_data = setup
 
@@ -169,7 +175,7 @@ def test_standup_send_long_message(setup):
 
     assert response['code'] == INPUT_ERROR
 
-    
+# Testing invalid standup
 def test_standup_send_inactive(setup):
     joe_smith_data, joes_funland_data, marry_mae_data = setup
 
@@ -182,6 +188,7 @@ def test_standup_send_inactive(setup):
 
     assert response['code'] == INPUT_ERROR
 
+# Edge case testing invalid user
 def test_standup_invalid_user(setup):
     joe_smith_data, joes_funland_data, marry_mae_data = setup
 
