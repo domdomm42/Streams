@@ -1,8 +1,9 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
-from src.other import print_store_debug
-from src.message import check_if_message_id_exists_and_get_sender_id
+from src.auth import auth_register_v1
+from src.channels import channels_create_v1
+from src.message import message_send_v1
 from datetime import datetime, timezone
 import re
 import urllib.request
@@ -239,96 +240,61 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
 
 def user_stats_v1(token):
-    # check valid token
     u_id = check_and_get_user_id(token)
 
     store = data_store.get()
-    num_channel_joined = 0
-    num_dm_joined = 0
-    num_messages_sent = 0
-    num_channels = len(store['channels']['channel_id'])
-    num_dms = len(store['dms']['dm_id'])
-    num_messages = len(store['messages'])
-    for channel_id in store['channels']['channel_id']:
-        if u_id in store['channels']['all_members'][channel_id]:
-            num_channel_joined = num_channel_joined + 1
-    for dm_id in store['dms']['dm_id']:
-        if u_id in store['dms']['all_members'][dm_id]:
-            num_dm_joined = num_dm_joined + 1
-    for message in store['messages']:
-        if check_if_message_id_exists_and_get_sender_id(message['message_id']) == u_id:
-            num_messages_sent = num_messages_sent + 1
-    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
-
-    # print(store['users']['channels_joined'])# empty
-
-    # channels_joined = store['users']['channels_joined']
-
-    channels_joined = store['users']['channels_joined'][u_id]
-
-    dms_joined = store['users']['dms_joined'][u_id]
-    messages_sent = store['users']['message_sent'][u_id]
-    channel_new_stat = {'num_channels_joined': num_channel_joined, 'time_stamp': time_stamp}
-    dms_new_stat = {'num_dms_joined': num_dm_joined, 'time_stamp': time_stamp}
-    messages_new_stat = {'num_messages_sent': num_messages_sent, 'time_stamp': time_stamp}
-    channels_joined.append(channel_new_stat)
-    dms_joined.append(dms_new_stat)
-    messages_sent.append(messages_new_stat)
-    if (num_channels + num_dms + num_messages) > 0:
-        involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent) / (
-                    num_channels + num_dms + num_messages)
-
-    if involvement_rate > 1:
-        involvement_rate = 1
 
     user_stats = {
-        'channels_joined': channels_joined,
-        'dms_joined': dms_joined,
-        'messages_sent': messages_sent,
-        'involvement_rate': involvement_rate
+        'channels_joined': store['users']['channels_user_data'][u_id],
+        'dms_joined': store['users']['dms_user_data'][u_id],
+        'messages_sent': store['users']['messages_sent_user_data'][u_id],
+        'involvement_rate': store['users']['involvement_rate'][u_id]
     }
 
     return {'user_stats': user_stats}
-
-
+    
 def users_stats_v1(token):
     check_and_get_user_id(token)
+
     store = data_store.get()
-    num_channels_exist = len(store['channels']['channel_id'])
-    num_dms_exist = len(store['dms']['dm_id'])
-    num_messages_exist = len(store['messages'])
 
-    user_list = []
-    for user_id in store['users']['user_id']:
-        for channel_id in store['channels']['channel_id']:
-            if user_id in store['channels']['all_members'][channel_id]:
-                user_list.append(user_id)
-        for dm_id in store['dms']['dm_id']:
-            if user_id in store['dms']['dm_id'][dm_id]:
-                user_list.append(user_id)
-
-    set(user_list)
-    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    active_user = len(user_list)
-    num_user = len(store['users']['user_id'])
-    utilization_rate = active_user / num_user
-    channels_exist = store['channels_exist']
-    dms_exist = store['dms_exist']
-    messages_exist = store['messages_exist']
-    channel_new_stat = {'num_channels_exist': num_channels_exist, 'time_stamp': time_stamp}
-    dms_new_stat = {'num_dms_exist': num_dms_exist, 'time_stamp': time_stamp}
-    messages_new_stat = {'num_messages_sent': num_messages_exist, 'time_stamp': time_stamp}
-    channels_exist.append(channel_new_stat)
-    dms_exist.append(dms_new_stat)
-    messages_exist.append(messages_new_stat)
     workspace_stats = {
-        'channels_exist': channels_exist,
-        'dms_exist': dms_exist,
-        'messages_exist': messages_exist,
-        'utilization_rate': utilization_rate
+        'channels_exist': store['workspace_stat_channels'],
+        'dms_exist': store['workspace_stat_dms'],
+        'messages_exist': store['workspace_stat_messages'],
+        'utilization_rate': store['utilization_rate']
     }
 
+    
+    # num_channels_exist = len(store['channels']['channel_id'])
+    # num_dms_exist = len(store['dms']['dm_id'])
+    # num_messages_exist = len(store['messages'])
+
+    # user_list = []
+    # for user_id in store['users']['user_id']:
+    #     for channel_id in store['channels']['channel_id']:
+    #         if user_id in store['channels']['all_members'][channel_id]:
+    #             user_list.append(user_id)
+    #     for dm_id in store['dms']['dm_id']:
+    #         if user_id in store['dms']['dm_id'][dm_id]:
+    #             user_list.append(user_id)
+
+    # set(user_list)
+    # time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    # active_user = len(user_list)
+    # num_user = len(store['users']['user_id'])
+    # utilization_rate = active_user / num_user
+    # channels_exist = store['channels_exist']
+    # dms_exist = store['dms_exist']
+    # messages_exist = store['messages_exist']
+    # channel_new_stat = {'num_channels_exist': num_channels_exist, 'time_stamp': time_stamp}
+    # dms_new_stat = {'num_dms_exist': num_dms_exist, 'time_stamp': time_stamp}
+    # messages_new_stat = {'num_messages_sent': num_messages_exist, 'time_stamp': time_stamp}
+    # channels_exist.append(channel_new_stat)
+    # dms_exist.append(dms_new_stat)
+    # messages_exist.append(messages_new_stat)
     return {'workspace_stats': workspace_stats}
+
 
 
 #    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
@@ -480,8 +446,14 @@ def check_invalid_u_id(u_id):
     if u_id not in store['users']['user_id']:
         raise InputError(description='This user does not exist!')
 
-
-
+if __name__ == '__main__':
+    token = auth_register_v1("jimjoe@gmail.com", "password", "Jim", "Joe")['token']
+    print(users_stats_v1(token))
+    channels_create_v1(token, 'Jim', False)
+    print(users_stats_v1(token))
+    message_send_v1(token, 0, "Hi there!")
+    print(users_stats_v1(token))
+    
 
 
 

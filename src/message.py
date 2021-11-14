@@ -5,8 +5,6 @@ from src.notifications import tag_users_in_channel_message, tag_users_in_dm_mess
 from datetime import datetime, timezone
 import threading
 
-import time
-
 MESSAGE_ID_TRACKER = -1
 
 def reset_message_id_tracker():
@@ -72,6 +70,11 @@ def message_send_v1(token, channel_id, message):
     store['channels']['messages'][idx].append(message_id)
     
     tag_users_in_channel_message(user_id, message, channel_id)
+    store['users']['messages_sent'][user_id] += 1
+    append_user_stat_data_msg(user_id)
+    
+    store['messages_exist'] += 1
+    append_workspace_stats_msg()
 
     data_store.set(store)
 
@@ -121,9 +124,14 @@ def message_senddm_v1(token, dm_id, message):
     store['dms']['messages'][idx].append(message_id)
     
     tag_users_in_dm_message(user_id, message, dm_id)
+    
+    store['users']['messages_sent'][user_id] += 1
+    append_user_stat_data_msg(user_id)   
+    
+    store['messages_exist'] += 1
+    append_workspace_stats_msg()
 
     data_store.set(store)
-
     return {
         'message_id': message_id
     }
@@ -233,6 +241,7 @@ def message_remove_v1(token, message_id):
         store['messages'].pop(message_idx)
         store['dms']['messages'][dm_idx].remove(message_id)
 
+
     data_store.set(store)
 
     return {}
@@ -311,6 +320,12 @@ def send_msg_later_thread(user_id, channel_id, message, time_sent, message_id):
 
     tag_users_in_channel_message(user_id, message, channel_id)
 
+    store['users']['messages_sent'][user_id] += 1
+    append_user_stat_data_msg(user_id)
+
+    store['messages_exist'] += 1
+    append_workspace_stats_msg()
+
     data_store.set(store)
 
 def message_sendlaterdm_v1(token, dm_id, message, time_sent):
@@ -386,6 +401,12 @@ def send_msgdm_later_thread(user_id, dm_id, message, time_sent, message_id):
     store['dms']['messages'][idx].append(message_id)
     
     tag_users_in_dm_message(user_id, message, dm_id)
+
+    store['users']['messages_sent'][user_id] += 1
+    append_user_stat_data_msg(user_id)
+
+    store['messages_exist'] += 1
+    append_workspace_stats_msg()    
 
     data_store.set(store)
 
@@ -612,55 +633,59 @@ def check_time(time_sent):
     if time_sent < int(datetime.now(timezone.utc).timestamp()):
         raise InputError(description='Time incorrect')
 
-# if __name__ == '__main__':
-#     # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
-#     # channels_create_v1(jim_joe_token, 'Jim Land', False)
+def append_user_stat_data_msg(u_id):
 
-#     # print('')
-#     # print(channel_messages_v1(jim_joe_token, 0, 0))
-#     # print('')
-#     # message_send_v1(jim_joe_token, 0, 'Hi')
-#     # print('')
-#     # print(channel_messages_v1(jim_joe_token, 0, 0))
-#     # print('')
-#     # message_sendlater_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
-#     # print('')
-#     # print(channel_messages_v1(jim_joe_token, 0, 0))
-#     # print('')
-#     # time.sleep(2)
-#     # message_send_v1(jim_joe_token, 0, 'Hi2')
-#     # print(channel_messages_v1(jim_joe_token, 0, 0))
-#     # print('Yellow')
-#     # time.sleep(2)
-#     # print('')
-#     # print(channel_messages_v1(jim_joe_token, 0, 0))
-#     # print('')
+    store = data_store.get()
+    
+    # Determine how many channels, dms and messages the user has joined/sent
+    channels_joined = store['users']['channels_joined'][u_id]
+    dms_joined = store['users']['dms_joined'][u_id]
+    messages_sent = store['users']['messages_sent'][u_id]    
+    
+    # Determine total number of channels
+    total_channels = len(store['channels']['channel_id'])
+    total_dms = len(store['dms']['dm_id'])
+    total_messages = len(store['messages'])
 
-#     # # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
-#     # # marry_mae_token = auth_register_v1('jimjoe11@gmail.com', 'password', 'SS23', 'S331')['token']
-#     # # dm_create_v1(jim_joe_token, [0, 1])
-#     # # print('')
-#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
-#     # # print('')
-#     # # message_senddm_v1(jim_joe_token, 0, 'Hi')
-#     # # print('')
-#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
-#     # # print('')
-#     # # message_sendlaterdm_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
-#     # # print('')
-#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
-#     # # print('')
-#     # # time.sleep(2)
-#     # # message_senddm_v1(jim_joe_token, 0, 'Hi2')
-#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
-#     # # print('Yellow')
-#     # # time.sleep(2)
-#     # # print('')
-#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
-#     # # print('')
+    time_stamp = int(datetime.now(timezone.utc).timestamp())
 
-#     user_handles = ['jim', 'joe']
-#     message = '123456782'
-#     print(message[0:20])
+    messages_new_stat = {'num_messages_sent': messages_sent, 'time_stamp': time_stamp}
+    store['users']['messages_sent_user_data'][u_id].append(messages_new_stat)
+    
+    involvement_rate = 0
+    if (channels_joined + dms_joined + messages_sent) > 0:
+        involvement_rate = (channels_joined + dms_joined + messages_sent) / (total_channels + total_dms + total_messages)
 
-#     pass
+    if involvement_rate > 1:
+        involvement_rate = 1
+
+    store['users']['involvement_rate'][u_id] = involvement_rate
+
+def append_workspace_stats_msg():
+    '''
+    This function updates the workspace statitics data once a change is made in the number of messages.
+
+    Arguments:
+        u_id (int) - The user id.
+
+    Exceptions:
+        No given exceptions
+    ''' 
+    store = data_store.get()
+
+    messages_exist = store['messages_exist']
+
+    time_stamp = int(datetime.now(timezone.utc).timestamp())
+
+    messages_new_stat = {'num_messages_exist': messages_exist, 'time_stamp': time_stamp}
+    store['workspace_stat_messages'].append(messages_new_stat)
+
+    num_users_who_have_joined_at_least_one_channel_or_dm = 0
+    num_users = len(store['users']['user_id'])
+    for u_id in store['users']['user_id']:
+        if store['users']['channels_joined'][u_id] > 0:
+            num_users_who_have_joined_at_least_one_channel_or_dm += 1
+        elif store['users']['dms_joined'][u_id] > 0:
+            num_users_who_have_joined_at_least_one_channel_or_dm += 1
+
+    store['utilization_rate'] = num_users_who_have_joined_at_least_one_channel_or_dm / num_users

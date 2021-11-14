@@ -3,11 +3,11 @@ from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
 from src.notifications import alert_user_channel_invited
 from src.users import user_profile_v1
-from src.other import print_store_debug
+from datetime import datetime, timezone
 
 def channel_invite_v1(token, channel_id, u_id):
     """
-        Given a user with ID u_id to join a channel with ID channel_id.
+        Given a user with ID u_id to join a channel with ID channel_id.appe
         
         Arguments:
             auth_user_id    (integer)       - use to identify users
@@ -32,6 +32,9 @@ def channel_invite_v1(token, channel_id, u_id):
     store['channels']['all_members'][channel_id].append(u_id)
     alert_user_channel_invited(auth_user_id, u_id, channel_id)
     
+    store['users']['channels_joined'][u_id] += 1
+    append_user_stat_data_channel(u_id)       
+
     data_store.set(store)
     return {}
 
@@ -145,7 +148,6 @@ def channel_messages_v1(token, channel_id, start):
         'end': end,
     }
 
-
 def channel_join_v1(token, channel_id):
     """
     Given a channel_id of a channel that the authorised user can join, adds them to that channel.
@@ -200,6 +202,10 @@ def channel_leave_v1(token, channel_id):
     if user_id in store['channels']['owner_user_id'][channel_id]:
         store['channels']['owner_user_id'][channel_id].remove(user_id)
     data_store.set(store)
+
+    store['users']['channels_joined'][user_id] -= 1
+    append_user_stat_data_channel(user_id)   
+
     return {}
 
 def channel_addowner_v1(token, channel_id, u_id):
@@ -275,7 +281,6 @@ def channel_removeowner_v1(token, channel_id, u_id):
     data_store.set(store)
     return {}
 
-
 def check_owner(channel_id, u_id):
     '''
     Check if u_id is an owner of channel_id.
@@ -312,11 +317,7 @@ def check_owner_permission(channel_id, user_id):
     store = data_store.get()
     if user_id not in store['channels']['owner_user_id'][channel_id]:
         if store['users']['is_global_owner'][user_id] == False:            
-            raise AccessError(description='Permission denied')
-
-
-            
-                
+            raise AccessError(description='Permission denied')     
 
 def check_not_owner(u_id, channel_id):
     '''
@@ -460,8 +461,6 @@ def check_invalid_channel_id(channel_id):
     if channel_id not in store['channels']['channel_id']:
         raise InputError(description='Channel ID does not exist')
 
-
-# Check invalid u_id
 def check_invalid_u_id(u_id):
     '''
     This function checks whether the given u_id is valid
@@ -475,13 +474,10 @@ def check_invalid_u_id(u_id):
         No return value
     ''' 
 
-
     store = data_store.get()
     if u_id not in store['users']['user_id']:
         raise InputError(description='This user does not exist!')
 
-
-# Check member u_id
 def check_member_u_id(channel_id, u_id):
     '''
     This function checks whether the start is of the message is valid, it cannot be greater than the total
@@ -504,8 +500,6 @@ def check_member_u_id(channel_id, u_id):
     else:
         pass
 
-
-# Check start
 def check_invalid_start(channel_id, start):
     '''
     This function checks whether the start is of the message is valid, it cannot be greater than the total
@@ -526,9 +520,6 @@ def check_invalid_start(channel_id, start):
     if start > no_msgs_in_channel or start < 0:
         raise InputError(description='Start is greater than the total number of messages in the channel')
 
-
-# AccessError
-# Check authorised
 def check_autorised_id(auth_user_id, channel_id):
     '''
     Checks if user is in the channel
@@ -567,4 +558,40 @@ def get_message(message_id):
         if msg['message_id'] == message_id:
             return msg
 
+def append_user_stat_data_channel(u_id):
+    '''
+    This function updates teh user statitics data once a change is made in the number of channels.
 
+    Arguments:
+        u_id (int) - The user id.
+
+    Exceptions:
+        No given exceptions
+    ''' 
+
+    store = data_store.get()
+    
+    # Determine how many channels, dms and messages the user has joined/sent
+    channels_joined = store['users']['channels_joined'][u_id]
+    dms_joined = store['users']['dms_joined'][u_id]
+    messages_sent = store['users']['messages_sent'][u_id]    
+    
+    # Determine total number of channels
+    total_channels = len(store['channels']['channel_id'])
+    total_dms = len(store['dms']['dm_id'])
+    total_messages = len(store['messages'])
+
+    time_stamp = int(datetime.now(timezone.utc).timestamp())
+
+    channel_new_stat = {'num_channels_joined': channels_joined, 'time_stamp': time_stamp}
+
+    store['users']['channels_user_data'][u_id].append(channel_new_stat)
+    
+    involvement_rate = 0
+    if (channels_joined + dms_joined + messages_sent) > 0:
+        involvement_rate = (channels_joined + dms_joined + messages_sent) / (total_channels + total_dms + total_messages)
+
+    if involvement_rate > 1:
+        involvement_rate = 1
+
+    store['users']['involvement_rate'][u_id] = involvement_rate

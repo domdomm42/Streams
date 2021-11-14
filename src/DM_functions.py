@@ -4,6 +4,10 @@ from src.auth import auth_register_v1
 from src.auth_auth_helpers import check_and_get_user_id
 from src.users import user_profile_v1
 from src.notifications import alert_user_dm_invited
+from src.other import print_store_debug
+from src.message import message_send_v1
+from src.channels import channels_create_v1
+from datetime import datetime, timezone
 import requests
 
 def search_v1(token, query_str):
@@ -257,6 +261,14 @@ def dm_create_v1(token, u_ids):
 
     for u_id in user_ids:
         alert_user_dm_invited(auth_user_id, u_id, dm_id)
+        store['users']['dms_joined'][u_id] += 1
+        append_user_stat_data_dm(u_id)
+
+    store['users']['dms_joined'][auth_user_id] += 1
+    append_user_stat_data_dm(auth_user_id)
+
+    store['dms_exist'] += 1
+    append_workspace_stats_dm()
 
     data_store.set(store)
 
@@ -318,13 +330,19 @@ def dm_remove_v1(token, dm_id):
     # removes the dm and its fields
     index = index_from_dm_id(dm_id, store)
 
+    for u_id in store['dms']['all_members'][index]:
+        store['users']['dms_joined'][u_id] -= 1
+        append_user_stat_data_dm(u_id)
+
     del store['dms']['dm_id'][index]
     del store['dms']['owner_user_id'][index]
     del store['dms']['dm_name'][index]
     del store['dms']['messages'][index]
     del store['dms']['all_members'][index]
 
-      
+    store['dms_exist'] -= 1
+    append_workspace_stats_dm()
+
     data_store.set(store)
 
     return {
@@ -407,6 +425,8 @@ def dm_leave_v1(token, dm_id):
         # -1 states that there is no owner in the dm
         store['dms']['owner_user_id'][index] = -1
     
+    store['users']['dms_joined'][auth_user_id] -= 1
+
     data_store.set(store)
     return {}
     
@@ -698,4 +718,55 @@ def index_from_channel_id(channel_id, store):
 
     return channel_index
    
+def append_user_stat_data_dm(u_id):
 
+    store = data_store.get()
+    
+    # Determine how many channels, dms and messages the user has joined/sent
+    channels_joined = store['users']['dms_joined'][u_id]
+    dms_joined = store['users']['dms_joined'][u_id]
+    messages_sent = store['users']['messages_sent'][u_id]    
+    
+    # Determine total number of channels
+    total_channels = len(store['channels']['channel_id'])
+    total_dms = len(store['dms']['dm_id'])
+    total_messages = len(store['messages'])
+
+    time_stamp = int(datetime.now(timezone.utc).timestamp())
+
+    dm_new_stat = {'num_dms_joined': dms_joined, 'time_stamp': time_stamp}
+
+    store['users']['dms_user_data'][u_id].append(dm_new_stat)
+    
+    involvement_rate = 0
+    if (channels_joined + dms_joined + messages_sent) > 0:
+        involvement_rate = (channels_joined + dms_joined + messages_sent) / (total_channels + total_dms + total_messages)
+
+    if involvement_rate > 1:
+        involvement_rate = 1
+
+    store['users']['involvement_rate'][u_id] = involvement_rate
+
+def append_workspace_stats_dm():
+
+    store = data_store.get()
+    
+    # Determine how many channels, dms and messages exists
+    dms_exist = store['dms_exist']
+    # dms_exist = store['dms_exist']
+    # messages_exist = store['messages_exist']
+
+    time_stamp = int(datetime.now(timezone.utc).timestamp())
+
+    dms_new_stat = {'num_dms_exist': dms_exist, 'time_stamp': time_stamp}
+    store['workspace_stat_dms'].append(dms_new_stat)
+
+    num_users_who_have_joined_at_least_one_channel_or_dm = 0
+    num_users = len(store['users']['user_id'])
+    for u_id in store['users']['user_id']:
+        if store['users']['channels_joined'][u_id] > 0:
+            num_users_who_have_joined_at_least_one_channel_or_dm += 1
+        elif store['users']['dms_joined'][u_id] > 0:
+            num_users_who_have_joined_at_least_one_channel_or_dm += 1
+
+    store['utilization_rate'] = num_users_who_have_joined_at_least_one_channel_or_dm / num_users

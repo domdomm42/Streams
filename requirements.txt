@@ -42,3 +42,4 @@ wrapt==1.12.1
 zipp==3.4.0
 mypy==0.800
 pycodestyle==2.7.0
+pillow==8.4.0

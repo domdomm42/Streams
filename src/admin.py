@@ -46,7 +46,6 @@ def admin_user_remove_v1(token, user_id):
         if message['u_id'] == user_id:
             idx = store['messages'].index(message)
             store['messages'][idx]['message'] = 'Removed user'
-
        
     store['users']['first_names'][user_id] = 'Removed'
     store['users']['last_names'][user_id] = 'user'
@@ -57,11 +56,12 @@ def admin_user_remove_v1(token, user_id):
     store['users']['removed_user'][user_id] = True
     store['users']['permissions'][user_id] = 3
 
-    # I DONT THINK THIS WILL WORK
+    for data in store['logged_in_users']:
+        if data['user_id'] == user_id:
+            store['logged_in_users'].remove({'user_id': user_id, 'session_id': data['session_id']})
+    
     store['channels']['all_members'][user_id] = 'X'
     store['dms']['all_members'][user_id] = 'X'
-
-
 
     data_store.set(store)
 
