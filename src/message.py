@@ -1,6 +1,7 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
+from src.notifications import tag_users_in_channel_message, tag_users_in_dm_message
 from datetime import datetime, timezone
 import threading
 
@@ -63,13 +64,15 @@ def message_send_v1(token, channel_id, message):
     time_created = int(datetime.now(timezone.utc).timestamp())
 
     message_react = {'react_id': 1, 'u_ids': [], 'is_this_user_reacted': False}
-    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created, 'reacts': message_react, 'is_pinned': False}
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created, 'reacts': [message_react], 'is_pinned': False}
 
     store['messages'].append(message_info)
 
     idx = store['channels']['channel_id'].index(channel_id)
     store['channels']['messages'][idx].append(message_id)
     
+    tag_users_in_channel_message(user_id, message, channel_id)
+
     data_store.set(store)
 
     return {
@@ -110,13 +113,15 @@ def message_senddm_v1(token, dm_id, message):
     time_created = int(datetime.now(timezone.utc).timestamp())
 
     message_react = {'react_id': 1, 'u_ids': [], 'is_this_user_reacted': False}
-    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created, 'reacts': message_react, 'is_pinned': False}
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_created, 'reacts': [message_react], 'is_pinned': False}
 
     store['messages'].append(message_info)
 
     idx = store['dms']['dm_id'].index(dm_id)
     store['dms']['messages'][idx].append(message_id)
     
+    tag_users_in_dm_message(user_id, message, dm_id)
+
     data_store.set(store)
 
     return {
@@ -165,11 +170,17 @@ def message_edit_v1(token, message_id, message):
             check_if_user_is_owner_of_channel_or_sender_or_global_owner(user_id, channel_id, sender_id)
             store['messages'][message_idx]['message'] = message
 
+            # Assumes the person who is editing the message is the owner of the message
+            tag_users_in_channel_message(user_id, message, channel_id)
+
         # Message belongs to a DM
         else:
             dm_id = dm_or_channel_id_of_message[0]
             check_if_user_is_owner_of_dm_or_sender(user_id, dm_id, sender_id)
             store['messages'][message_idx]['message'] = message
+
+            # Assumes the person who is editing the message is the owner of the message
+            tag_users_in_dm_message(user_id, message, dm_id)
 
         data_store.set(store)
 
@@ -213,7 +224,7 @@ def message_remove_v1(token, message_id):
         channel_idx = store['channels']['channel_id'].index(channel_id)
         store['messages'].pop(message_idx)
         store['channels']['messages'][channel_idx].remove(message_id)
-
+        
     # Message belongs to a DM
     else:
         dm_id = dm_or_channel_id_of_message[0]
@@ -291,13 +302,15 @@ def send_msg_later_thread(user_id, channel_id, message, time_sent, message_id):
     store = data_store.get()
 
     message_react = {'react_id': 1, 'u_ids': [], 'is_this_user_reacted': False}
-    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_sent, 'reacts': message_react, 'is_pinned': False}
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_sent, 'reacts': [message_react], 'is_pinned': False}
 
     store['messages'].append(message_info)
 
     idx = store['channels']['channel_id'].index(channel_id)
     store['channels']['messages'][idx].append(message_id)
-    
+
+    tag_users_in_channel_message(user_id, message, channel_id)
+
     data_store.set(store)
 
 def message_sendlaterdm_v1(token, dm_id, message, time_sent):
@@ -365,13 +378,15 @@ def send_msgdm_later_thread(user_id, dm_id, message, time_sent, message_id):
     store = data_store.get()
 
     message_react = {'react_id': 1, 'u_ids': [], 'is_this_user_reacted': False}
-    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_sent, 'reacts': message_react, 'is_pinned': False}
+    message_info = {'message_id': message_id, 'u_id': user_id, 'message': message, 'time_created': time_sent, 'reacts': [message_react], 'is_pinned': False}
 
     store['messages'].append(message_info)
 
     idx = store['dms']['dm_id'].index(dm_id)
     store['dms']['messages'][idx].append(message_id)
     
+    tag_users_in_dm_message(user_id, message, dm_id)
+
     data_store.set(store)
 
 def check_channel_id(channel_id):
@@ -473,9 +488,6 @@ def get_dm_or_channel_id_of_message(message_id):
     Arguments:
         message_id  (integer)   - The message_id of the message.
     
-    Exceptions:
-        Input Error     -   Message does not belong in any channel or dm.
-    
     Return Value:
         Returns (dm_id, 'dm') or (channel_id, 'channel') depending if the message belongs to a channel or DM.
     '''
@@ -493,8 +505,6 @@ def get_dm_or_channel_id_of_message(message_id):
         if message_id in messages_group:
             idx = store['dms']['messages'].index(messages_group)
             return store['dms']['dm_id'][idx], 'dm'
-
-    raise InputError(description="Message does not belong in any channel or dm!")
 
 def check_if_user_is_owner_of_channel_or_sender_or_global_owner(user_id, channel_id, sender_id):
     ''' 
@@ -602,50 +612,55 @@ def check_time(time_sent):
     if time_sent < int(datetime.now(timezone.utc).timestamp()):
         raise InputError(description='Time incorrect')
 
-if __name__ == '__main__':
-    # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
-    # channels_create_v1(jim_joe_token, 'Jim Land', False)
+# if __name__ == '__main__':
+#     # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
+#     # channels_create_v1(jim_joe_token, 'Jim Land', False)
 
-    # print('')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('')
-    # message_send_v1(jim_joe_token, 0, 'Hi')
-    # print('')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('')
-    # message_sendlater_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
-    # print('')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('')
-    # time.sleep(2)
-    # message_send_v1(jim_joe_token, 0, 'Hi2')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('Yellow')
-    # time.sleep(2)
-    # print('')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('')
+#     # print('')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('')
+#     # message_send_v1(jim_joe_token, 0, 'Hi')
+#     # print('')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('')
+#     # message_sendlater_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
+#     # print('')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('')
+#     # time.sleep(2)
+#     # message_send_v1(jim_joe_token, 0, 'Hi2')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('Yellow')
+#     # time.sleep(2)
+#     # print('')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('')
 
-    # # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
-    # # marry_mae_token = auth_register_v1('jimjoe11@gmail.com', 'password', 'SS23', 'S331')['token']
-    # # dm_create_v1(jim_joe_token, [0, 1])
-    # # print('')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('')
-    # # message_senddm_v1(jim_joe_token, 0, 'Hi')
-    # # print('')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('')
-    # # message_sendlaterdm_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
-    # # print('')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('')
-    # # time.sleep(2)
-    # # message_senddm_v1(jim_joe_token, 0, 'Hi2')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('Yellow')
-    # # time.sleep(2)
-    # # print('')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('')
-    pass
+#     # # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
+#     # # marry_mae_token = auth_register_v1('jimjoe11@gmail.com', 'password', 'SS23', 'S331')['token']
+#     # # dm_create_v1(jim_joe_token, [0, 1])
+#     # # print('')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('')
+#     # # message_senddm_v1(jim_joe_token, 0, 'Hi')
+#     # # print('')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('')
+#     # # message_sendlaterdm_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
+#     # # print('')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('')
+#     # # time.sleep(2)
+#     # # message_senddm_v1(jim_joe_token, 0, 'Hi2')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('Yellow')
+#     # # time.sleep(2)
+#     # # print('')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('')
+
+#     user_handles = ['jim', 'joe']
+#     message = '123456782'
+#     print(message[0:20])
+
+#     pass

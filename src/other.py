@@ -31,7 +31,12 @@ def clear_v1():
     store['users']['is_global_owner'] = []
     store['users']['removed_user'] = []
     store['users']['permissions'] = []
-    store['users']['password_reset_code'] = []  #new
+    store['users']['password_reset_code'] = []  #new - Dom
+    store['users']['notifications'] = [] # new -Ridho
+    store['users']['channels_joined'] = [] # new -Simon
+    store['users']['dms_joined'] = [] # new -Simon
+    store['users']['messages_sent'] = []# new -Simon
+    store['users']['profile_img_url'] = []
 
     store['channels']['channel_id'] = []
     store['channels']['channel_name'] = []
@@ -39,6 +44,8 @@ def clear_v1():
     store['channels']['is_public'] = []
     store['channels']['all_members'] = []
     store['channels']['messages'] = []
+    store['channels']['standup_time_finish'] = []
+    store['channels']['is_standup_active'] = []
 
     store['messages'] = []
 
@@ -83,6 +90,8 @@ def print_store_debug():
     print(store['users']['permissions'])
     print("Printing Password reset codes")
     print(store['users']['password_reset_code'])
+    print("Printing Profile IMG URL")
+    print(store['users']['profile_img_url'])
 
     print(" ")
 

@@ -57,8 +57,9 @@ def admin_user_remove_v1(token, user_id):
     store['users']['removed_user'][user_id] = True
     store['users']['permissions'][user_id] = 3
 
+    # I DONT THINK THIS WILL WORK
     store['channels']['all_members'][user_id] = 'X'
-    store['dms']['members'][user_id] = 'X'
+    store['dms']['all_members'][user_id] = 'X'
 
 
 

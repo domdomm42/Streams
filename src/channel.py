@@ -1,6 +1,9 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
+from src.notifications import alert_user_channel_invited
+from src.users import user_profile_v1
+from src.other import print_store_debug
 
 def channel_invite_v1(token, channel_id, u_id):
     """
@@ -27,7 +30,8 @@ def channel_invite_v1(token, channel_id, u_id):
     check_member_u_id(channel_id, u_id)
 
     store['channels']['all_members'][channel_id].append(u_id)
-
+    alert_user_channel_invited(auth_user_id, u_id, channel_id)
+    
     data_store.set(store)
     return {}
 
@@ -79,22 +83,12 @@ def channel_details_v1(token, channel_id):
 
     owner_details = []
     for owner_member_id in owners:
-        user_email = store['users']['emails'][owner_member_id]
-        user_first_name = store['users']['first_names'][owner_member_id]
-        user_last_name = store['users']['last_names'][owner_member_id]
-        user_handles = store['users']['user_handles'][owner_member_id]
-        owner_details.append({'u_id': owner_member_id, 'email': user_email,
-                            'name_first': user_first_name, 'name_last': user_last_name, 'handle_str': user_handles})
+        owner_details.append(user_profile_v1(token, owner_member_id)['user'])
 
     members_details = []
 
     for member_users_id in members:
-        user_email = store['users']['emails'][member_users_id]
-        user_first_name = store['users']['first_names'][member_users_id]
-        user_last_name = store['users']['last_names'][member_users_id]
-        user_handles = store['users']['user_handles'][member_users_id]
-        members_details.append({'u_id': member_users_id, 'email': user_email,
-                                'name_first': user_first_name, 'name_last': user_last_name, 'handle_str': user_handles})
+        members_details.append(user_profile_v1(token, member_users_id)['user'])
 
     return {
         'name': name,
@@ -140,7 +134,8 @@ def channel_messages_v1(token, channel_id, start):
         
         # Set is_this_user_reacted to True if the auth_user_id has reacted to the message
         msg = get_message(idx)
-        if auth_user_id in msg['reacts']['u_ids']:
+
+        if auth_user_id in msg['reacts'][0]['u_ids']:
             msg['reacts']['is_this_user_reacted'] = True
         messages.append(msg)
 
@@ -316,12 +311,9 @@ def check_owner_permission(channel_id, user_id):
     '''
     store = data_store.get()
     if user_id not in store['channels']['owner_user_id'][channel_id]:
-        if  store['users']['is_global_owner'][user_id] == False:
-            
+        if store['users']['is_global_owner'][user_id] == False:            
             raise AccessError(description='Permission denied')
-        else:
-            if user_id not in store['channels']['all_members'][channel_id]:
-                raise AccessError(description='Permission denied')    
+
 
             
                 
