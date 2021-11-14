@@ -582,12 +582,7 @@ def index_from_dm_id(dm_id, store):
             counter <int>: counts the index where the dm_id is located      
 
     '''
-    counter = 0
-    for num in store['dms']['dm_id']:
-        if dm_id == num:
-            break
-        counter += 1
-    return counter
+    return store['dms']['dm_id'].index(dm_id)
 
 def get_message(message_id):
     '''
@@ -693,13 +688,12 @@ def message_index_from_id(message_id, store):
     Return Values:
             counter <int>: counts the index where the message is located      
     '''
-    message_index = 0
-    for num in store['messages']:
-        if message_id == num['message_id']:
-            break
-        message_index += 1
+    
+    for msg in store['messages']:
+        if msg['message_id'] == message_id:
+            message_idx = store['messages'].index(msg)
 
-    return message_index 
+    return message_idx 
 
 def index_from_channel_id(channel_id, store):
     '''
@@ -712,13 +706,8 @@ def index_from_channel_id(channel_id, store):
     Return Values:
             counter <int>: counts the index where the channel is located      
     '''
-    channel_index = 0
-    for num in store['channels']['channel_id']:
-        if channel_id == num:
-            break
-        channel_index += 1
 
-    return channel_index
+    return store['channels']['channel_id'].index(channel_id)
    
 def append_user_stat_data_dm(u_id):
 
