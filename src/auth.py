@@ -252,7 +252,7 @@ def auth_passwordreset_reset_v1(reset_code, new_password):
     try:
         idx = store['users']['password_reset_code'].index(reset_code)
     except:
-        raise InputError(description="Reset code is not a valid reset code!")
+        raise InputError(description="Reset code is not a valid reset code!") from None
     
     if len(new_password) < 6:
         raise InputError(description="Password entered is less than 6 characters long!")
