@@ -204,7 +204,7 @@ def auth_passwordreset_request_v1(email):
     gmail_password = '@beaglesend1531'
 
     sent_from = gmail_user
-    to = ['me@gmail.com', 'TeamBeagle1531@gmail.com']
+    to = ['me@gmail.com', email]
     subject = 'Password Reset code'
     body = reset_code
 
