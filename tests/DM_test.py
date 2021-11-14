@@ -639,11 +639,13 @@ def test_simple_string_search(setup):
             'u_id': 0,
             'message': 'big tings bruv',
             'time_created': timestamp1,
-            'reacts': {
-                'react_id': 1,
-                'u_ids': [],
-                'is_this_user_reacted': False
-            },
+            'reacts': [
+                {
+                    'react_id': 1,
+                    'u_ids': [],
+                    'is_this_user_reacted': False
+                }   
+            ],
             'is_pinned': False
         }] 
     
