@@ -80,7 +80,7 @@ def message_react_v1(token, message_id, react_id):
     check_react_id(react_id)
 
     message_index = message_index_from_id(message_id, store)
-
+    print(store)
     if auth_user_id in store['messages'][message_index]['reacts']['u_ids']:
         raise InputError("Message already contains the appropriate react")
     else:
@@ -88,7 +88,7 @@ def message_react_v1(token, message_id, react_id):
     
     if auth_user_id == store['messages'][message_index]['u_id']:
         store['messages'][message_index]['reacts']['is_this_user_reacted'] = True
-        
+    print(store)   
     data_store.set(store)
     
     return {}        
@@ -691,7 +691,7 @@ def message_index_from_id(message_id, store):
     '''
     message_index = 0
     for num in store['messages']:
-        if message_id == num['messsage_id']:
+        if message_id == num['message_id']:
             break
         message_index += 1
 
