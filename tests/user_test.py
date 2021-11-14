@@ -899,7 +899,7 @@ def test_upload_invalid_ye(setup):
 
 
 def test_upload_invalid_token1(setup):
-    response_log_joe, _ = setup
+    #response_log_joe, _ = setup
 
     # 159 * 200
     photo_info = {
@@ -923,17 +923,17 @@ def test_upload_invalid_token1(setup):
 
 
 def test_upload_valid_same_twice(setup):
-    response_log_joe, response_log_marry = setup
+    _, response_log_marry = setup
 
     # 159 * 200
-    photo_info_1 = {
-        "token": response_log_joe['token'],
-        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
-        "x_start": 50,
-        "y_start": 50,
-        "x_end": 130,
-        "y_end": 130
-    }
+    # photo_info_1 = {
+    #     "token": response_log_joe['token'],
+    #     "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
+    #     "x_start": 50,
+    #     "y_start": 50,
+    #     "x_end": 130,
+    #     "y_end": 130
+    # }
     photo_info = {
         "token": response_log_marry['token'],
         "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
@@ -1048,8 +1048,8 @@ def test_users_stats2(setup):
     response2 = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info2)
 
 
-    response_data1 = response1.json()
-    response_data2 = response2.json()
+    #response_data1 = response1.json()
+    #response_data2 = response2.json()
 
     time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
 
