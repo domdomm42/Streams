@@ -673,7 +673,7 @@ def message_index_from_id(message_id, store):
     '''
     message_index = 0
     for num in store['messages']:
-        if message_id == num['messsage_id']:
+        if message_id == num['message_id']:
             break
         message_index += 1
 
