@@ -2,11 +2,202 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth import auth_register_v1
 from src.auth_auth_helpers import check_and_get_user_id
-from src.notifications import alert_user_dm_invited
-from src.other import print_store_debug
 from src.users import user_profile_v1
+from src.notifications import alert_user_dm_invited
 import requests
 
+def search_v1(token, query_str):
+    '''
+    Returns a collection of messages where the query string is present and is occupied by the user
+
+    Arguements:
+        token <string>: identifying calue for the calling user
+        query_str <string>: the string to be searched for in messages
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        InputError: length of query_str is less than 1 or over 1000 characters
+
+    Return Values:
+        messages <list>: list of dictionaries containing the fields message_id, u_id,
+                         message, time_created
+    '''
+    store = data_store.get()
+
+    auth_user_id = check_and_get_user_id(token)
+    if len(query_str) > 1000 or len(query_str) < 1:
+        raise InputError('Invalid Query string given')
+
+    message_list = []
+    messages_dict = []
+    
+    channels_joined = []
+    dms_joined = []
+    index = 0
+    for channel_id in store['channels']['channel_id']:
+        if auth_user_id in store['channels']['all_members'][index]:
+            channels_joined.append(channel_id)
+        index += 1
+    index = 0
+    for dm_id in store['dms']['dm_id']:
+        if auth_user_id in store['dms']['all_members'][index]:
+            dms_joined.append(dm_id)
+        index += 1
+            
+    for channel_id in channels_joined:
+        channel_index = index_from_channel_id(channel_id, store)
+        message_list.extend(store['channels']['messages'][channel_index])
+
+    for dm_id in dms_joined:
+        dm_index = index_from_dm_id(dm_id, store)
+        message_list.extend(store['dms']['messages'][dm_index])
+
+    for message in store['messages']:
+        if message['message_id'] in message_list and query_str in message['message']:
+            messages_dict.append(message)
+
+    return {'messages': messages_dict}        
+
+
+def message_react_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, add a "react" to 
+    that particular message
+
+    Arguments:
+        token <string>: identifying value for the calling user
+        message_id <int>: the identifying number for the message
+        react_id <int>: the identifying value for the mentioned react, only 1  
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        InputError: message_id is not valid/non-existent in the dm or channel of the user
+        InputError: react_id is not a valid react >< 1
+        InputError: the message already has a react of the same react_id 
+    '''    
+    store = data_store.get()
+
+    auth_user_id = check_and_get_user_id(token)
+    check_message_id(auth_user_id, message_id, store)
+    check_react_id(react_id)
+
+    message_index = message_index_from_id(message_id, store)
+
+    if auth_user_id in store['messages'][message_index]['reacts'][0]['u_ids']:
+        raise InputError("Message already contains the appropriate react")
+    else:
+        store['messages'][message_index]['reacts'][0]['u_ids'].append(auth_user_id)
+    
+    if auth_user_id == store['messages'][message_index]['u_id']:
+        store['messages'][message_index]['reacts'][0]['is_this_user_reacted'] = True
+        
+    data_store.set(store)
+    
+    return {}        
+
+
+def message_unreact_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, remove a "react" to that particular message
+
+    Arguments:
+        token <string>: identifying value for the calling user
+        message_id <int>: the identifying number for the message
+        react_id <int>: the identifying value for the mentioned react, only 1  
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        InputError: message_id is not valid/non-existent in the dm or channel of the user
+        InputError: react_id is not a valid react >< 1
+        InputError: the message already has no react
+    '''    
+    store = data_store.get()
+
+    auth_user_id = check_and_get_user_id(token)
+    check_message_id(auth_user_id, message_id, store)
+    check_react_id(react_id)
+
+    message_index = message_index_from_id(message_id, store)
+
+    if auth_user_id not in store['messages'][message_index]['reacts'][0]['u_ids']:
+        raise InputError("Message does not contain a react")
+    else:
+        store['messages'][message_index]['reacts'][0]['u_ids'].remove(auth_user_id)
+    
+    if auth_user_id == store['messages'][message_index]['u_id']:   
+        store['messages'][message_index]['reacts'][0]['is_this_user_reacted'] = False
+    
+    data_store.set(store)
+    
+    return {}   
+
+def message_pin_v1(token, message_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 'pin' that particular message
+
+    Arguments:
+        token <string>: identifying value for the calling user
+        message_id <int>: the identifying number for the message  
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        AccessError: the authorised user is not an owner of the channel/DM that contains the message
+        InputError: message_id is not valid/non-existent in the dm or channel of the user
+        InputError: the message already has a pin   
+    '''    
+    store = data_store.get()
+    
+    auth_user_id = check_and_get_user_id(token)
+    check_message_id(auth_user_id, message_id, store)
+    user_index = index_from_u_id(auth_user_id, store)
+    if store['users']['is_global_owner'][user_index] == False:
+        check_owner_permission(auth_user_id, message_id, store)
+
+    message_index = message_index_from_id(message_id, store)
+    if store['messages'][message_index]['is_pinned'] == True:
+        raise InputError('Message has already been pinned')
+    
+    store['messages'][message_index]['is_pinned'] = True
+    
+    data_store.set(store)
+    
+    return {}            
+
+
+    
+
+def message_unpin_v1(token, message_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 'unpin' that particular message
+
+    Arguments:
+        token <string>: identifying value for the calling user
+        message_id <int>: the identifying number for the message  
+
+    Exceptions:
+        AccessError: where the token given is invalid or doesnt exist in database
+        AccessError: the authorised user is not an owner of the channel/DM that contains the message
+        InputError: message_id is not valid/non-existent in the dm or channel of the user
+        InputError: the message isnt pinned  
+    '''    
+    store = data_store.get()
+    
+    auth_user_id = check_and_get_user_id(token)
+    check_message_id(auth_user_id, message_id, store)
+    user_index = index_from_u_id(auth_user_id, store)
+
+    if store['users']['is_global_owner'][user_index] == False:
+        check_owner_permission(auth_user_id, message_id, store)
+
+    message_index = message_index_from_id(message_id, store)
+    if store['messages'][message_index]['is_pinned'] == False:
+        raise InputError('Message has already been unpinned')
+
+    store['messages'][message_index]['is_pinned'] = False
+    
+    data_store.set(store)
+    
+    return {}
 
 def dm_create_v1(token, u_ids):
     '''
@@ -177,7 +368,6 @@ def dm_details_v1(token, dm_id):
     for u_id in store['dms']['all_members'][name_index]:
         new_dict = user_profile_v1(token, u_id)['user']
         u_id_list.append(new_dict)
-            
 
     return {
         'name': name,
@@ -308,7 +498,7 @@ def check_user_in_dm(u_id, dm_id, store):
     Checks if the authorised user (token) is a member of the DM
 
     Arguments:
-            u_id <int>: indetifying integer of the user
+            u_id <int>: indtifying integer of the user
             dm_id <int>: dm ID being checked
             store <dictionary>: the data_store used to save all info
 
@@ -401,7 +591,7 @@ def get_message(message_id):
     This function takes message_id and returns the message associated with message_id
 
     Arguments:
-        message_id(int) - id of message you want to access
+        message_id <int> - id of message you want to access
 
     Exceptions:
         No given exceptions
@@ -415,12 +605,116 @@ def get_message(message_id):
         if msg['message_id'] == message_id:
             return msg
 
-if __name__ == '__main__':
-    # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
-    # marry_mae_token = auth_register_v1('jimjoe12@gmail.com', 'password', 'Marry', 'Mae')['token']
-    # darron_mike = auth_register_v1('jimjoe123@gmail.com', 'password', 'Darron', 'Mike')['token']
+def check_react_id(react_id):
+    '''
+    This function takes react_id to see if it follows the parameters, returns INPUTERROR if not
 
-    # dm_create_v1(jim_joe_token, [1, 2])
- 
-    # print_store_debug()
-    pass
+    Arguments:
+        react_id <int> - id of react you want to access
+
+    Exceptions:
+        InputError - if the react_id is not equal to 1 (only applicable one)
+    '''
+    if react_id != 1:
+        raise InputError('Invalid react_id given')
+
+def check_message_id(auth_user, message_id, store):
+    '''
+    This function takes message to see if it exists, returns INPUTERROR if not
+
+    Arguments:
+        auth_user <int> - id of the person accessing the message
+        message_id <int> - id of message you want to access
+        store <dict> - data_store in use
+    Exceptions:
+        InputError - if the user is not within the DM or channel for the message
+    '''
+    
+    if any(message_id in sublist for sublist in store['channels']['messages']):
+        index = next(i for i, v in enumerate(store['channels']['messages']) if message_id in v)
+
+        if auth_user not in store['channels']['all_members'][index]:
+            raise InputError('User is not a member of channel that contains message')
+        else:
+            return
+    
+    if any(message_id in sublist for sublist in store['dms']['messages']):
+        
+        index = next(i for i, v in enumerate(store['dms']['messages']) if message_id in v)
+
+        if auth_user not in store['dms']['all_members'][index]:
+            raise InputError('User is not a member of DM that contains message')
+        else:
+            return
+    
+    raise InputError('Message does not exist in DM/Channel that user has joined')    
+        
+    
+
+def check_owner_permission(auth_user, message_id, store):
+    '''
+    This function checks if the user is an owner in the channel where the message exists, returns ACCESSERROR if not
+
+    Arguments:
+        auth_user <int> - id of the person accessing the message
+        message_id <int> - id of message you want to access
+        store <dict> - data_store in use
+    Exceptions:
+        AccessError - if the user is not an owner within the DM or channel 
+    '''
+    if any(message_id in sublist for sublist in store['channels']['messages']):
+        index = next(i for i, v in enumerate(store['channels']['messages']) if message_id in v)
+
+        if auth_user != store['channels']['owner_user_id'][index]:
+            raise AccessError('User is not an owner of channel that contains message')
+        else:
+            return
+
+    if any(message_id in sublist for sublist in store['dms']['messages']):
+        
+        index = next(i for i, v in enumerate(store['dms']['messages']) if message_id in v)
+        if auth_user != store['dms']['owner_user_id'][index]:
+            raise AccessError('User is not an owner of the DM')
+        else:
+            return
+     
+
+def message_index_from_id(message_id, store):
+    '''
+    Loops through all message's to find the index of the value given
+    
+    Arguments:
+            message_id <int>: indetifying integer of the message
+            store <dictionary>: the data_store used to save all info
+
+    Return Values:
+            counter <int>: counts the index where the message is located      
+    '''
+    message_index = 0
+    for num in store['messages']:
+        if message_id == num['messsage_id']:
+            break
+        message_index += 1
+
+    return message_index 
+
+def index_from_channel_id(channel_id, store):
+    '''
+    Loops through all channels's to find the index of the value given
+    
+    Arguments:
+            channel_id <int>: indetifying integer of the channel
+            store <dictionary>: the data_store used to save all info
+
+    Return Values:
+            counter <int>: counts the index where the channel is located      
+    '''
+    channel_index = 0
+    for num in store['channels']['channel_id']:
+        if channel_id == num:
+            break
+        channel_index += 1
+
+    return channel_index
+   
+
