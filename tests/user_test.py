@@ -921,43 +921,6 @@ def test_upload_invalid_token1(setup):
 
 
 
-
-def test_upload_valid_same_twice(setup):
-    _, response_log_marry = setup
-
-    # 159 * 200
-    # photo_info_1 = {
-    #     "token": response_log_joe['token'],
-    #     "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
-    #     "x_start": 50,
-    #     "y_start": 50,
-    #     "x_end": 130,
-    #     "y_end": 130
-    # }
-    photo_info = {
-        "token": response_log_marry['token'],
-        "img_url": "http://cgi.cse.unsw.edu.au/~jas/home/pics/jas.jpg",
-        "x_start": 10,
-        "y_start": 10,
-        "x_end": 90,
-        "y_end": 90
-    }
-    
-    
-    
-    response = requests.post(f'{BASE_URL}user/profile/uploadphoto/v1', json=photo_info)
-    
-    
-    
-    
-    
-    
-    # response_data = response.json()
-
-    assert response.status_code == 200
-
-
-
 def test_upload_valid_same(setup):
     response_log_joe, _ = setup
 
@@ -1038,29 +1001,7 @@ def test_users_stats(setup):
 
 
 
-def test_users_stats2(setup):
-    response_log_joe, response_log_marry = setup
-    user_all_info1 = {"token": response_log_joe["token"]}
-    
-    response1 = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info1)
-    
-    user_all_info2 = {"token": response_log_marry["token"]}
-    response2 = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info2)
 
-
-    #response_data1 = response1.json()
-    #response_data2 = response2.json()
-
-    time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
-
-    assert {'workspace_stats': {
-        'channels_exist': [{'num_channels_exist': 0, 'time_stamp': time_stamp}, {'num_channels_exist': 0, 'time_stamp': time_stamp}],
-
-        'dms_exist': [{'num_dms_exist': 0, 'time_stamp': time_stamp}, {'num_dms_exist': 0, 'time_stamp': time_stamp}],
-        
-        'messages_exist': [{'num_messages_sent': 0, 'time_stamp': time_stamp}, {'num_messages_sent': 0, 'time_stamp': time_stamp}],
-        
-        'utilization_rate': 0.0}}
 
 
 
