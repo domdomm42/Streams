@@ -45,7 +45,7 @@ def test_invalid_channel(setup):
     joe_smith_data, _, marry_mae_data = setup
 
     # Joe Smith attempts to invite to a channel that does not exist
-    channel_invite_info = {'token': joe_smith_data['token'], 'channel_id': 10, 'u_id': marry_mae_data['token']}
+    channel_invite_info = {'token': joe_smith_data['token'], 'channel_id': 10, 'u_id': marry_mae_data['auth_user_id']}
     response = requests.post(f'{BASE_URL}/channel/invite/v2', json = channel_invite_info)
     response_data = response.json()
     assert response_data['code'] == INPUT_ERROR
