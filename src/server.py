@@ -95,15 +95,15 @@ def auth_logout():
 @APP.route("/auth/passwordreset/request/v1", methods=['POST'])
 def password_reset_request():
     request_data = request.get_json()
-    auth_passwordreset_request_v1(request_data['email'])
-    return dumps({})
+    response = auth_passwordreset_request_v1(request_data['email'])
+    return dumps(response)
 
 
 @APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
 def password_reset_reset():
     request_data = request.get_json()
-    auth_passwordreset_reset_v1(request_data['reset_code'], request_data['new_password'])
-    return dumps({})
+    response = auth_passwordreset_reset_v1(request_data['reset_code'], request_data['new_password'])
+    return dumps(response)
 
 
 @APP.route("/channels/create/v2", methods=['POST'])

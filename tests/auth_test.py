@@ -407,67 +407,70 @@ def test_simple_password_reset():
     # auth_login_v1("TeamBeagle1531@gmail.com", "password")
 
     user_info_password_req = {"email": "TeamBeagle1531@gmail.com"}
-    requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_password_req)
+    response = requests.post(f'{BASE_URL}/auth/passwordreset/request/v1', json = user_info_password_req)
+    assert response.status_code in [200, 201]
     
     
 def test_new_pass_too_short():
     requests.delete(f'{BASE_URL}/clear/v1')
     user_info_reg_1 = {"email": "TeamBeagle1531@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Tim"}
-    
     requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
 
     user_info_login_1 = {"email": "TeamBeagle1531@gmail.com", "password": "password"}
     requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login_1)
    
-
-    user_info_password_req = {"email": "TeamBeagle1531@gmailzz.com"}
-    requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = user_info_password_req)
-
+    user_info_password_req = {"email": "TeamBeagle1531@gmail.com"}
+    response = requests.post(f'{BASE_URL}/auth/passwordreset/request/v1', json = user_info_password_req)
+    assert response.status_code in [200, 201]
 
 
 def test_invalid_reset_code():
-    clear_v1()
-    auth_register_v1("TeamBeagle1531@gmail.com", "password", "Joe", "Tim")
-    auth_login_v1("TeamBeagle1531@gmail.com", "password")
-    auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
+    requests.delete(f'{BASE_URL}/clear/v1')
 
-    store = data_store.get()
-    code = store['users']['password_reset_code'][0] + 's'
+    user_info_reg_1 = {"email": "TeamBeagle1531@gmail.com", "password": "password", "name_first": "Joe", "name_last": "Tim"}
+    requests.post(f'{BASE_URL}/auth/register/v2', json = user_info_reg_1)
 
-    with pytest.raises(InputError):
-        auth_passwordreset_reset_v1(code, "dompassword")
+    user_info_login_1 = {"email": "TeamBeagle1531@gmail.com", "password": "password"}
+    requests.post(f'{BASE_URL}/auth/login/v2', json = user_info_login_1)
 
-def test_simple_reset_with_mult_users():
-    clear_v1()
-    auth_register_v1("cottoneyedjoe@gmail.com", "password", "Cotton", "Eyed")
-    auth_login_v1("cottoneyedjoe@gmail.com", "password")
+    user_info_password_req = {"email": "TeamBeagle1531@gmail.com"}
+    response = requests.post(f'{BASE_URL}/auth/passwordreset/request/v1', json = user_info_password_req)
 
-    auth_register_v1("TeamBeagle1531@gmail.com", "password1", "Joe", "Tim")
-    auth_login_v1("TeamBeagle1531@gmail.com", "password1")
-    auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
+    request_reset_key = {"reset_code": 'ABC', "new_password": 'sajdfhdj'}
+    response = requests.post(f'{BASE_URL}/auth/passwordreset/reset/v1', json = request_reset_key)
+    assert response.status_code == INPUT_ERROR
 
-    store = data_store.get()
-    code = store['users']['password_reset_code'][1]
+# def test_simple_reset_with_mult_users():
+#     clear_v1()
+#     auth_register_v1("cottoneyedjoe@gmail.com", "password", "Cotton", "Eyed")
+#     auth_login_v1("cottoneyedjoe@gmail.com", "password")
 
-    auth_passwordreset_reset_v1(code, "dompassword")
-    assert auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
+#     auth_register_v1("TeamBeagle1531@gmail.com", "password1", "Joe", "Tim")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "password1")
+#     auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
 
-def test_check_logged_out_users():
-    clear_v1()
-    auth_register_v1("cottoneyedjoe@gmail.com", "password", "Cotton", "Eyed")
-    auth_login_v1("cottoneyedjoe@gmail.com", "password")
+#     store = data_store.get()
+#     code = store['users']['password_reset_code'][1]
 
-    auth_register_v1("TeamBeagle1531@gmail.com", "password1", "Joe", "Tim")
-    auth_login_v1("TeamBeagle1531@gmail.com", "password1")
-    auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
+#     auth_passwordreset_reset_v1(code, "dompassword")
+#     assert auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
 
-    store = data_store.get()
-    code = store['users']['password_reset_code'][1]
+# def test_check_logged_out_users():
+#     clear_v1()
+#     auth_register_v1("cottoneyedjoe@gmail.com", "password", "Cotton", "Eyed")
+#     auth_login_v1("cottoneyedjoe@gmail.com", "password")
 
-    auth_passwordreset_reset_v1(code, "dompassword")
-    auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
+#     auth_register_v1("TeamBeagle1531@gmail.com", "password1", "Joe", "Tim")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "password1")
+#     auth_passwordreset_request_v1("TeamBeagle1531@gmail.com")
 
-    assert len(store['logged_in_users']) == 3
+#     store = data_store.get()
+#     code = store['users']['password_reset_code'][1]
+
+#     auth_passwordreset_reset_v1(code, "dompassword")
+#     auth_login_v1("TeamBeagle1531@gmail.com", "dompassword")
+
+#     assert len(store['logged_in_users']) == 3
 
 
 
