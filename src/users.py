@@ -1,13 +1,11 @@
 from src.data_store import data_store
-from src.error import InputError, AccessError
+from src.error import InputError
 from src.auth_auth_helpers import check_and_get_user_id
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.message import message_send_v1
-from datetime import datetime, timezone
 import re
 import urllib.request
-import sys
 from PIL import Image
 from src.config import *
 

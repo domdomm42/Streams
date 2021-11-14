@@ -139,7 +139,7 @@ def channel_messages_v1(token, channel_id, start):
         msg = get_message(idx)
 
         if auth_user_id in msg['reacts'][0]['u_ids']:
-            msg['reacts']['is_this_user_reacted'] = True
+            msg['reacts'][0]['is_this_user_reacted'] = True
         messages.append(msg)
 
     return {
