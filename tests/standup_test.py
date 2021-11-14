@@ -120,7 +120,7 @@ def test_start_active_again(setup):
     requests.post(f'{BASE_URL}/standup/start/v1', json = standup_start_info)
     response = requests.post(f'{BASE_URL}/standup/start/v1', json = standup_start_info)
 
-    active_info = {'token': joe_smith_data['token'], 'channel_id': joes_funland_data['channel_id']}
+    {'token': joe_smith_data['token'], 'channel_id': joes_funland_data['channel_id']}
     response = requests.get(f'{BASE_URL}/standup/active/v1', params = standup_start_info)
     
     assert response.status_code == 200
@@ -128,7 +128,7 @@ def test_start_active_again(setup):
 def test_start_inactive(setup):
     joe_smith_data, joes_funland_data, _ = setup
 
-    active_info = {'token': joe_smith_data['token'], 'channel_id': joes_funland_data['channel_id']}
+    {'token': joe_smith_data['token'], 'channel_id': joes_funland_data['channel_id']}
     standup_start_info = {'token': joe_smith_data['token'], 'channel_id': joes_funland_data['channel_id'], 'length': 3}
     response = requests.get(f'{BASE_URL}/standup/active/v1', params = standup_start_info)
 
