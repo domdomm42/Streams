@@ -700,6 +700,56 @@ def test_complex_react_pin_search(setup):
             'is_pinned': False
         }] 
 
+def test_pin(setup):
+    _, joe, marry, _ = setup
+    channel1 = {'token': joe, 'name': 'Joe', 'is_public': True}
+    # sends two messages from joe and marry
+    send_ch1 = {'token': joe, 'channel_id': 0, 'message': 'big tings bruv'}
+    send_ch2 = {'token': marry, 'channel_id': 0, 'message': 'small tings bruv'}
+    requests.post(f'{BASE_URL}/channels/create/v2', json = channel1)
+    # records the time and id of each message sent
+    response_create = requests.post(f'{BASE_URL}/message/send/v1', json = send_ch1)
+    timestamp1 = int(datetime.now(timezone.utc).timestamp())
+    
+    message_id1 = response_create.json()['message_id']
+    
+    response_create = requests.post(f'{BASE_URL}/message/send/v1', json = send_ch2)
+    
+    # react and pin the first message
+    message_react = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/react/v1', json = message_react)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/pin/v1', json = message_pin)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    response = requests.post(f'{BASE_URL}/message/pin/v1', json = message_pin).json()
+    assert response['code'] == INPUTERROR
+
+def test_unpin(setup):
+    _, joe, marry, _ = setup
+    channel1 = {'token': joe, 'name': 'Joe', 'is_public': True}
+    # sends two messages from joe and marry
+    send_ch1 = {'token': joe, 'channel_id': 0, 'message': 'big tings bruv'}
+    send_ch2 = {'token': marry, 'channel_id': 0, 'message': 'small tings bruv'}
+    requests.post(f'{BASE_URL}/channels/create/v2', json = channel1)
+    # records the time and id of each message sent
+    response_create = requests.post(f'{BASE_URL}/message/send/v1', json = send_ch1)
+    timestamp1 = int(datetime.now(timezone.utc).timestamp())
+    
+    message_id1 = response_create.json()['message_id']
+    
+    response_create = requests.post(f'{BASE_URL}/message/send/v1', json = send_ch2)
+    
+    # react and pin the first message
+    message_react = {'token': joe, 'message_id': message_id1, 'react_id': 1}
+    requests.post(f'{BASE_URL}/message/react/v1', json = message_react)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/pin/v1', json = message_pin)
+    message_pin = {'token': joe, 'message_id': message_id1}
+    requests.post(f'{BASE_URL}/message/unpin/v1', json = message_pin).json()
+    message_pin = {'token': joe, 'message_id': message_id1}
+    response = requests.post(f'{BASE_URL}/message/unpin/v1', json = message_pin).json()
+    assert response['code'] == INPUTERROR
+
 def test_complex_react_pin_channel_search(setup):
     _, joe, marry, _ = setup
     channel1 = {'token': joe, 'name': 'Joe', 'is_public': True}
