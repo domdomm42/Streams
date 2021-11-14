@@ -278,6 +278,7 @@ def test_simple_dm_details(setup):
             'name_first': 'Marry', 
             'name_last': 'Smith',
             'handle_str': 'marrysmith',
+            'messages_sent': '',
             'profile_img_url': ''
         },
         {
@@ -286,6 +287,7 @@ def test_simple_dm_details(setup):
             'name_first': 'Joe', 
             'name_last': 'Smith',
             'handle_str':  'joesmith',
+            'messages_sent': '',
             'profile_img_url': ''
         }
     ]
@@ -312,6 +314,7 @@ def test_simple_dm_leave(setup):
             'name_first': 'Marry', 
             'name_last': 'Smith',
             'handle_str': 'marrysmith',
+            'messages_sent': '',
             'profile_img_url': ''
         }
     ]

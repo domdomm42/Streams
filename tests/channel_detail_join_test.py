@@ -146,6 +146,7 @@ def test_global_owner_join_private(setup):
                 'name_first': 'Marry',
                 'name_last': 'Joe',
                 'u_id': 1,
+                'messages_sent': '',
                 'profile_img_url': ''
             }
         ],
@@ -155,6 +156,7 @@ def test_global_owner_join_private(setup):
                 'name_first': 'Marry',
                 'name_last': 'Joe',
                 'u_id': 1,
+                'messages_sent': '',
                 'profile_img_url': ''
             },
             {   'email': 'joe123@gmail.com',
@@ -162,6 +164,7 @@ def test_global_owner_join_private(setup):
                 'name_first': 'Joe',
                 'name_last': 'Smith',
                 'u_id': 0,
+                'messages_sent': '',
                 'profile_img_url': ''
             }
         ],
@@ -187,6 +190,7 @@ def test_valid_channel_id_detail_1(setup):
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
                 'handle_str': 'joesmith',
+                'messages_sent': '',
                 'profile_img_url': ''
             }
         ], 
@@ -197,6 +201,7 @@ def test_valid_channel_id_detail_1(setup):
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
                 'handle_str': 'joesmith',
+                'messages_sent': '',
                 'profile_img_url': ''
             }
         ]
@@ -222,6 +227,7 @@ def test_valid_channel_id_detail_2(setup):
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
                 'handle_str': 'marryjoe',
+                'messages_sent': '',
                 'profile_img_url': ''
             }
         ], 
@@ -232,6 +238,7 @@ def test_valid_channel_id_detail_2(setup):
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
                 'handle_str': 'marryjoe',
+                'messages_sent': '',
                 'profile_img_url': ''
             }
         ]
@@ -261,6 +268,7 @@ def test_valid_channel_id_join(setup):
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
                 'handle_str': 'joesmith',
+                'messages_sent': '',
                 'profile_img_url': ''
             }
         ], 
@@ -271,6 +279,7 @@ def test_valid_channel_id_join(setup):
                 'name_first': 'Joe', 
                 'name_last': 'Smith', 
                 'handle_str': 'joesmith',
+                'messages_sent': '',
                 'profile_img_url': ''
             }, 
             {   'u_id': 1, 
@@ -278,6 +287,7 @@ def test_valid_channel_id_join(setup):
                 'name_first': 'Marry', 
                 'name_last': 'Joe', 
                 'handle_str': 'marryjoe',
+                'messages_sent': '',
                 'profile_img_url': ''
             }
         ]

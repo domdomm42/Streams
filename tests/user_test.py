@@ -64,6 +64,7 @@ def test_valid_u_id(setup):
         'name_last': 'Smith',
         'handle_str': 'joesmith',
         'u_id': 0,
+        'messages_sent': '',
         'profile_img_url': '',
     }
 
@@ -86,12 +87,14 @@ def test_user_all_output(setup):
             'name_first': 'Joe',
             'name_last': 'Smith',
             'u_id': 0,
+            'messages_sent': '',
             'profile_img_url': ''},
             {'email': 'marryjoe222@gmail.com',
             'handle_str': 'marryjoe',
             'name_first': 'Marry',
             'name_last': 'Joe',
             'u_id': 1,
+            'messages_sent': '',
             'profile_img_url': ''},
 
         ]
@@ -115,6 +118,7 @@ def test_user_profile_output(setup):
         'name_last': 'Joe',
         'handle_str': 'marryjoe',
         'u_id': 1,
+        'messages_sent': '',
         'profile_img_url': ''}
 
 # Test for name
@@ -213,6 +217,7 @@ def test_valid_name(setup):
         'name_last': 'b',
         'handle_str': 'joesmith',
         'u_id': 0,
+        'messages_sent': '',
         'profile_img_url': ''
     }
 
@@ -284,6 +289,7 @@ def test_valid_email(setup):
         'name_last': 'Smith',
         'handle_str': 'joesmith',
         'u_id': 0,
+        'messages_sent': '',
         'profile_img_url': ''
     }
 
@@ -383,6 +389,7 @@ def test_valid_handle(setup):
         'name_last': 'Smith',
         'handle_str': 'KobeBryant',
         'u_id': 0,
+        'messages_sent': '',
         'profile_img_url': ''
     }
     
@@ -409,12 +416,14 @@ def test_successful_users_all():
             'name_first': 'sheriff',
             'name_last': 'woody',
             'u_id': 0,
+            'messages_sent': '',
             'profile_img_url': ''},
             {'email': 'buzz.lightyear@starcommand.com',
             'handle_str': 'buzzlightyear',
             'name_first': 'buzz',
             'name_last':'lightyear',
             'u_id': 1,
+            'messages_sent': '',
             'profile_img_url': ''}]
     }
 
@@ -794,7 +803,7 @@ def test_upload_valid_same(setup):
 
     assert response.status_code == 200
 
-    
+
 def test_upload_valid(setup):
     response_log_joe, _ = setup
 
@@ -815,13 +824,29 @@ def test_upload_valid(setup):
 
 
 
-'''
+
 def test_user_stats(setup):
     response_log_joe, _ = setup
     user_all_info = {"token": response_log_joe["token"]}
     response = requests.get(f'{BASE_URL}user/stats/v1', params=user_all_info)
     response_data = response.json()
-    assert response_data == {}
+    
+    time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    
+    
+    assert response_data == {'user_stats': {
+        'channels_joined': [{'num_channels_joined': 0, 'time_stamp': time_stamp}],
+        'dms_joined': [{'num_dms_joined': 0, 'time_stamp': time_stamp}],
+        'involvement_rate': 0, 
+        'messages_sent': [{'num_messages_sent': 0, 'time_stamp': time_stamp}]}}
+
+
+
+
+
+
+
+
 
 
 def test_users_stats(setup):
@@ -830,20 +855,14 @@ def test_users_stats(setup):
 
     response = requests.get(f'{BASE_URL}users/stats/v1', params=user_all_info)
     response_data = response.json()
-    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
 
-    assert response_data == {'workspace_stats': {'channels_exist': [{'num_channels_exist': 0, 'time_stamp': time_stamp},
-                                                                    {'num_channels_exist': 0,
-                                                                     'time_stamp': time_stamp}],
-                                                 'dms_exist': [{'num_dms_exist': 0, 'time_stamp': time_stamp},
-                                                               {'num_dms_exist': 0,
-                                                                'time_stamp': time_stamp}],
-                                                 'messages_exist': [{'num_messages_sent': 0,
-                                                                     'time_stamp': time_stamp},
-                                                                    {'num_messages_sent': 0,
-                                                                     'time_stamp': time_stamp}],
-                                                 'utilization_rate': 0.0}}
-'''
+    assert response_data == {'workspace_stats': {
+        'channels_exist': [{'num_channels_exist': 0, 'time_stamp': time_stamp}],
+        'dms_exist': [{'num_dms_exist': 0, 'time_stamp': time_stamp}],
+        'messages_exist': [{'num_messages_sent': 0, 'time_stamp': time_stamp}],
+        'utilization_rate': 0.0}}
+
 # def test_user_stats(setup):
 #     response_log_joe, _ = setup
 #     user_all_info = {"token": response_log_joe["token"]}

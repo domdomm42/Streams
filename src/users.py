@@ -70,6 +70,7 @@ def user_all_v1(token):
                             'name_first': user_name_first, 
                             'name_last': user_name_last, 
                             'handle_str': user_handle_str, 
+                            'messages_sent': '', 
                             'profile_img_url': ''})
 
     data_store.set(store)
@@ -106,6 +107,7 @@ def user_profile_v1(token, u_id):
                             'name_first': user_name_first, 
                             'name_last': user_name_last, 
                             'handle_str': user_handle_str,
+                            'messages_sent': '', 
                             'profile_img_url': ''}
 
     return {'user': user}
@@ -257,22 +259,30 @@ def user_stats_v1(token):
     for message in store['messages']:
         if check_if_message_id_exists_and_get_sender_id(message['message_id']) == u_id:
             num_messages_sent = num_messages_sent + 1
-    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
 
     # print(store['users']['channels_joined'])# empty
 
     # channels_joined = store['users']['channels_joined']
 
-    channels_joined = store['users']['channels_joined'][u_id]
+    channels_joined = store['users']['channels_joined']
 
-    dms_joined = store['users']['dms_joined'][u_id]
-    messages_sent = store['users']['message_sent'][u_id]
+    dms_joined = store['users']['dms_joined']
+
+
+
+    print(store)
+    messages_sent = store['users']['messages_sent']
+    
+    messages_sent = store['users']['messages_sent']
     channel_new_stat = {'num_channels_joined': num_channel_joined, 'time_stamp': time_stamp}
     dms_new_stat = {'num_dms_joined': num_dm_joined, 'time_stamp': time_stamp}
     messages_new_stat = {'num_messages_sent': num_messages_sent, 'time_stamp': time_stamp}
     channels_joined.append(channel_new_stat)
     dms_joined.append(dms_new_stat)
     messages_sent.append(messages_new_stat)
+    
+    involvement_rate = 0
     if (num_channels + num_dms + num_messages) > 0:
         involvement_rate = (num_channel_joined + num_dm_joined + num_messages_sent) / (
                     num_channels + num_dms + num_messages)
@@ -307,7 +317,7 @@ def users_stats_v1(token):
                 user_list.append(user_id)
 
     set(user_list)
-    time_stamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    time_stamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
     active_user = len(user_list)
     num_user = len(store['users']['user_id'])
     utilization_rate = active_user / num_user
