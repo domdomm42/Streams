@@ -1,9 +1,8 @@
+   
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.auth import auth_register_v1
 from src.auth_auth_helpers import check_and_get_user_id
-from src.users import user_profile_v1
-from src.notifications import alert_user_dm_invited
 import requests
 
 def search_v1(token, query_str):
@@ -82,15 +81,15 @@ def message_react_v1(token, message_id, react_id):
     check_react_id(react_id)
 
     message_index = message_index_from_id(message_id, store)
-
-    if auth_user_id in store['messages'][message_index]['reacts'][0]['u_ids']:
+    print(store)
+    if auth_user_id in store['messages'][message_index]['reacts']['u_ids']:
         raise InputError("Message already contains the appropriate react")
     else:
-        store['messages'][message_index]['reacts'][0]['u_ids'].append(auth_user_id)
+        store['messages'][message_index]['reacts']['u_ids'].append(auth_user_id)
     
     if auth_user_id == store['messages'][message_index]['u_id']:
-        store['messages'][message_index]['reacts'][0]['is_this_user_reacted'] = True
-        
+        store['messages'][message_index]['reacts']['is_this_user_reacted'] = True
+    print(store)   
     data_store.set(store)
     
     return {}        
@@ -119,13 +118,13 @@ def message_unreact_v1(token, message_id, react_id):
 
     message_index = message_index_from_id(message_id, store)
 
-    if auth_user_id not in store['messages'][message_index]['reacts'][0]['u_ids']:
+    if auth_user_id not in store['messages'][message_index]['reacts']['u_ids']:
         raise InputError("Message does not contain a react")
     else:
-        store['messages'][message_index]['reacts'][0]['u_ids'].remove(auth_user_id)
+        store['messages'][message_index]['reacts']['u_ids'].remove(auth_user_id)
     
     if auth_user_id == store['messages'][message_index]['u_id']:   
-        store['messages'][message_index]['reacts'][0]['is_this_user_reacted'] = False
+        store['messages'][message_index]['reacts']['is_this_user_reacted'] = False
     
     data_store.set(store)
     
@@ -149,7 +148,7 @@ def message_pin_v1(token, message_id):
     
     auth_user_id = check_and_get_user_id(token)
     check_message_id(auth_user_id, message_id, store)
-    user_index = auth_user_id
+    user_index = index_from_u_id(auth_user_id, store)
     if store['users']['is_global_owner'][user_index] == False:
         check_owner_permission(auth_user_id, message_id, store)
 
@@ -184,7 +183,7 @@ def message_unpin_v1(token, message_id):
     
     auth_user_id = check_and_get_user_id(token)
     check_message_id(auth_user_id, message_id, store)
-    user_index = auth_user_id
+    user_index = index_from_u_id(auth_user_id, store)
 
     if store['users']['is_global_owner'][user_index] == False:
         check_owner_permission(auth_user_id, message_id, store)
@@ -217,17 +216,16 @@ def dm_create_v1(token, u_ids):
         dm_id <integer>: the identifying number for each newly created DM
 
     '''
-    user_ids = u_ids[:]
-    
     store = data_store.get()
 
     # Validity checks for each token and u_ids
     auth_user_id = check_and_get_user_id(token)
     check_valid_user(u_ids, store)
-
+    
     # Add function caller/dm owner to user list
     u_ids.append(auth_user_id)
     all_users = u_ids
+
     # Create name for dm as stringated list of u_ids
     all_names = []
     for name in all_users:
@@ -251,12 +249,6 @@ def dm_create_v1(token, u_ids):
     store['dms']['owner_user_id'].append(auth_user_id)
     store['dms']['all_members'].append(all_users)
     store['dms']['messages'].append([])
-
-    # Notify relevant users that they have been added to a DM
-    # u_ids.pop()
-
-    for u_id in user_ids:
-        alert_user_dm_invited(auth_user_id, u_id, dm_id)
 
     data_store.set(store)
 
@@ -366,8 +358,16 @@ def dm_details_v1(token, dm_id):
     # Gets the index of the u_id in the data_store and uses that to extract member information from users
     # u_id is just the index they are in the users library
     for u_id in store['dms']['all_members'][name_index]:
-        new_dict = user_profile_v1(token, u_id)['user']
+        u_id_index = index_from_u_id(u_id, store)
+        new_dict = {
+            'u_id': store['users']['user_id'][u_id_index],
+            'email': store['users']['emails'][u_id_index],
+            'name_first': store['users']['first_names'][u_id_index],
+            'name_last': store['users']['last_names'][u_id_index],
+            'handle_str': store['users']['user_handles'][u_id_index]
+        }
         u_id_list.append(new_dict)
+            
 
     return {
         'name': name,
@@ -464,8 +464,8 @@ def dm_messages_v1(token, dm_id, start):
         
         # Set is_this_user_reacted to True if the auth_user_id has reacted to the message
         msg = get_message(idx)
-        if auth_user_id in msg['reacts'][0]['u_ids']:
-            msg['reacts'][0]['is_this_user_reacted'] = True
+        if auth_user_id in msg['reacts']['u_ids']:
+            msg['reacts']['is_this_user_reacted'] = True
         messages.append(msg)
 
     return {
@@ -563,6 +563,25 @@ def index_from_dm_id(dm_id, store):
     counter = 0
     for num in store['dms']['dm_id']:
         if dm_id == num:
+            break
+        counter += 1
+    return counter
+
+
+def index_from_u_id(u_id, store):
+    '''
+    Loops through all u_id's to find the index of the value given
+    
+    Arguments:
+            u_id <int>: indetifying integer of the user
+            store <dictionary>: the data_store used to save all info
+
+    Return Values:
+            counter <int>: counts the index where the u_id is located      
+    '''
+    counter = 0
+    for num in store['users']['user_id']:
+        if u_id == num:
             break
         counter += 1
     return counter
@@ -673,7 +692,7 @@ def message_index_from_id(message_id, store):
     '''
     message_index = 0
     for num in store['messages']:
-        if message_id == num['messsage_id']:
+        if message_id == num['message_id']:
             break
         message_index += 1
 
@@ -698,4 +717,3 @@ def index_from_channel_id(channel_id, store):
 
     return channel_index
    
-
