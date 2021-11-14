@@ -488,9 +488,6 @@ def get_dm_or_channel_id_of_message(message_id):
     Arguments:
         message_id  (integer)   - The message_id of the message.
     
-    Exceptions:
-        Input Error     -   Message does not belong in any channel or dm.
-    
     Return Value:
         Returns (dm_id, 'dm') or (channel_id, 'channel') depending if the message belongs to a channel or DM.
     '''
@@ -508,8 +505,6 @@ def get_dm_or_channel_id_of_message(message_id):
         if message_id in messages_group:
             idx = store['dms']['messages'].index(messages_group)
             return store['dms']['dm_id'][idx], 'dm'
-
-    raise InputError(description="Message does not belong in any channel or dm!")
 
 def check_if_user_is_owner_of_channel_or_sender_or_global_owner(user_id, channel_id, sender_id):
     ''' 
@@ -617,55 +612,55 @@ def check_time(time_sent):
     if time_sent < int(datetime.now(timezone.utc).timestamp()):
         raise InputError(description='Time incorrect')
 
-if __name__ == '__main__':
-    # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
-    # channels_create_v1(jim_joe_token, 'Jim Land', False)
+# if __name__ == '__main__':
+#     # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
+#     # channels_create_v1(jim_joe_token, 'Jim Land', False)
 
-    # print('')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('')
-    # message_send_v1(jim_joe_token, 0, 'Hi')
-    # print('')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('')
-    # message_sendlater_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
-    # print('')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('')
-    # time.sleep(2)
-    # message_send_v1(jim_joe_token, 0, 'Hi2')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('Yellow')
-    # time.sleep(2)
-    # print('')
-    # print(channel_messages_v1(jim_joe_token, 0, 0))
-    # print('')
+#     # print('')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('')
+#     # message_send_v1(jim_joe_token, 0, 'Hi')
+#     # print('')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('')
+#     # message_sendlater_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
+#     # print('')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('')
+#     # time.sleep(2)
+#     # message_send_v1(jim_joe_token, 0, 'Hi2')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('Yellow')
+#     # time.sleep(2)
+#     # print('')
+#     # print(channel_messages_v1(jim_joe_token, 0, 0))
+#     # print('')
 
-    # # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
-    # # marry_mae_token = auth_register_v1('jimjoe11@gmail.com', 'password', 'SS23', 'S331')['token']
-    # # dm_create_v1(jim_joe_token, [0, 1])
-    # # print('')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('')
-    # # message_senddm_v1(jim_joe_token, 0, 'Hi')
-    # # print('')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('')
-    # # message_sendlaterdm_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
-    # # print('')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('')
-    # # time.sleep(2)
-    # # message_senddm_v1(jim_joe_token, 0, 'Hi2')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('Yellow')
-    # # time.sleep(2)
-    # # print('')
-    # # print(dm_messages_v1(jim_joe_token, 0, 0))
-    # # print('')
+#     # # jim_joe_token = auth_register_v1('jimjoe@gmail.com', 'password', 'Jim', 'Joe')['token']
+#     # # marry_mae_token = auth_register_v1('jimjoe11@gmail.com', 'password', 'SS23', 'S331')['token']
+#     # # dm_create_v1(jim_joe_token, [0, 1])
+#     # # print('')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('')
+#     # # message_senddm_v1(jim_joe_token, 0, 'Hi')
+#     # # print('')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('')
+#     # # message_sendlaterdm_v1(jim_joe_token, 0, 'Yo', int(datetime.now(timezone.utc).timestamp()) + 3)
+#     # # print('')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('')
+#     # # time.sleep(2)
+#     # # message_senddm_v1(jim_joe_token, 0, 'Hi2')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('Yellow')
+#     # # time.sleep(2)
+#     # # print('')
+#     # # print(dm_messages_v1(jim_joe_token, 0, 0))
+#     # # print('')
 
-    user_handles = ['jim', 'joe']
-    message = '123456782'
-    print(message[0:20])
+#     user_handles = ['jim', 'joe']
+#     message = '123456782'
+#     print(message[0:20])
 
-    pass
+#     pass

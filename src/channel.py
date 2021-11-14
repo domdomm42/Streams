@@ -3,6 +3,7 @@ from src.error import InputError, AccessError
 from src.auth_auth_helpers import check_and_get_user_id
 from src.notifications import alert_user_channel_invited
 from src.users import user_profile_v1
+from src.other import print_store_debug
 
 def channel_invite_v1(token, channel_id, u_id):
     """
@@ -310,12 +311,9 @@ def check_owner_permission(channel_id, user_id):
     '''
     store = data_store.get()
     if user_id not in store['channels']['owner_user_id'][channel_id]:
-        if  store['users']['is_global_owner'][user_id] == False:
-            
+        if store['users']['is_global_owner'][user_id] == False:            
             raise AccessError(description='Permission denied')
-        else:
-            if user_id not in store['channels']['all_members'][channel_id]:
-                raise AccessError(description='Permission denied')    
+
 
             
                 

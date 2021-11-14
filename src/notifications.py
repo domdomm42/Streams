@@ -83,7 +83,3 @@ def tag_users_in_dm_message(sender_id, message, dm_id):
             store['users']['notifications'][tagged_user_id].append(notification)
 
     data_store.set(store)
-
-if __name__ == '__main__':
-    list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-    print(list[-1:-21:-1])

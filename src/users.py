@@ -8,6 +8,7 @@ import re
 import urllib.request
 import sys
 from PIL import Image
+from src.config import *
 
 
 def user_profile_sethandle_v1(token, handle_str):
@@ -66,11 +67,12 @@ def user_all_v1(token):
             user_name_first = store['users']['first_names'][user_id]
             user_name_last = store['users']['last_names'][user_id]
             user_handle_str = store['users']['user_handles'][user_id]
+            user_profile_pic = store['users']['profile_img_url'][user_id]
             users.append({'u_id': user_id, 'email': user_email, 
                             'name_first': user_name_first, 
                             'name_last': user_name_last, 
                             'handle_str': user_handle_str, 
-                            'profile_img_url': ''})
+                            'profile_img_url': user_profile_pic})
 
     data_store.set(store)
 
@@ -102,11 +104,12 @@ def user_profile_v1(token, u_id):
     user_name_first = store['users']['first_names'][u_id]
     user_name_last = store['users']['last_names'][u_id]
     user_handle_str = store['users']['user_handles'][u_id]
+    user_profile_pic = store['users']['profile_img_url'][u_id]
     user = {'u_id': u_id, 'email': user_email, 
                             'name_first': user_name_first, 
                             'name_last': user_name_last, 
                             'handle_str': user_handle_str,
-                            'profile_img_url': ''}
+                            'profile_img_url': user_profile_pic}
 
     return {'user': user}
 
@@ -138,8 +141,6 @@ def user_profile_setname_v1(token, name_first, name_last):
     store['users']['first_names'][user_id] = name_first
     store['users']['last_names'][user_id] = name_last
 
-    print('sdhf')
-    print_store_debug()
     data_store.set(store)
 
     return {}
@@ -216,14 +217,18 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     im = im.crop((x_start, y_start, x_end, y_end))
 
     # cropped = im.crop((x_start, y_start, x_end, y_end))
-    im.save(f'src/static/{u_id}.jpg')
+    
     # cropped.save('src/static/{u_id}.jpg')
 
     crop_image(img_url, x_start, y_start, x_end, y_end)
 
+    im.save(f'src/static/{u_id}.jpg')
+
+
     # store['users']['profile_img_url'][f'{u_id}'] = f'src/static/{u_id}.jpg'
-    # store['users']['profile_img_url'][u_id] = f'src/static/{u_id}.jpg'
-    store['users']['profile_img_url'].append(f'src/static/{u_id}.jpg')
+    
+    store['users']['profile_img_url'][u_id] = f'http://localhost:{port}/src/static/{u_id}.jpg'
+    # store['users']['profile_img_url'].append(f'src/static/{u_id}.jpg')
 
     # = crop_image(img_url, x_start, y_start, x_end, y_end)
     data_store.set(store)
@@ -351,20 +356,6 @@ def http_check(img_url):
         raise InputError(description='Invalid Url')
 
 
-def check_valid_startend(img_url, x_start, y_start, x_end, y_end, u_id):
-    # im = Image.open(f'image/{u_id}.jpg')
-
-    store = data_store.get()
-    # print('word')
-    # print(store['users']['profile_img_url'])
-
-    im = Image.open(store['users']['profile_img_url'][u_id])
-
-    width, height = im.size
-    if x_start > x_end or y_start > y_end or x_start > width or x_end > width or y_start > height or y_end > height or x_start < 0 or y_start < 0:
-        raise InputError(description='Invalid Size')
-
-
 #
 def check_type(img_url):
     resp = urllib.request.urlopen(img_url)
@@ -372,13 +363,6 @@ def check_type(img_url):
     if img.format != 'JPEG':
         raise InputError(description='Invalid Type')
     #
-
-
-def imageDown(img_url, u_id):
-    # urllib.request.urlretrieve(img_url, image/{u_id}.jpg)
-    # urllib.request.urlretrieve(img_url, f'image/{u_id}.jpg')
-    urllib.request.urlretrieve(img_url, 'src/static/tmp.jpg')
-    # urllib.request.urlretrieve(f'{img_url}, image/{u_id}.jpg')
 
 
 def crop_image(img_url, x_start, y_start, x_end, y_end):
@@ -390,12 +374,6 @@ def crop_image(img_url, x_start, y_start, x_end, y_end):
     cropped.save('src/static/{u_id}.jpg')
 
     return 'src/static/{u_id}.jpg'
-    # cropped.save(f'image/{u_id}.jpg')
-    # cropped
-
-
-def serve_image():
-    pass
 
 
 # #########################

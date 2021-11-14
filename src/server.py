@@ -2,7 +2,7 @@ import sys
 import signal
 from json import dumps
 import json
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from src.error import InputError
 from src import config
@@ -55,7 +55,7 @@ def defaultHandler(err):
     return response
 
 
-APP = Flask(__name__)
+APP = Flask(__name__, static_url_path='/src/static/')
 CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -95,8 +95,8 @@ def auth_logout():
 @APP.route("/auth/passwordreset/request/v1", methods=['POST'])
 def password_reset_request():
     request_data = request.get_json()
-    auth_passwordreset_request_v1(request_data['email'])
-    return dumps({})
+    response = auth_passwordreset_request_v1(request_data['email'])
+    return dumps(response)
 
 
 @APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
@@ -415,6 +415,10 @@ def standup_send():
     request_data = request.get_json()
     response = standup_send_v1(request_data['token'], request_data['channel_id'], request_data['message'])
     return dumps(response)
+
+@APP.route("/src/static/<path:path>")
+def send_js(path):
+    return send_from_directory('', path)
 
 
 #### NO NEED TO MODIFY BELOW THIS POINT
